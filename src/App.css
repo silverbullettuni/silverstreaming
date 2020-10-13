@@ -91,11 +91,16 @@
   padding: 10px 10px 0 10px;
   box-shadow: black 0 0 0.5rem;
   font-size: 12px;
+  text-align: left;
 }
 
 .text {
-  margin-left: 40px;
+  color: antiquewhite;
 }
 .name {
-  margin-left: 40px;
+  color: rgb(131, 190, 241);
+}
+
+#record-box span.name {
+  font-size: 10px;
 }

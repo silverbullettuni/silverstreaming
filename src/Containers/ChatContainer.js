@@ -14,28 +14,27 @@ export default function ChatContainer(props) {
     },[]);
 
     function send(){
-        let value = textbox.current.value
-        let list = message
+        const value = textbox.current.value
+        const list = message
         list.push({user:'q', txt:value})
-        
-        setMessage(list)
+        setMessage(message => [...message])
+        textbox.current.value = ''
     }
-
 
     return (
         <div className="container">
-            <div id="record-box" >
+            <div id="record-box">
             {
-                message.map(v => {
-                    return <div> 
-                        <span>{v.user} : </span><span>{v.txt}</span>
+                message.map((v, index) => 
+                    <div key={index}> 
+                        <span className='name'>{v.user} : </span><span className='text'>{v.txt}</span>
                     </div>
-                })
+                )
             }   
             
             </div>
             <div id="send-box">
-                <textarea rows="1" cols="80" ref={textbox}></textarea>
+                <textarea rows="1" cols="80" ref={textbox} className='text'></textarea>
                 <div className="button">
                     <button type='submit' onClick={send}>Send</button>
                 </div>
