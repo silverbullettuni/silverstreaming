@@ -23,7 +23,10 @@ export default function ParticipantsContainer(props) {
             <div className="muteButtons">
                 <button onClick={() => toggleMuteAll(true)}>Mute all</button>
                 <button onClick={() => toggleMuteAll(false)}>Unmute all</button>
-            </div>            
+            </div>
+            <div className="leaveButton">
+                <button className="LeaveSessionButton">Session</button>
+            </div>           
             <div className="thumbnails">
                 {
                     props.participants?.map((index, source) => {
