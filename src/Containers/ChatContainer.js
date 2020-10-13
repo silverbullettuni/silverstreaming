@@ -1,6 +1,6 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useEffect, useRef } from 'react'
+import {useParams} from 'react-router-dom'
 import socketIOClient from "socket.io-client";
-
 
 export default function ChatContainer(props) {
     const [participant, setParticipant] = useState([]);
@@ -8,15 +8,15 @@ export default function ChatContainer(props) {
     const [message, setMessage] = useState([]);
 
     const textbox = useRef();
+    const { id } = useParams();
 
     useEffect(() => {
-        
-    },[]);
+    });
 
     function send(){
         const value = textbox.current.value
         const list = message
-        list.push({user:'q', txt:value})
+        list.push({user:id, txt:value})
         setMessage(message => [...message])
         textbox.current.value = ''
     }
@@ -31,7 +31,6 @@ export default function ChatContainer(props) {
                     </div>
                 )
             }   
-            
             </div>
             <div id="send-box">
                 <textarea rows="1" cols="80" ref={textbox} className='text'></textarea>
