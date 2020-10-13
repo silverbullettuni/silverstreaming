@@ -1,38 +1,101 @@
 .App {
   text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.AppHeader {
+  text-decoration: none;
+  font-size: 1.2em;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.container {
+  display: grid;
+  background-color: #333;
+  padding: 1rem;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.landingInputBox {
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  width: 30%;
+  margin: auto;
 }
 
-.App-link {
-  color: #61dafb;
+.input {
+  background-color: lightgray;
+  padding: 1rem;
+  font-size: 1.3em;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.input label {
+  margin-right: 1rem;
+}
+
+.input input {
+  font-size: 1.2em;
+}
+
+.modeButton button {
+  padding: 1rem;
+  width: 50%;
+  font-size: 1.2em;
+
+}
+
+.mainVideoPlayer {
+  width: 100%;
+}
+
+.thumbnails {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 1rem;
+
+}
+
+.streamThumbnail {
+  box-shadow: black 0 0 0.5rem;
+}
+
+.participantVideoPlayer {
+  width: 100%;
+  height: 100%;
+}
+
+#send-box {
+  position: relative;
+  box-sizing: border-box;
+  width: 540px;
+  height: 175px;
+  padding: 10px;
+  overflow: hidden;
+}
+
+#send-box textarea {
+  display: block;
+  width: 100%;
+  height: 60%;
+  background-color: #333;
+  border: none;
+  outline: none;
+  font-size: 12px;
+  font-family: arial;
+  box-shadow: black 0 0 0.5rem;
+  resize: none;
+}
+
+#record-box {
+  position: relative;
+  box-sizing: border-box;
+  width: 540px;
+  height: 225px;
+  padding: 10px 10px 0 10px;
+  box-shadow: black 0 0 0.5rem;
+  font-size: 12px;
+}
+
+.text {
+  margin-left: 40px;
+}
+.name {
+  margin-left: 40px;
 }
