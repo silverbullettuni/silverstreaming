@@ -1,68 +1,57 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# WebRTC Video/Audio Broadcast
 
-## Available Scripts
+WebRTC PeerToPeer broadcast application that allows the broadcaster to send video and audio stream to all connected users (watchers). 
 
-In the project directory, you can run:
+You can find the tutorial that explains the code and functionality on my [website](https://gabrieltanner.org/blog/webrtc-video-broadcast).
 
-### `npm start`
+## Getting started
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Starting the application
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+Start the application using Node:
 
-### `npm test`
+```bash
+# Install dependencies for server
+npm install
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# Run the server
+node server
+```
 
-### `npm run build`
+Start the application using Docker:
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+# Building the image
+docker build --tag webrtcvideobroadcast .
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+# Run the image in a container
+docker run -d -p 4000:4000 webrtcvideobroadcast
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Testing the application
 
-### `npm run eject`
+The application should now be running on your localhost:4000 and you test it by connecting to localhost:4000/broadcast.html to add a new broadcaster.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+After that, you just need to visit localhost:4000 to connect to the server as a client and you should get the video that is streamed from the broadcaster.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Adding a TURN server
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Install a linux-server. Allow traffic to the port you choose (in this case 12779). Install and configure coturn.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```
 
-## Learn More
+sudo apt-get update
+sudo apt-get install coturn
+turnserver --listening-port 12779 --user testuser:testpassword --external-ip PUBLIC_CLOUD_IP/PRIVATE_CLOUD_IP --realm DOMAIN_OR_PUBLIC_IP --verbose
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Configure your TURN credentials to broadcast.js and watch.js
 
-### Code Splitting
+## Authors
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+Anna Suo-Anttila, Jermu Toiviainen, Kim Milan, Shujun Liu, Ville Mannila
 
-### Analyzing the Bundle Size
+## License
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
