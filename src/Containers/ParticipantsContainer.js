@@ -1,5 +1,9 @@
 import React, {createRef, useRef, useEffect} from 'react'
 import StreamThumbnail from '../Components/StreamThumbail';
+import LeaveSessionButton from '../Components/LeaveSessionButton';
+
+
+  
 
 export default function ParticipantsContainer(props) {
 
@@ -17,6 +21,8 @@ export default function ParticipantsContainer(props) {
             ref.muted = newState;
         }
     }
+
+    
     
     return (
         <div className="container">
@@ -25,7 +31,7 @@ export default function ParticipantsContainer(props) {
                 <button onClick={() => toggleMuteAll(false)}>Unmute all</button>
             </div>
             <div className="leaveButton">
-                <button className="LeaveSessionButton">Session</button>
+                <LeaveSessionButton />
             </div>           
             <div className="thumbnails">
                 {

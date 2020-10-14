@@ -1,16 +1,19 @@
 import React from 'react'
+import { Route, Switch, Redirect, HashRouter, Link } from 'react-router-dom'
+import LandingContainer from '../Containers/LandingContainer';
 
 class LeaveSessionButton extends React.Component {
-    handleClick() {
-      console.log('this is:', this);
-    }
+    handleClick = () => {
+
+  };
   
-    render() {
-      // This syntax ensures `this` is bound within handleClick
-      return (
-        <button onClick={() => this.handleClick()}>
-          Click me
-        </button>
-      );
-    }
+  render() {
+    return (
+      <button onClick={this.handleClick}>
+         <Link to="/home">Leave session</Link> 
+      </button>
+    );
   }
+}
+
+export default LeaveSessionButton;
