@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import ChatContainer from './ChatContainer';
 import socketIOClient from "socket.io-client";
 import LeaveSessionButton from '../Components/LeaveSessionButton';
+import MuteMicButton from '../Components/MuteMicButton';
 
 const config = {
     iceServers: [
@@ -75,6 +76,7 @@ export default function ViewContainer(props) {
                 src={source}
             />
             <div className="leaveButton">
+                <MuteMicButton />
                 <LeaveSessionButton />
             </div>     
             <ChatContainer/>
