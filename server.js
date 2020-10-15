@@ -3,9 +3,17 @@ const app = express();
 
 let broadcaster;
 const port = 4000;
+const httpsPort = 8443;
 
 const http = require("http");
+var https = require('https');
+var fs = require('fs');
+var privateKey  = fs.readFileSync('sslcert/78633766_18.191.139.1734000.key', 'utf8');
+var certificate = fs.readFileSync('sslcert/78633766_18.191.139.1734000.cert', 'utf8');
+var credentials = {key: privateKey, cert: certificate};
+
 const server = http.createServer(app);
+var httpsServer = https.createServer(credentials, app);
 
 const io = require("socket.io")(server);
 app.use(express.static(__dirname + "/public"));
@@ -33,3 +41,4 @@ io.sockets.on("connection", socket => {
   });
 });
 server.listen(port, () => console.log(`Server is running on port ${port}`));
+httpsServer.listen(httpsPort, () => console.log(`Server is running on port ${httpsPort}`));
