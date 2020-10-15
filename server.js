@@ -14,7 +14,7 @@ var credentials = {key: privateKey, cert: certificate};
 
 const server = http.createServer(app);
 var httpsServer = https.createServer(credentials, app);
-const io = require("socket.io")(httpServer);
+const io = require("socket.io")(httpsServer);
 app.use(express.static(__dirname + "/public"));
 
 io.sockets.on("error", e => console.log(e));
