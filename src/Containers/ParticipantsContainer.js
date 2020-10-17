@@ -3,7 +3,6 @@ import StreamThumbnail from '../Components/StreamThumbail';
 
 export default function ParticipantsContainer(props) {
 
-
     const participantRefs = useRef([]);
 
     useEffect(() => {
@@ -17,6 +16,10 @@ export default function ParticipantsContainer(props) {
             ref.muted = newState;
         }
     }
+
+    function selectParticipant(participant){
+        props.selectParticipant(participant);
+    }
     
     return (
         <div className="container">
@@ -26,14 +29,14 @@ export default function ParticipantsContainer(props) {
             </div>            
             <div className="thumbnails">
                 {
-                    props.participants?.map((index, source) => {
-                        return  <div className="streamThumbnail" key={index}>
+                    props.participants?.map((participant, index) => {
+                        return  <div className="streamThumbnail" key={index-1} onClick={() => selectParticipant(participant)}>
                                     <video 
                                         className="participantVideoPlayer"
                                         autoPlay 
                                         controls 
                                         playsInline
-                                        source={source}
+                                        source={participant.src}
                                         ref={el => participantRefs.current[index-1] = el} 
                                         key={index}
                                     />
