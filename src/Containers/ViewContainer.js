@@ -69,6 +69,7 @@ export default function ViewContainer(props) {
     return (
         <div className="container">
             <video 
+                id="viewerVideo"
                 className="mainVideoPlayer"
                 autoPlay 
                 controls 
