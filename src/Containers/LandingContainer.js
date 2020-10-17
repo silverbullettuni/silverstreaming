@@ -1,9 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, createContext } from 'react';
 
 import { Route, Switch, Redirect, HashRouter, Link } from 'react-router-dom';
 
+export const userContext = createContext();
+
 export default function LandingContainer() {
 
+    const [participant, setParticipant] = useState("")
+    
     const [tokenId, setTokenId] = useState("");
     const tokenInput = useRef();
   
@@ -21,6 +25,12 @@ export default function LandingContainer() {
         tokenInput.current.value = token;
     }
 
+    function handleUser(){
+        let user = window.prompt('Please enter your username ')
+        if (!user){ user = Date.now() }
+        setParticipant(user)
+    }
+
     return (
       <div className="container">
           <div className="landingInputBox">
@@ -33,10 +43,12 @@ export default function LandingContainer() {
             </div>
             <div className="buttons">
                 <Link to={`/watch/${tokenId}`} className="modeButton">
-                    <button>Watch</button>
+                    <button onClick={handleUser}>Watch</button>
+                    <userContext.Provider value={participant}></userContext.Provider>
                 </Link>
                 <Link to={`/broadcast/${tokenId}`} className="modeButton">
-                    <button>Broadcast</button>
+                    <button onClick={handleUser}>Broadcast</button>
+                    <userContext.Provider value={participant}></userContext.Provider>
                 </Link>
             </div>
           </div>

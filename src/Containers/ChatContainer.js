@@ -1,22 +1,19 @@
-import React, {useState, useEffect, useRef } from 'react'
-import {useParams} from 'react-router-dom'
-import socketIOClient from "socket.io-client";
+import React, {useState, useEffect, useRef, createContext, useContext } from 'react';
+import {useParams} from 'react-router-dom';
+import { userContext } from './LandingContainer'
+// import realChat from '../chat';
 
 export default function ChatContainer(props) {
-    const [participant, setParticipant] = useState([]);
-    const [chat, setChat] = useState([]);
     const [message, setMessage] = useState([]);
-
+    const participant = useContext(userContext)
     const textbox = useRef();
-    const { id } = useParams();
-
-    useEffect(() => {
-    });
+    
+    // const [chat, setChat] = realChat(id);
 
     function send(){
         const value = textbox.current.value
         const list = message
-        list.push({user:id, txt:value})
+        list.push({user:participant, txt:value})
         setMessage(message => [...message])
         textbox.current.value = ''
     }
