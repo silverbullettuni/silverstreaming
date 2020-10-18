@@ -1,11 +1,11 @@
-import React, {useState, useEffect, useRef, createContext, useContext } from 'react';
+import React, {useState, useEffect, useRef, useContext } from 'react';
 import {useParams} from 'react-router-dom';
-import { userContext } from './LandingContainer'
+import { userContext } from './ViewContainer'
 // import realChat from '../chat';
 
 export default function ChatContainer(props) {
     const [message, setMessage] = useState([]);
-    const participant = useContext(userContext)
+    const participant = useContext(userContext);
     const textbox = useRef();
     
     // const [chat, setChat] = realChat(id);
