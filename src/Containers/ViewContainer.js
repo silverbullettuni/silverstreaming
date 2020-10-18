@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, createContext } from 'react'
 import ChatContainer from './ChatContainer';
 import socketIOClient from "socket.io-client";
+
+export const userContext = createContext();
 
 const config = {
     iceServers: [
@@ -18,6 +20,13 @@ const config = {
 export default function ViewContainer(props) {
     const [source, setSource] = useState("");
     let peerConnection;
+    const [participant, setParticipant] = useState([])
+
+    useEffect(() => {
+      let user = window.prompt('Please enter your username ');
+      if (!user){ user = Date.now() }
+      setParticipant(user);
+    },[])
 
     /*useEffect(() => {
         const socket = socketIOClient(window.location.origin);
@@ -73,7 +82,9 @@ export default function ViewContainer(props) {
                 playsInline
                 src={source}
             />
-            <ChatContainer/>
+            <userContext.Provider value={participant}>
+              <ChatContainer/>
+            </userContext.Provider>
         </div>
     );
 }

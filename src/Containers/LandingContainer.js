@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, createContext } from 'react';
 
 import { Route, Switch, Redirect, HashRouter, Link } from 'react-router-dom';
+
 
 export default function LandingContainer() {
 
@@ -21,6 +22,7 @@ export default function LandingContainer() {
         tokenInput.current.value = token;
     }
 
+
     return (
       <div className="container">
           <div className="landingInputBox">
@@ -34,7 +36,7 @@ export default function LandingContainer() {
             <div className="buttons">
                 <Link to={`/watch/${tokenId}`} className="modeButton">
                     <button>Watch</button>
-                </Link>
+                 </Link>
                 <Link to={`/broadcast/${tokenId}`} className="modeButton">
                     <button>Broadcast</button>
                 </Link>
