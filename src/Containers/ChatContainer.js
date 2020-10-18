@@ -1,19 +1,20 @@
 import React, {useState, useEffect, useRef, useContext } from 'react';
 import {useParams} from 'react-router-dom';
 import { userContext } from './ViewContainer'
+import { broadcasterContext } from './BroadcastContainer'
 // import realChat from '../chat';
 
 export default function ChatContainer(props) {
     const [message, setMessage] = useState([]);
-    const participant = useContext(userContext);
     const textbox = useRef();
     
-    // const [chat, setChat] = realChat(id);
+    const participant = useContext(userContext);
+    const broadcaster = useContext(broadcasterContext);
 
     function send(){
         const value = textbox.current.value
         const list = message
-        list.push({user:participant, txt:value})
+        list.push({user:broadcaster||participant, txt:value})
         setMessage(message => [...message])
         textbox.current.value = ''
     }
