@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, createContext } from 'react'
 import ChatContainer from './ChatContainer';
 import ParticipantsContainer from './ParticipantsContainer';
 import socketIOClient from "socket.io-client";
@@ -16,12 +16,15 @@ const config = {
   ]
 };
 
+export const broadcasterContext = createContext();
+
 export default function BroadcastContainer(props) {
 
     const audioSelect = useRef();
     const videoSelect = useRef();
     const videoElement = useRef();
     const socket = socketIOClient(window.location.origin);
+
 
     const testParticipants = [
       { id: "1", src: "1s" },
@@ -41,6 +44,14 @@ export default function BroadcastContainer(props) {
     function selectParticipant(participant){
       setSelectedParticipant(participant);
     }
+
+
+    const [broadcaster, setBroadcaster] = useState([])
+    useEffect(() => {
+      let user = window.prompt('Please enter your username ');
+      if (!user){ user = Date.now() }
+      setBroadcaster(user);
+    },[])
 
     /*useEffect(() => {
         getStream()
@@ -153,8 +164,13 @@ export default function BroadcastContainer(props) {
                 playsInline
                 src={selectedParticipant?.src}
             />  
+
             <ParticipantsContainer participants={participants} selectParticipant={selectParticipant}/>
-            <ChatContainer/>          
+
+            <broadcasterContext.Provider value={broadcaster}>
+              <ChatContainer/>
+            </broadcasterContext.Provider>         
+
         </div>
     );
 }
