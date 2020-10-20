@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, createContext } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import ChatContainer from './ChatContainer';
 import ParticipantsContainer from './ParticipantsContainer';
 import socketIOClient from "socket.io-client";
@@ -16,7 +16,6 @@ const config = {
   ]
 };
 
-export const broadcasterContext = createContext();
 
 export default function BroadcastContainer(props) {
 
@@ -25,19 +24,6 @@ export default function BroadcastContainer(props) {
     const videoElement = useRef();
     const socket = socketIOClient(window.location.origin);
 
-    const [broadcaster, setBroadcaster] = useState([])
-    useEffect(() => {
-      if (window.sessionStorage.getItem('broadcasterData') === null){
-        let user = window.prompt('Please enter your username ');
-        if (!user){ user = Date.now() }
-        setBroadcaster(user);
-
-        window.sessionStorage.setItem('broadcasterData', user)
-      }else{
-        let getUser = window.sessionStorage.getItem('broadcasterData');
-        setBroadcaster(getUser);
-      }
-    },[])
 
     /*useEffect(() => {
         getStream()
@@ -149,10 +135,7 @@ export default function BroadcastContainer(props) {
                 playsInline
             />  
             <ParticipantsContainer participants={["1", "2", "3", "4", "5", "6", "7", "8", "9" ]}/>
-           
-            <broadcasterContext.Provider value={broadcaster}>
-              <ChatContainer/>
-            </broadcasterContext.Provider>         
+            <ChatContainer/>      
         </div>
     );
 }
