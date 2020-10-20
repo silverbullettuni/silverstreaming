@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef, useContext } from 'react';
 import {useParams} from 'react-router-dom';
-import socketIOClient, { Socket } from "socket.io-client";
+import socketIOClient from "socket.io-client";
 
 import { userContext } from './ViewContainer'
 import { broadcasterContext } from './BroadcastContainer'
@@ -69,7 +69,6 @@ export default function ChatContainer(props) {
             <div id="send-box">
                 <textarea rows="1" cols="80" 
                 ref={textbox} 
-                value={message}
                 onChange={(e)=>setMessage(e.target.value)}
                 className='text'></textarea>
                 <div className="button">

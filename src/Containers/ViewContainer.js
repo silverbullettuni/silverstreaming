@@ -1,4 +1,5 @@
-import React, { useState, useEffect, createContext } from 'react'
+import React, { useState, useEffect, createContext, useContext } from 'react'
+
 import ChatContainer from './ChatContainer';
 import socketIOClient from "socket.io-client";
 
@@ -20,13 +21,24 @@ const config = {
 export default function ViewContainer(props) {
     const [source, setSource] = useState("");
     let peerConnection;
-    const [participant, setParticipant] = useState([])
+    const [participant, setParticipant] = useState([]);
+
+    let user;
 
     useEffect(() => {
-      let user = window.prompt('Please enter your username ');
-      if (!user){ user = Date.now() }
-      setParticipant(user);
+      if (participant != null){
+        user = localStorage.getItem('userData');
+        setParticipant(user);
+      }else{
+        user = window.prompt('Please enter your username ');
+        if (!user){ user = Date.now() }
+
+        localStorage.setItem('userData', user)
+        setParticipant(user);
+      }
+      
     },[])
+    
 
     /*useEffect(() => {
         const socket = socketIOClient(window.location.origin);
