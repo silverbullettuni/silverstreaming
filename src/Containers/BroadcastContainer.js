@@ -27,10 +27,18 @@ export default function BroadcastContainer(props) {
 
     const [broadcaster, setBroadcaster] = useState([])
     useEffect(() => {
-      let user = window.prompt('Please enter your username ');
-      if (!user){ user = Date.now() }
-      setBroadcaster(user);
+      if (window.sessionStorage.getItem('broadcasterData') === null){
+        let user = window.prompt('Please enter your username ');
+        if (!user){ user = Date.now() }
+        setBroadcaster(user);
+
+        window.sessionStorage.setItem('broadcasterData', user)
+      }else{
+        let getUser = window.sessionStorage.getItem('broadcasterData');
+        setBroadcaster(getUser);
+      }
     },[])
+
     /*useEffect(() => {
         getStream()
             .then(getDevices)

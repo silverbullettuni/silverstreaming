@@ -26,19 +26,18 @@ export default function ViewContainer(props) {
     let user;
 
     useEffect(() => {
-      if (participant != null){
-        user = localStorage.getItem('userData');
-        setParticipant(user);
-      }else{
+      if (window.sessionStorage.getItem('userData') === null){
         user = window.prompt('Please enter your username ');
         if (!user){ user = Date.now() }
-
-        localStorage.setItem('userData', user)
         setParticipant(user);
+
+        window.sessionStorage.setItem('userData', user)
+      }else{
+        let getUser = window.sessionStorage.getItem('userData');
+        setParticipant(getUser);
       }
       
     },[])
-    
 
     /*useEffect(() => {
         const socket = socketIOClient(window.location.origin);
