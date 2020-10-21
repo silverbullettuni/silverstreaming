@@ -4,6 +4,7 @@ const app = express();
 let broadcaster;
 let onlineUsers = {};
 let onlineCount = 0;
+
 const port = 4000;
 
 const http = require("http");
@@ -42,6 +43,7 @@ io.sockets.on("connection", socket => {
       onlineCount++;
     }
     io.emit('login', {onlineUsers:onlineUsers, onlineCount:onlineCount, user:userData})
+    console.log(userData.username + ' joins the room. ');
   })
 
   socket.on("exitChatbox", () => {
@@ -52,13 +54,13 @@ io.sockets.on("connection", socket => {
       onlineCount--;
 
       io.emit('exitChatbox', {onlineUsers:onlineUsers, onlineCount:onlineCount, user:userData})
-      console.log(userData.username);
+      console.log(userData.username + ' exits the room. ');
     }
   })
 
   socket.on('message', (chatData) => {
     io.emit('message', chatData);
-    console.log(chatData.message);
+    console.log(chatData.username + ':' + chatData.message);
   })
   
 });

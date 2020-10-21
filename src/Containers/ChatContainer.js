@@ -1,8 +1,12 @@
-import React, {useState, useEffect, useRef, useContext } from 'react';
+import React, {useState, useEffect, useRef, useContext, createContext } from 'react';
+import { unstable_renderSubtreeIntoContainer } from 'react-dom';
 import {useParams} from 'react-router-dom';
 import socketIOClient from "socket.io-client";
+import MessageContainer from './Message';
 
 import { DataContext } from './InfoContainer'
+
+export const MessageContext = createContext();
 
 export default function ChatContainer(props) {
     const data = useContext(DataContext);
@@ -26,9 +30,11 @@ export default function ChatContainer(props) {
     useEffect(() => {
         setUser(data.participant)
         setUid(data.uid)
-        ready()
-    })
+    },[message])
 
+    useEffect(()=>{
+        ready();
+    })
 
     function generateMsgId() {
         return new Date().getTime() + "" + Math.floor(Math.random()*899+100)
@@ -59,13 +65,13 @@ export default function ChatContainer(props) {
     }
 
     function updateMsg(userData){
-        const msg = message
-        const newMsg = { type:'chat', 
+        let msg = message
+        let newMsg = { type:'chat', 
                          username:userData.username, 
                          uid:userData.uid, 
                          action:userData.message,
                          msgId:generateMsgId()}
-        msg = message.push(newMsg);
+        msg = message.concat(newMsg);
         setMessage(msg);
     }
 
@@ -84,10 +90,12 @@ export default function ChatContainer(props) {
     }
 
     function send(){
-        const message = textbox.current.value
-        const list = chat
-        list.push({user:user, txt:message})
-        setChat(message => [...message])
+        // const message = textbox.current.value
+        // const list = chat
+        // list.push({user:user, txt:message})
+        // setChat(message => [...message])
+
+        socket.emit('message', { uid:uid, username:user,message:textbox.current.value})
         textbox.current.value = ''
     }
 
@@ -96,15 +104,9 @@ export default function ChatContainer(props) {
         <div className="container">
             <div className="display-flex">
                 
-                <div id="record-box">
-                {
-                    chat.map((msg, index) => 
-                        <div key={index}> 
-                            <span className='name'>{msg.user} : </span><span className='text'>{msg.txt}</span>
-                        </div>
-                    )
-                }   
-                </div>
+                <MessageContext.Provider value={message}>
+                    <MessageContainer/>
+                </MessageContext.Provider>
                 <div className="online-count" align='right' 
                     ref={userList} >
                     <p>
@@ -124,7 +126,6 @@ export default function ChatContainer(props) {
             <div id="send-box">
                     <textarea rows="1" cols="80" 
                     ref={textbox} 
-                    onChange={(e)=>setMessage(e.target.value)}
                     className='text'></textarea>
                     <div className="button">
                         <button type='submit' onClick={send}>Send</button>
