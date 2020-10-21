@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { Route, Switch, Redirect, HashRouter, Link } from 'react-router-dom'
-import ViewContainer from './Containers/ViewContainer';
-import BroadcastContainer from './Containers/BroadcastContainer';
 import LandingContainer from './Containers/LandingContainer';
+import InfoContainer from './Containers/InfoContainer';
 
 function App() {
 
@@ -23,9 +22,10 @@ function App() {
       
         <Switch>
           <Route path="/home" component={LandingContainer} />
-          <Route path="/watch/:id" component={ViewContainer} />
+          <Route path="/info/:wb/:id" component={InfoContainer} /> 
+          {/* <Route path="/watch/:id" component={ViewContainer} /> */}
           <Route exact path="/" render={() => (<Redirect to="/home" />)} />           
-          <Route path="/broadcast/:id" component={BroadcastContainer}/>      
+          {/* <Route path="/broadcast/:id" component={BroadcastContainer}/>       */}
           <Route path="*" render={() => (<Redirect to="/home" />)} />
         </Switch>
       </HashRouter>

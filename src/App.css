@@ -92,6 +92,7 @@
   box-shadow: black 0 0 0.5rem;
   font-size: 12px;
   text-align: left;
+  float: left;
 }
 
 .text {
@@ -103,4 +104,21 @@
 
 #record-box span.name {
   font-size: 10px;
+}
+
+.online-count {
+  text-align: right;
+  float: right;
+  color: antiquewhite;
+  margin: 10px;
+}
+
+.online-users {
+  text-align: left;
+  color: antiquewhite;
+  margin: 10px;
+}
+
+.display-flex {
+  display: flex;
 }

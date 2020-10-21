@@ -34,10 +34,10 @@ export default function LandingContainer() {
                 <input id="tokenIdInput" ref={tokenInput} onChange={event => setTokenId(event.target.value)} placeholder="Input token id"/>
             </div>
             <div className="buttons">
-                <Link to={`/watch/${tokenId}`} className="modeButton">
+                <Link to={`/info/watch/${tokenId}`} className="modeButton">
                     <button>Watch</button>
                  </Link>
-                <Link to={`/broadcast/${tokenId}`} className="modeButton">
+                <Link to={`/info/broadcast/${tokenId}`} className="modeButton">
                     <button>Broadcast</button>
                 </Link>
             </div>

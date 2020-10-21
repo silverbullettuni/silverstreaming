@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 
 let broadcaster;
+let onlineUsers = {};
+let onlineCount = 0;
+
 const port = 4000;
 const httpsPort = 8443;
 
@@ -38,6 +41,35 @@ io.sockets.on("connection", socket => {
   socket.on("disconnect", () => {
     socket.to(broadcaster).emit("disconnectPeer", socket.id);
   });
+
+  socket.on("login", (userData) => {
+    socket.id = userData.uid;
+
+    if (!(userData.uid in onlineUsers)){
+      onlineUsers[userData.uid] = userData.username
+      onlineCount++;
+    }
+    io.emit('login', {onlineUsers:onlineUsers, onlineCount:onlineCount, user:userData})
+    console.log(userData.username + ' joins the room. ');
+  })
+
+  socket.on("exitChatbox", () => {
+    if (socket.id in onlineUsers){
+      var userData = {uid:socket.id, username:onlineUsers[socket.id]};
+
+      delete onlineUsers[socket.id];
+      onlineCount--;
+
+      io.emit('exitChatbox', {onlineUsers:onlineUsers, onlineCount:onlineCount, user:userData})
+      console.log(userData.username + ' exits the room. ');
+    }
+  })
+
+  socket.on('message', (chatData) => {
+    io.emit('message', chatData);
+    console.log(chatData.username + ':' + chatData.message);
+  })
+  
 });
 server.listen(port, () => console.log(`Server is running on port ${port}`));
 httpsServer.listen(httpsPort, () => console.log(`Server is running on port ${httpsPort}`));
