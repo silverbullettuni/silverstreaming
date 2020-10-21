@@ -42,11 +42,10 @@ io.sockets.on("connection", socket => {
       onlineCount++;
     }
     io.emit('login', {onlineUsers:onlineUsers, onlineCount:onlineCount, user:userData})
-    console.log(userData.username);
   })
 
   socket.on("exitChatbox", () => {
-    if (onlineUsers.hasOwnProperty(socket.id)){
+    if (socket.id in onlineUsers){
       var userData = {uid:socket.id, username:onlineUsers[socket.id]};
 
       delete onlineUsers[socket.id];

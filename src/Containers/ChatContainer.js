@@ -1,10 +1,12 @@
-import React, {useState, useEffect, useRef, useContext, createContext } from 'react';
+import React, {useState, useEffect, useRef, useContext } from 'react';
 import {useParams} from 'react-router-dom';
 import socketIOClient from "socket.io-client";
 
 import { DataContext } from './InfoContainer'
 
 export default function ChatContainer(props) {
+    const data = useContext(DataContext);
+    
     const [uid, setUid] = useState([])
     const [user, setUser] = useState([])
     const [room, setRoom] = useState('');
@@ -19,17 +21,14 @@ export default function ChatContainer(props) {
     const socket = socketIOClient(ENDPOINT)
    
     const textbox = useRef();
-    
-    const data = useContext(DataContext);
-    
+    const userList = useRef();
 
     useEffect(() => {
-        var dataJSON = JSON.stringify(data);
-        var fullData = JSON.parse(dataJSON);
-        setUser(fullData.participant)
-        setUid(fullData.uid)
+        setUser(data.participant)
+        setUid(data.uid)
         ready()
     })
+
 
     function generateMsgId() {
         return new Date().getTime() + "" + Math.floor(Math.random()*899+100)
@@ -43,7 +42,7 @@ export default function ChatContainer(props) {
                          uid:o.user.uid, 
                          action:action,
                          msgId:generateMsgId()}
-        msg = message.push(newMsg);
+        msg = message.concat(newMsg);
         setOnlineCount(o.onlineCount);
         setOnlineUsers(o.onlineUsers);
         setMessage(msg);
@@ -60,7 +59,7 @@ export default function ChatContainer(props) {
     }
 
     function updateMsg(userData){
-        let msg = message
+        const msg = message
         const newMsg = { type:'chat', 
                          username:userData.username, 
                          uid:userData.uid, 
@@ -92,6 +91,7 @@ export default function ChatContainer(props) {
         textbox.current.value = ''
     }
 
+
     return (
         <div className="container">
             <div className="display-flex">
@@ -105,7 +105,8 @@ export default function ChatContainer(props) {
                     )
                 }   
                 </div>
-                <div className="online-count" align='right'>
+                <div className="online-count" align='right' 
+                    ref={userList} >
                     <p>
                         Online Users: {onlineCount}
                     </p>                    

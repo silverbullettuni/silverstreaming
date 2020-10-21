@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect, createContext, useRef } from 'react';
 import {useParams} from "react-router-dom";
 import BroadcastContainer from './BroadcastContainer';
 import ViewContainer from './ViewContainer';
@@ -19,13 +19,18 @@ export default function InfoContainer(props){
  
     // Variable for all data
     const data = {
-        "participant":participant,
-        "uid":uid
+        participant:participant,
+        uid:uid
     };
     
     useEffect(() => {
         inputUsername();
-    },[])
+
+
+        window.onunload = function () {
+            socket.emit('exitChatbox')
+        }
+    })
  
     function generateUid() {
         return new Date().getTime() + "" + Math.floor(Math.random()*9+1)
@@ -33,18 +38,28 @@ export default function InfoContainer(props){
 
     function inputUsername(){
         if (window.sessionStorage.getItem('userData') === null){
-            let user = window.prompt('Please enter your username ');
+            let participant = window.prompt('Please enter your username ');
             let uid = generateUid();
-            if (!user){ user =  'guest' + uid}
-            setParticipant(user);
+            if (!participant){ participant =  'guest' + uid}
+            setParticipant(participant);
             setUid(uid);
+
+            var obj = {uid:uid, username:participant}
+            var str = JSON.stringify(obj)
             
-            window.sessionStorage.setItem('userData', user)
-            
-            socket.emit('login',{uid:uid, username:user})
+            window.sessionStorage.setItem('userData', str)
+
+            if(participant != ''){
+                socket.emit('login',{uid:uid, username:participant})
+            }
         }else{
             let getUser = window.sessionStorage.getItem('userData');
-            setParticipant(getUser);
+            var obj = JSON.parse(getUser)
+            setUid(obj.uid);
+            setParticipant(obj.username);
+            if(participant != ''){
+                socket.emit('login',{uid:uid, username:participant})
+            }
         }
          
     }

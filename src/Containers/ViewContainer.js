@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 
 import ChatContainer from './ChatContainer';
 import socketIOClient from "socket.io-client";
@@ -75,6 +75,7 @@ export default function ViewContainer(props) {
                 playsInline
                 src={source}
             />
+
               <ChatContainer/>
         </div>
     );

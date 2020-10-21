@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import ChatContainer from './ChatContainer';
 import ParticipantsContainer from './ParticipantsContainer';
 import socketIOClient from "socket.io-client";
+
 const peerConnections = {};
 const config = {
   iceServers: [
@@ -135,7 +136,9 @@ export default function BroadcastContainer(props) {
                 playsInline
             />  
             <ParticipantsContainer participants={["1", "2", "3", "4", "5", "6", "7", "8", "9" ]}/>
-            <ChatContainer/>      
+            
+          
+            <ChatContainer/>
         </div>
     );
 }
