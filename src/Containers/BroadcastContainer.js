@@ -26,6 +26,33 @@ export default function BroadcastContainer(props) {
     const socket = socketIOClient(window.location.origin);
 
 
+    const testParticipants = [
+      { id: "1", src: "1s" },
+      { id: "2", src: "2s" },
+      { id: "3", src: "3s" },
+      { id: "4", src: "4s" },
+      { id: "5", src: "5s" },
+      { id: "6", src: "6s" },
+      { id: "7", src: "7s" },
+      { id: "8", src: "8s" },
+      { id: "9", src: "9s" },
+    ]
+
+    const [participants, setParticipants] = useState(testParticipants); // temp
+    const [selectedParticipant, setSelectedParticipant] = useState(testParticipants[0]);
+
+    function selectParticipant(participant){
+      setSelectedParticipant(participant);
+    }
+
+
+    const [broadcaster, setBroadcaster] = useState([])
+    useEffect(() => {
+      let user = window.prompt('Please enter your username ');
+      if (!user){ user = Date.now() }
+      setBroadcaster(user);
+    },[])
+
     /*useEffect(() => {
         getStream()
             .then(getDevices)
@@ -129,16 +156,21 @@ export default function BroadcastContainer(props) {
 
     return (
         <div className="container">
+            <span>{selectedParticipant?.id}</span>
             <video 
                 className="mainVideoPlayer"
                 autoPlay 
                 controls 
                 playsInline
+                src={selectedParticipant?.src}
             />  
-            <ParticipantsContainer participants={["1", "2", "3", "4", "5", "6", "7", "8", "9" ]}/>
-            
-          
-            <ChatContainer/>
+
+            <ParticipantsContainer participants={participants} selectParticipant={selectParticipant}/>
+
+            <broadcasterContext.Provider value={broadcaster}>
+              <ChatContainer/>
+            </broadcasterContext.Provider>         
+
         </div>
     );
 }
