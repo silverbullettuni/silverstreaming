@@ -1,5 +1,9 @@
 import React, {createRef, useRef, useEffect} from 'react'
 import StreamThumbnail from '../Components/StreamThumbail';
+import LeaveSessionButton from '../Components/LeaveSessionButton';
+
+
+  
 
 export default function ParticipantsContainer(props) {
 
@@ -17,16 +21,23 @@ export default function ParticipantsContainer(props) {
         }
     }
 
+
+    
+
     function selectParticipant(participant){
         props.selectParticipant(participant);
     }
+
     
     return (
         <div className="container">
             <div className="muteButtons">
                 <button onClick={() => toggleMuteAll(true)}>Mute all</button>
                 <button onClick={() => toggleMuteAll(false)}>Unmute all</button>
-            </div>            
+            </div>
+            <div className="leaveButton">
+                <LeaveSessionButton />
+            </div>           
             <div className="thumbnails">
                 {
                     props.participants?.map((participant, index) => {

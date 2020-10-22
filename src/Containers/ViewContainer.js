@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 
 import ChatContainer from './ChatContainer';
 import socketIOClient from "socket.io-client";
+import LeaveSessionButton from '../Components/LeaveSessionButton';
 
 const config = {
     iceServers: [
@@ -75,8 +76,11 @@ export default function ViewContainer(props) {
                 playsInline
                 src={source}
             />
+            <div className="leaveButton">
+                <LeaveSessionButton />
+            </div>     
+            <ChatContainer/>
 
-              <ChatContainer/>
         </div>
     );
 }
