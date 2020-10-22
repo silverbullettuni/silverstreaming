@@ -13,9 +13,7 @@ export default function ChatContainer(props) {
     
     const [uid, setUid] = useState([])
     const [user, setUser] = useState([])
-    const [room, setRoom] = useState('');
     const [message, setMessage] = useState([]);
-    const [chat, setChat ] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState({});
     const [onlineCount, setOnlineCount] = useState(0);
     const [userHtml, setUserHtml] = useState([]);
@@ -34,7 +32,7 @@ export default function ChatContainer(props) {
 
     useEffect(()=>{
         ready();
-    })
+    },[])
 
     function generateMsgId() {
         return new Date().getTime() + "" + Math.floor(Math.random()*899+100)
@@ -55,7 +53,6 @@ export default function ChatContainer(props) {
 
         const users = JSON.parse(JSON.stringify(o.onlineUsers)); 
 
-        // console.log(JSON.stringify(users))
         let html = [];
         for (let key in users){
             html.push(users[key])

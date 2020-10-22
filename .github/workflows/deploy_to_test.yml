@@ -1,0 +1,15 @@
+name: Deploy to test server
+on:
+  push:
+    branches: [ deploy-branch ]
+jobs:
+  build:  
+    runs-on: ubuntu-latest
+    steps:
+      - name: ls -a via ssh
+        uses: garygrossgarten/github-action-ssh@release
+        with:
+          command: ./deploy.sh
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          privateKey: ${{ secrets.PRIVATE_KEY}}

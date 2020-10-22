@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import React, { useState, useEffect, useRef, useContext, createContext } from 'react'
 import ChatContainer from './ChatContainer';
 import ParticipantsContainer from './ParticipantsContainer';
 import socketIOClient from "socket.io-client";
@@ -17,6 +17,7 @@ const config = {
   ]
 };
 
+export const broadcasterContext = createContext();
 
 export default function BroadcastContainer(props) {
 
@@ -24,7 +25,6 @@ export default function BroadcastContainer(props) {
     const videoSelect = useRef();
     const videoElement = useRef();
     const socket = socketIOClient(window.location.origin);
-
 
     const testParticipants = [
       { id: "1", src: "1s" },
@@ -174,7 +174,6 @@ export default function BroadcastContainer(props) {
         </div>
     );
 }
-
 
 
 

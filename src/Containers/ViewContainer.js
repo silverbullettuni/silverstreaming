@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react'
 
 import ChatContainer from './ChatContainer';
 import socketIOClient from "socket.io-client";
+import LeaveSessionButton from '../Components/LeaveSessionButton';
+import MuteMicButton from '../Components/MuteMicButton';
 
 const config = {
     iceServers: [
@@ -69,14 +71,19 @@ export default function ViewContainer(props) {
     return (
         <div className="container">
             <video 
+                id="viewerVideo"
                 className="mainVideoPlayer"
                 autoPlay 
                 controls 
                 playsInline
                 src={source}
             />
+            <div className="leaveButton">
+                <MuteMicButton />
+                <LeaveSessionButton />
+            </div>     
+            <ChatContainer/>
 
-              <ChatContainer/>
         </div>
     );
 }
