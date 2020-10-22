@@ -59,14 +59,13 @@ export default function ChatContainer(props) {
     }
 
     function updateMsg(userData){
-        let msg = message
         let newMsg = { type:'chat', 
                          username:userData.username, 
                          uid:userData.uid, 
                          action:userData.message,
                          msgId:generateMsgId()}
-        msg = message.concat(newMsg);
-        setMessage(msg);
+
+        setMessage(message=>[...message,newMsg]);
     }
 
     function ready() {
@@ -101,6 +100,7 @@ export default function ChatContainer(props) {
                 <MessageContext.Provider value={message}>
                     <MessageContainer/>
                 </MessageContext.Provider>
+                
                 <div className="online-count" align='right' 
                     ref={userList} >
                     <p>

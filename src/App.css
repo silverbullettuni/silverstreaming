@@ -93,6 +93,7 @@
   font-size: 12px;
   text-align: left;
   float: left;
+  overflow: scroll;
 }
 
 .text {
