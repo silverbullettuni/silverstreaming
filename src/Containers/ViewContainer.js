@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
+
 import ChatContainer from './ChatContainer';
 import socketIOClient from "socket.io-client";
 import LeaveSessionButton from '../Components/LeaveSessionButton';
@@ -19,6 +20,7 @@ const config = {
 export default function ViewContainer(props) {
     const [source, setSource] = useState("");
     let peerConnection;
+
 
     /*useEffect(() => {
         const socket = socketIOClient(window.location.origin);
@@ -78,6 +80,7 @@ export default function ViewContainer(props) {
                 <LeaveSessionButton />
             </div>     
             <ChatContainer/>
+
         </div>
     );
 }
