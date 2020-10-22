@@ -1,9 +1,7 @@
 import React, {useState, useEffect, useRef, useContext, createContext } from 'react';
-import { unstable_renderSubtreeIntoContainer } from 'react-dom';
-import {useParams} from 'react-router-dom';
 import socketIOClient from "socket.io-client";
-import MessageContainer from './Message';
 
+import MessageContainer from './Message';
 import { DataContext } from './InfoContainer'
 
 export const MessageContext = createContext();
@@ -19,7 +17,6 @@ export default function ChatContainer(props) {
     const [userHtml, setUserHtml] = useState([]);
 
     const ENDPOINT = window.location.hostname + ":4000";
-
     const socket = socketIOClient(ENDPOINT)
    
     const textbox = useRef();
