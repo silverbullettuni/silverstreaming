@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import React, { useState, useEffect, useRef, useContext, createContext } from 'react'
 import ChatContainer from './ChatContainer';
 import ParticipantsContainer from './ParticipantsContainer';
 import socketIOClient from "socket.io-client";
@@ -17,6 +17,7 @@ const config = {
   ]
 };
 
+export const broadcasterContext = createContext();
 
 export default function BroadcastContainer(props) {
 
