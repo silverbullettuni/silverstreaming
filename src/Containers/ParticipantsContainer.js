@@ -1,6 +1,7 @@
 import React, {createRef, useRef, useEffect} from 'react'
 import StreamThumbnail from '../Components/StreamThumbail';
 import LeaveSessionButton from '../Components/LeaveSessionButton';
+import InviteLinkButton from '../Components/InviteLinkButton';
 
 
   
@@ -21,6 +22,11 @@ export default function ParticipantsContainer(props) {
         }
     }
 
+    function getWatchUrl(){
+        var url = window.location.href;
+
+    }
+
 
     
 
@@ -37,6 +43,8 @@ export default function ParticipantsContainer(props) {
             </div>
             <div className="leaveButton">
                 <LeaveSessionButton />
+                <InviteLinkButton />
+                <text id="watchUrl">asd</text>
             </div>           
             <div className="thumbnails">
                 {
