@@ -7,4 +7,7 @@ tar -zxvf deploy-branch.tar.gz
 rm deploy-branch.tar.gz
 cd silverstreaming-deploy-branch
 npm install
-node server
+while /bin/true; do
+    node server
+done &
+
