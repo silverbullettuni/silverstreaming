@@ -9,9 +9,9 @@ class LeaveSessionButton extends React.Component {
   
   render() {
     return (
-      <button onClick={this.handleClick}>
-         <Link to="/home">Leave session</Link> 
-      </button>
+
+         <Link to="/home"><button>Leave session</button></Link> 
+
     );
   }
 }
