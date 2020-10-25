@@ -2,6 +2,9 @@ import React, { useState,  useRef } from 'react';
 
 import { Link } from 'react-router-dom';
 
+// All tokens that have started broadcasting are saved here
+// TODO/WIP: MOVE THIS TO SOMEWHERE permanent/server side thingy (then import it back here?)
+let tokensList = ["test"];
 
 export default function LandingContainer() {
 
@@ -22,6 +25,21 @@ export default function LandingContainer() {
         tokenInput.current.value = token;
     }
 
+    function validateToken(){
+        const index = tokensList.indexOf(tokenId);
+        console.log(tokenId);
+        if(index === -1)
+        {
+            console.log("invalidToken")
+            return false;
+        }
+        return true;
+    }
+
+    function invalidToken(event){
+        event.preventDefault();
+        alert("invalid token");
+    }
 
     return (
       <div className="container">
@@ -34,11 +52,11 @@ export default function LandingContainer() {
                 <input id="tokenIdInput" ref={tokenInput} onChange={event => setTokenId(event.target.value)} placeholder="Input token id"/>
             </div>
             <div className="buttons">
-                <Link to={`/info/watch/${tokenId}`} className="modeButton">
+                <Link to={`/info/watch/${tokenId}`} onClick={e => {validateToken() === true? console.log("ok") : invalidToken(e)}} className="modeButton">
                     <button>Watch</button>
-                 </Link>
+                </Link>
                 <Link to={`/info/broadcast/${tokenId}`} className="modeButton">
-                    <button>Broadcast</button>
+                    <button onClick={ e=> {tokensList.push(tokenId);tokenId ===""? invalidToken(e):console.log("ok")}}>Broadcast</button>
                 </Link>
             </div>
           </div>
@@ -47,4 +65,3 @@ export default function LandingContainer() {
       </div>
     );
   }
-  
