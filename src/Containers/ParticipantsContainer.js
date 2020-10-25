@@ -24,6 +24,7 @@ export default function ParticipantsContainer(props) {
 
     function getWatchUrl(){
         var url = window.location.href;
+        document.getElementById("watchUrl").innerHTML = url;
 
     }
 
@@ -44,7 +45,7 @@ export default function ParticipantsContainer(props) {
             <div className="leaveButton">
                 <LeaveSessionButton />
                 <InviteLinkButton />
-                <text id="watchUrl">asd</text>
+                <text id="watchUrl"></text>
             </div>           
             <div className="thumbnails">
                 {

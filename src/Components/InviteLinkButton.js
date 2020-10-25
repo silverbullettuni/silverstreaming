@@ -1,19 +1,20 @@
 import React from 'react'
+import { Route, Switch, Redirect, HashRouter, Link } from 'react-router-dom'
+import LandingContainer from '../Containers/LandingContainer';
 
-class MuteMicButton extends React.Component {
+class InviteLinkButton extends React.Component {
     handleClick = () => { 
-        var url = window.location.href;
-        document.execCommand("copy");
-
+    //  var url = window.location.href;
+    //  console.log("link "+ url);
+    //  document.getElementById("watchUrl").innerHTML = url;
+    //  document.execCommand("copy");
   };
   
   render() {
     return (
-      <button onClick={this.handleClick}>
-         Invite link
-      </button>
+      <Link to="/watch"><button>Link to stream</button></Link> 
     );
   }
 }
 
-export default MuteMicButton;
+export default InviteLinkButton;
