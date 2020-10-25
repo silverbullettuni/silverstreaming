@@ -5,6 +5,7 @@
 
 # Ignore files related to API keys
 .env
+/sslcert
 
 # Logs
 logs
