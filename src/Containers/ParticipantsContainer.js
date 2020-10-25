@@ -1,9 +1,5 @@
-import React, {createRef, useRef, useEffect} from 'react'
-import StreamThumbnail from '../Components/StreamThumbail';
-import LeaveSessionButton from '../Components/LeaveSessionButton';
-
-
-  
+import React, { useRef, useEffect} from 'react'
+import LeaveSessionButton from '../Components/LeaveSessionButton'; 
 
 export default function ParticipantsContainer(props) {
 

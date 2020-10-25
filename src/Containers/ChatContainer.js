@@ -34,7 +34,7 @@ export default function ChatContainer(props) {
 
     useEffect(()=>{
         ready();
-    })
+    },[])
 
     function generateMsgId() {
         return new Date().getTime() + "" + Math.floor(Math.random()*899+100)
