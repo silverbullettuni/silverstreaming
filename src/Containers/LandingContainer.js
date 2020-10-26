@@ -19,6 +19,7 @@ export default function LandingContainer() {
         }
 
         setTokenId(token);
+        sessionStorage.setItem('token', token);
         tokenInput.current.value = token;
     }
 
