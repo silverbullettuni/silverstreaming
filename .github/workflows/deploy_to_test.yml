@@ -3,9 +3,26 @@ on:
   push:
     branches: [ deploy-branch ]
 jobs:
-  build:  
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test
+  deploy:  
     runs-on: ubuntu-latest
     steps:
+      - run: npm 
       - name: ls -a via ssh
         uses: garygrossgarten/github-action-ssh@release
         with:
