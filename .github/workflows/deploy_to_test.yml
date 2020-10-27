@@ -22,7 +22,6 @@ jobs:
   deploy:  
     runs-on: ubuntu-latest
     steps:
-      - run: npm 
       - name: ls -a via ssh
         uses: garygrossgarten/github-action-ssh@release
         with:
