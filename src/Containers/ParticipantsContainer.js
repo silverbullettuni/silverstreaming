@@ -2,8 +2,8 @@ import React, {createRef, useRef, useEffect} from 'react'
 import StreamThumbnail from '../Components/StreamThumbail';
 import LeaveSessionButton from '../Components/LeaveSessionButton';
 import InviteLinkButton from '../Components/InviteLinkButton';
-
-
+import CameraOffButton from '../Components/CameraOffButton';
+import CameraOnButton from '../Components/CameraOnButton';
   
 
 export default function ParticipantsContainer(props) {
@@ -42,8 +42,10 @@ export default function ParticipantsContainer(props) {
                 <button onClick={() => toggleMuteAll(false)}>Unmute all</button>
             </div>
             <div className="leaveButton">
-                <LeaveSessionButton />
+                <CameraOffButton />
+                <CameraOnButton />
                 <InviteLinkButton />
+                <LeaveSessionButton />
             </div>           
             <div className="thumbnails">
                 {

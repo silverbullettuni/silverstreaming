@@ -4,6 +4,8 @@ import ChatContainer from './ChatContainer';
 import socketIOClient from "socket.io-client";
 import LeaveSessionButton from '../Components/LeaveSessionButton';
 import MuteMicButton from '../Components/MuteMicButton';
+import CameraOffButton from '../Components/CameraOffButton';
+import CameraOnButton from '../Components/CameraOnButton';
 
 const config = {
     iceServers: [
@@ -80,6 +82,8 @@ export default function ViewContainer(props) {
             />
             <div className="leaveButton">
                 <MuteMicButton />
+                <CameraOffButton />
+                <CameraOnButton />
                 <LeaveSessionButton />
             </div>     
             <ChatContainer/>
