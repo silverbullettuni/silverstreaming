@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import ChatContainer from './ChatContainer';
 import socketIOClient from "socket.io-client";
@@ -16,57 +16,73 @@ const config = {
         //   "credential": "TURN_CREDENTIALS"
         // }
     ]
-  };
+};
+
+const ENDPOINT = window.location.hostname + ":4000";
 
 export default function ViewContainer(props) {
-    const [source, setSource] = useState("");
-    let peerConnection;
 
+    const [hostConnection, setHostConnection] = useState({})
+    const socket = socketIOClient(ENDPOINT);
+    const videoElement = useRef();
 
-    /*useEffect(() => {
-        const socket = socketIOClient(window.location.origin);
+    useEffect(() => {
+        
         socket.on("offer", (id, description) => {
-            peerConnection = new RTCPeerConnection(config);
-            peerConnection
-              .setRemoteDescription(description)
-              .then(() => peerConnection.createAnswer())
-              .then(sdp => peerConnection.setLocalDescription(sdp))
-              .then(() => {
-                socket.emit("answer", id, peerConnection.localDescription);
-              });
-            peerConnection.ontrack = event => {
-                setSource(event.streams[0]);
-              
-            };
-            peerConnection.onicecandidate = event => {
-              if (event.candidate) {
-                socket.emit("candidate", id, event.candidate);
-              }
-            };
-          });
-          
-          
-          socket.on("candidate", (id, candidate) => {
-            peerConnection
+          let peerConnection = new RTCPeerConnection(config);
+          peerConnection
+            .setRemoteDescription(description)
+            .then(() => peerConnection.createAnswer())
+            .then(sdp => peerConnection.setLocalDescription(sdp))
+            .then(() => {
+              console.log("answer " + peerConnection.localDescription);
+              socket.emit("answer", id, peerConnection.localDescription);
+            });
+
+          peerConnection.ontrack = event => {
+            videoElement.current.srcObject = event.streams[0];     
+          };
+
+          peerConnection.onicecandidate = event => {
+            if (event.candidate) {
+              socket.emit("candidate", id, event.candidate);
+            }
+          };
+
+          setHostConnection(peerConnection);
+
+        });
+               
+        socket.on("candidate", (id, candidate) => {
+          setHostConnection(prev => {
+            let host = prev;
+            host
               .addIceCandidate(new RTCIceCandidate(candidate))
               .catch(e => console.error(e));
-          });
+            return host;
+          })
+        });
+        
+        socket.on("connect", () => {
+          socket.emit("watcher");
+        });
+        
+        socket.on("broadcaster", () => {
+          socket.emit("watcher");
+        });
+        
+        socket.on("disconnectPeer", () => {
           
-          socket.on("connect", () => {
-            socket.emit("watcher");
-          });
-          
-          socket.on("broadcaster", () => {
-            socket.emit("watcher");
-          });
-          
-          socket.on("disconnectPeer", () => {
-            peerConnection.close();
-          });
+          setHostConnection(prev => {
+            let host = prev;
+            host.close();
+            return undefined;
+          })
+        });
 
-          return () => socket.disconnect();
+        return () => socket.disconnect();
 
-    }, []);*/
+    }, []);
 
     return (
         <div className="container">
@@ -76,7 +92,7 @@ export default function ViewContainer(props) {
                 autoPlay 
                 controls 
                 playsInline
-                src={source}
+                ref={videoElement}
             />
             <div className="leaveButton">
                 <MuteMicButton />
