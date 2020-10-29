@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useRef, useContext, createContext } from 'react';
 import socketIOClient from "socket.io-client";
 
-import MessageContainer from './Message';
 import { DataContext } from './InfoContainer'
 
 export const MessageContext = createContext();
