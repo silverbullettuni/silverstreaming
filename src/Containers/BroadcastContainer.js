@@ -25,6 +25,7 @@ export default function BroadcastContainer(props) {
     const audioSelect = useRef();
     const videoSelect = useRef();
     const videoElement = useRef();
+    const selfVideoElement = useRef();
     const socket = socketIOClient(ENDPOINT);
 
     const testParticipants = [
@@ -60,16 +61,41 @@ export default function BroadcastContainer(props) {
         .then(gotDevices);
     }, [])
 
+    function refreshStream(){
+      let stream = selfVideoElement.current.srcObject;       
+        if(stream)
+        {
+          stream.getTracks().forEach(track => {
+            setPeers(prev => {
+              const newPeers = new Map(prev);
+              newPeers.forEach(peer => {
+                let sender = peer.getSenders().find(s => s.track.kind == track.kind)
+                sender.replaceTrack(track);
+              })
+
+              return newPeers;
+            })
+
+          });       
+        }
+    }
+
     useEffect(() => {
-                
+         
       socket.on("watcher", id => {
         const peerConnection = new RTCPeerConnection(config);      
 
-        let stream = videoElement.current.srcObject;       
+        let stream = selfVideoElement.current.srcObject;       
         if(stream)
         {
-          stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+          stream.getTracks().forEach(track => {
+            peerConnection.addTrack(track, stream)
+          });
         }
+
+        peerConnection.ontrack = event => {
+          videoElement.current.srcObject = event.streams[0];     
+        };
               
         peerConnection.onicecandidate = event => {
           if (event.candidate) {
@@ -168,7 +194,8 @@ export default function BroadcastContainer(props) {
       videoSelect.current.selectedIndex = [...videoSelect.current.options].findIndex(
         option => option.text === stream.getVideoTracks()[0].label
       );
-      videoElement.current.srcObject = stream;
+      selfVideoElement.current.srcObject = stream;
+      refreshStream();
       socket.emit("broadcaster");
     }
     
@@ -179,8 +206,8 @@ export default function BroadcastContainer(props) {
     return (
         <div className="container">
             <span>{selectedParticipant?.id}</span>
-            <select ref={audioSelect}/>
-            <select ref={videoSelect}/>
+            <select ref={audioSelect} onChange={getStream}/>
+            <select ref={videoSelect} onChange={getStream}/>
             <video 
                 className="mainVideoPlayer"
                 autoPlay 
@@ -188,7 +215,14 @@ export default function BroadcastContainer(props) {
                 playsInline
                 src={selectedParticipant?.src}
                 ref={videoElement}
-            />  
+            />
+            <video 
+                className="selfVideoPlayer"
+                autoPlay 
+                controls 
+                playsInline
+                ref={selfVideoElement}
+            />
 
             <ParticipantsContainer participants={participants} selectParticipant={selectParticipant}/>
 
