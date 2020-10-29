@@ -1,8 +1,5 @@
 import React, {useState, useEffect, useRef, useContext, createContext } from 'react';
-import { unstable_renderSubtreeIntoContainer } from 'react-dom';
-import {useParams} from 'react-router-dom';
 import socketIOClient from "socket.io-client";
-import MessageContainer from './Message';
 
 import { DataContext } from './InfoContainer'
 
@@ -13,15 +10,12 @@ export default function ChatContainer(props) {
     
     const [uid, setUid] = useState([])
     const [user, setUser] = useState([])
-    const [room, setRoom] = useState('');
     const [message, setMessage] = useState([]);
-    const [chat, setChat ] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState({});
     const [onlineCount, setOnlineCount] = useState(0);
     const [userHtml, setUserHtml] = useState([]);
 
     const ENDPOINT = window.location.hostname + ":4000";
-
     const socket = socketIOClient(ENDPOINT)
    
     const textbox = useRef();
@@ -55,7 +49,6 @@ export default function ChatContainer(props) {
 
         const users = JSON.parse(JSON.stringify(o.onlineUsers)); 
 
-        // console.log(JSON.stringify(users))
         let html = [];
         for (let key in users){
             html.push(users[key])
@@ -65,14 +58,13 @@ export default function ChatContainer(props) {
     }
 
     function updateMsg(userData){
-        let msg = message
         let newMsg = { type:'chat', 
                          username:userData.username, 
                          uid:userData.uid, 
                          action:userData.message,
                          msgId:generateMsgId()}
-        msg = message.concat(newMsg);
-        setMessage(msg);
+
+        setMessage(message=>[...message,newMsg]);
     }
 
     function ready() {
@@ -97,16 +89,24 @@ export default function ChatContainer(props) {
 
         socket.emit('message', { uid:uid, username:user,message:textbox.current.value})
         textbox.current.value = ''
+        
+        // keep scroll bar at the bottom
+        setInterval(function(){
+            document.getElementById('record-box').scrollTop = document.getElementById('record-box').scrollHeight;
+        }, 200)
     }
-
 
     return (
         <div className="container">
             <div className="display-flex">
-                
-                <MessageContext.Provider value={message}>
-                    <MessageContainer/>
-                </MessageContext.Provider>
+                <div id="record-box">
+                {
+                    message.map((m, index)=>
+                        <p key={index}><span className='name'>{m.username}:</span><span className='text'>{m.action}</span></p>
+                    )
+                }   
+                </div>
+                    
                 <div className="online-count" align='right' 
                     ref={userList} >
                     <p>
