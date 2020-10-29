@@ -90,17 +90,24 @@ export default function ChatContainer(props) {
 
         socket.emit('message', { uid:uid, username:user,message:textbox.current.value})
         textbox.current.value = ''
+        
+        // keep scroll bar at the bottom
+        setInterval(function(){
+            document.getElementById('record-box').scrollTop = document.getElementById('record-box').scrollHeight;
+        }, 200)
     }
-
 
     return (
         <div className="container">
             <div className="display-flex">
-                
-                <MessageContext.Provider value={message}>
-                    <MessageContainer/>
-                </MessageContext.Provider>
-                
+                <div id="record-box">
+                {
+                    message.map((m, index)=>
+                        <p key={index}><span className='name'>{m.username}:</span><span className='text'>{m.action}</span></p>
+                    )
+                }   
+                </div>
+                    
                 <div className="online-count" align='right' 
                     ref={userList} >
                     <p>
