@@ -4,6 +4,7 @@ import LeaveSessionButton from '../Components/LeaveSessionButton';
 import InviteLinkButton from '../Components/InviteLinkButton';
 import CameraOffButton from '../Components/CameraOffButton';
 import CameraOnButton from '../Components/CameraOnButton';
+import MuteMicButton from '../Components/MuteMicButton';
   
 
 export default function ParticipantsContainer(props) {
@@ -42,6 +43,7 @@ export default function ParticipantsContainer(props) {
                 <button onClick={() => toggleMuteAll(false)}>Unmute all</button>
             </div>
             <div className="leaveButton">
+                <MuteMicButton />
                 <CameraOffButton />
                 <CameraOnButton />
                 <InviteLinkButton />
