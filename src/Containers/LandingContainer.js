@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, createContext } from 'react';
+import React, { useState,  useRef } from 'react';
 
-import { Route, Switch, Redirect, HashRouter, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 
 export default function LandingContainer() {

@@ -1,18 +1,18 @@
 import React, { useState, useEffect, createContext, useRef } from 'react';
 import {useParams} from "react-router-dom";
+import socketIOClient from "socket.io-client";
+
 import BroadcastContainer from './BroadcastContainer';
 import ViewContainer from './ViewContainer';
-
-import socketIOClient from "socket.io-client";
 
 export const DataContext = createContext();
  
 export default function InfoContainer(props){
 
     const ENDPOINT = window.location.hostname + ":4000";
+    const socket = socketIOClient(ENDPOINT);
     
     const [uid, setUid] = useState('');
-    const socket = socketIOClient(ENDPOINT);
     const [participant, setParticipant] = useState('');
 
     const [isExit, setIsExit] = useState(false);
@@ -25,8 +25,6 @@ export default function InfoContainer(props){
         uid:uid
     };
     
-    
-
     useEffect(() => {
         inputUsername();
         window.onbeforeunload = function () {
@@ -60,6 +58,7 @@ export default function InfoContainer(props){
             var obj = JSON.parse(getUser)
             setUid(obj.uid);
             setParticipant(obj.username);
+            
             if(participant != ''){
                 socket.emit('login',{uid:uid, username:participant})
             }
