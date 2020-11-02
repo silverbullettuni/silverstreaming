@@ -1,6 +1,6 @@
 import React from 'react'
-import { Route, Switch, Redirect, HashRouter, Link } from 'react-router-dom'
-import LandingContainer from '../Containers/LandingContainer';
+import {Link } from 'react-router-dom'
+
 
 class LeaveSessionButton extends React.Component {
     handleClick = () => {
@@ -9,9 +9,7 @@ class LeaveSessionButton extends React.Component {
   
   render() {
     return (
-      <button onClick={this.handleClick}>
-         <Link to="/home">Leave session</Link> 
-      </button>
+         <Link to="/home"><button>Leave session</button></Link> 
     );
   }
 }
