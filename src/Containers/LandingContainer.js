@@ -28,7 +28,7 @@ export default function LandingContainer() {
       <div className="container">
           <div className="landingInputBox">
             <div className="tokenGenerator">
-                <button onClick={generateToken}>Generate token</button>
+                <button id="TokenGeneratorButton" onClick={generateToken}>Generate token</button>
             </div>
             <div className="input">
                 <label htmlFor="#tokenIdInput">Token</label>
@@ -39,7 +39,7 @@ export default function LandingContainer() {
                     <button>Watch</button>
                  </Link>
                 <Link to={`/info/broadcast/${tokenId}`} className="modeButton">
-                    <button>Broadcast</button>
+                    <button id="BroadcastButton">Broadcast</button>
                 </Link>
             </div>
           </div>
