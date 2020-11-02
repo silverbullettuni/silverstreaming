@@ -33,6 +33,9 @@ export default function InfoContainer(props) {
         socket.emit("streamerTimeout");
       }
     };
+    if (wb == "broadcast") {
+        socket.emit("resetStreamerTimeout");
+    }
   }, [isExit]);
 
   function generateUid() {
@@ -77,7 +80,6 @@ export default function InfoContainer(props) {
       </div>
     );
   } else if (wb == "broadcast") {
-    socket.emit("resetStreamerTimeout");
     return (
       <div className="container">
         <DataContext.Provider value={data}>
