@@ -5,7 +5,7 @@ let broadcaster;
 let onlineUsers = {};
 let onlineCount = 0;
 let timeout;
-const seconds=5000; // 10 minutes 600000
+const seconds=600000; // 10 minutes 600000
 
 const port = 4000;
 const httpsPort = 8443;
