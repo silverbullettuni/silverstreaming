@@ -5,7 +5,7 @@ let broadcaster;
 let onlineUsers = {};
 let onlineCount = 0;
 let timeout;
-const seconds=600000; // 10 minutes 600000
+const seconds = 600000; // 10 minutes 600000
 
 const port = 4000;
 const httpsPort = 8443;
@@ -53,17 +53,19 @@ io.sockets.on("connection", (socket) => {
   });
 
   socket.on("streamerTimeout", () => {
-    console.log("Streamer closed the window, waiting for 10 minutes to recover")
+    console.log(
+      "Streamer closed the window, waiting for 10 minutes to recover"
+    );
     timeout = setTimeout(() => {
       console.log("Timing out: disconnecting peer connection");
       socket.to(broadcaster).emit("disconnectPeer", socket.id);
       io.emit("streamerTimeouted");
-    } , seconds)
+    }, seconds);
   });
 
   socket.on("resetStreamerTimeout", () => {
-    clearTimeout(timeout)
-    console.log("Streamer timeout reseted.")
+    clearTimeout(timeout);
+    console.log("Streamer timeout reseted.");
   });
 
   socket.on("login", (userData) => {
