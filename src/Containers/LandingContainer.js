@@ -36,7 +36,7 @@ export default function LandingContainer() {
             </div>
             <div className="buttons">
                 <Link to={`/info/watch/${tokenId}`} className="modeButton">
-                    <button>Watch</button>
+                    <button id="ViewerButton">Watch</button>
                  </Link>
                 <Link to={`/info/broadcast/${tokenId}`} className="modeButton">
                     <button id="BroadcastButton">Broadcast</button>

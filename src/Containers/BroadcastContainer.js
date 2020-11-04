@@ -158,6 +158,7 @@ export default function BroadcastContainer(props) {
         <div className="container">
             <span>{selectedParticipant?.id}</span>
             <video 
+                id="streamerVideo"
                 className="mainVideoPlayer"
                 autoPlay 
                 controls 
