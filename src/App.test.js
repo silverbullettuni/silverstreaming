@@ -5,5 +5,5 @@ import App from './App';
 test('tests work', () => {
   const { getByText } = render(<App />);
   const linkElement = getByText(/Silverstreaming Demo/i);
-  expect(linkElement).toBeInTheDocument();ß
+  expect(linkElement).toBeInTheDocument();
 });

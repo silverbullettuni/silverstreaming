@@ -79,7 +79,9 @@ export default function ViewContainer(props) {
         return undefined;
       })
     });
-
+    socket.on("streamerTimeouted", () => {
+      window.location.reload();
+    });
     return () => socket.disconnect();
 
   }, []);

@@ -34,7 +34,7 @@ export default function InfoContainer(props) {
       }
     };
     if (wb == "broadcast") {
-        socket.emit("resetStreamerTimeout");
+      socket.emit("resetStreamerTimeout");
     }
   }, [isExit]);
 
