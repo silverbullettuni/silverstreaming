@@ -1,15 +1,15 @@
-import React, { useState, useEffect, createContext, useRef } from "react";
-import { useParams } from "react-router-dom";
-import BroadcastContainer from "./BroadcastContainer";
-import ViewContainer from "./ViewContainer";
-
+import React, { useState, useEffect, createContext, useRef } from 'react';
+import {useParams} from "react-router-dom";
 import socketIOClient from "socket.io-client";
+
+import BroadcastContainer from './BroadcastContainer';
+import ViewContainer from './ViewContainer';
 
 export const DataContext = createContext();
 
+
 export default function InfoContainer(props) {
   const ENDPOINT = window.location.hostname + ":4000";
-
   const [uid, setUid] = useState("");
   const socket = socketIOClient(ENDPOINT);
   const [participant, setParticipant] = useState("");
@@ -67,7 +67,7 @@ export default function InfoContainer(props) {
       setParticipant(obj.username);
       if (participant != "") {
         socket.emit("login", { uid: uid, username: participant });
-      }
+      } 
     }
   }
 

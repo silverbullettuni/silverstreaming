@@ -88,11 +88,11 @@
   box-sizing: border-box;
   width: 540px;
   height: 225px;
-  padding: 10px 10px 0 10px;
   box-shadow: black 0 0 0.5rem;
   font-size: 12px;
   text-align: left;
   float: left;
+  overflow: auto;
 }
 
 .text {

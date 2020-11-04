@@ -47,6 +47,7 @@ export default function BroadcastContainer(props) {
       setSelectedParticipant(participant);
     }
 
+
     const [broadcaster, setBroadcaster] = useState([])
     useEffect(() => {
       let user = window.prompt('Please enter your username ');
@@ -193,14 +194,11 @@ export default function BroadcastContainer(props) {
 
             <ParticipantsContainer participants={participants} selectParticipant={selectParticipant}/>
 
-            <broadcasterContext.Provider value={broadcaster}>
-              <ChatContainer/>
-            </broadcasterContext.Provider>         
+            <ChatContainer/>       
 
         </div>
     );
 }
-
 
 
 
