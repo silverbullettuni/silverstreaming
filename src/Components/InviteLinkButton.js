@@ -10,7 +10,7 @@ class InviteLinkButton extends React.Component {
   
   render() {
     return (
-      <button onClick={this.handleClick}>
+      <button id="linkToStreamButton" onClick={this.handleClick}>
         Link to stream
       </button> 
     );

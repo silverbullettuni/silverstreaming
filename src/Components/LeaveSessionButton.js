@@ -9,7 +9,7 @@ class LeaveSessionButton extends React.Component {
   
   render() {
     return (
-         <Link to="/home"><button>Leave session</button></Link> 
+         <Link to="/home"><button id="leaveSessionButton">Leave session</button></Link> 
     );
   }
 }
