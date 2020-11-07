@@ -24,6 +24,7 @@ export default function ChatContainer(props) {
     useEffect(() => {
         setUser(data.participant)
         setUid(data.uid)
+        document.getElementById('record-box').scrollTop = document.getElementById('record-box').scrollHeight;
     },[message])
 
     useEffect(()=>{
@@ -36,16 +37,16 @@ export default function ChatContainer(props) {
 
 
     function updateSysMsg(o,action){
-        let msg = message
+        // let msg = message;
         const newMsg = { type:'system', 
                          username:o.user.username, 
                          uid:o.user.uid, 
                          action:action,
                          msgId:generateMsgId()}
-        msg = message.concat(newMsg);
+        // msg = message.concat(newMsg);
         setOnlineCount(o.onlineCount);
         setOnlineUsers(o.onlineUsers);
-        setMessage(msg);
+        setMessage(message=>[...message,newMsg]);
 
         const users = JSON.parse(JSON.stringify(o.onlineUsers)); 
 
@@ -70,10 +71,10 @@ export default function ChatContainer(props) {
     function ready() {
         const socketReady = socket;
         socketReady.on('login', (o) => {
-            updateSysMsg(o,'login')
+            updateSysMsg(o,'Join the room')
         })
         socketReady.on('exitChatbox', (o) => {
-            updateSysMsg(o,'exitChatbox')
+            updateSysMsg(o,'Leave the room')
         })
         socketReady.on('message', (userData) => {
             updateMsg(userData)
@@ -91,9 +92,9 @@ export default function ChatContainer(props) {
         textbox.current.value = ''
         
         // keep scroll bar at the bottom
-        setInterval(function(){
-            document.getElementById('record-box').scrollTop = document.getElementById('record-box').scrollHeight;
-        }, 200)
+        // setInterval(function(){
+        //     document.getElementById('record-box').scrollTop = document.getElementById('record-box').scrollHeight;
+        // }, 200)
     }
 
     return (

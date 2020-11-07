@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useRef, createContext } from 'react'
+import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
 import ChatContainer from './ChatContainer';
 import ParticipantsContainer from './ParticipantsContainer';
 import socketIOClient from "socket.io-client";
+
+import { DataContext } from './InfoContainer'
 
 const config = {
   iceServers: [
@@ -27,6 +29,8 @@ export default function BroadcastContainer(props) {
     const videoElement = useRef();
     const socket = socketIOClient(ENDPOINT);
 
+    const data = useContext(DataContext);
+
     const testParticipants = [
       { id: "1", src: "1s" },
       { id: "2", src: "2s" },
@@ -46,6 +50,14 @@ export default function BroadcastContainer(props) {
     function selectParticipant(participant){
       setSelectedParticipant(participant);
     }
+
+
+    const [broadcaster, setBroadcaster] = useState([])
+    useEffect(() => {
+      let user = data.participant;
+      if (!user){ user = Date.now() }
+      setBroadcaster(user);
+    },[])
 
     useEffect(() => {
       getStream()

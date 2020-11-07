@@ -15,8 +15,6 @@ export default function InfoContainer(props){
     const [uid, setUid] = useState('');
     const [participant, setParticipant] = useState('');
 
-    const [isExit, setIsExit] = useState(false);
-
     const {wb} = useParams();
  
     // Variable for all data
@@ -24,14 +22,19 @@ export default function InfoContainer(props){
         participant:participant,
         uid:uid
     };
-    
-    useEffect(() => {
+
+    useEffect(()=>{
         inputUsername();
-        window.onbeforeunload = function () {
-            setIsExit(true);
-            socket.emit('exitChatbox')
+        const beforeunload= e =>{
+            e.preventDefault();
+            socket.emit('exitChatbox');
+        };
+        window.addEventListener('beforeunload', beforeunload);
+
+        return ()=>{
+            window.removeEventListener('beforeunload', beforeunload);
         }
-    },[isExit])
+    },[])
  
     function generateUid() {
         return new Date().getTime() + "" + Math.floor(Math.random()*9+1)
