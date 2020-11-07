@@ -47,14 +47,6 @@ export default function BroadcastContainer(props) {
       setSelectedParticipant(participant);
     }
 
-
-    const [broadcaster, setBroadcaster] = useState([])
-    useEffect(() => {
-      let user = window.prompt('Please enter your username ');
-      if (!user){ user = Date.now() }
-      setBroadcaster(user);
-    },[])
-
     useEffect(() => {
       getStream()
         .then(getDevices)
