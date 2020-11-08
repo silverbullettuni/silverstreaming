@@ -25,14 +25,16 @@ export default function InfoContainer(props){
 
     useEffect(()=>{
         inputUsername();
-        const beforeunload= e =>{
-            e.preventDefault();
-            socket.emit('exitChatbox');
+        let beforeunloadTime = 0, intervalTime = 0;
+        window.onbeforeunload = function() {
+            beforeunloadTime = new Date().getTime();
+            alert(beforeunloadTime)
         };
-        window.addEventListener('beforeunload', beforeunload);
-
-        return ()=>{
-            window.removeEventListener('beforeunload', beforeunload);
+        window.onunload = function() {
+            intervalTime = new Date().getTime - beforeunloadTime;
+            if (intervalTime <= 5){
+                socket.emit('exitChatbox')
+            }
         }
     },[])
  

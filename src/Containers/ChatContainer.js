@@ -14,7 +14,7 @@ export default function ChatContainer(props) {
     const [onlineUsers, setOnlineUsers] = useState({});
     const [onlineCount, setOnlineCount] = useState(0);
     const [userHtml, setUserHtml] = useState([]);
-    const [newMessage, setNewMessage] = useState("");
+    //const [newMessage, setNewMessage] = useState("");
     const [countNewMessages, setCountNewMessages] = useState(-1);
 
     const ENDPOINT = window.location.hostname + ":4000";
@@ -28,11 +28,11 @@ export default function ChatContainer(props) {
         setUser(data.participant)
         setUid(data.uid)
         document.getElementById('record-box').scrollTop = document.getElementById('record-box').scrollHeight;
-        message.map((m,index)=>{
-            if(index == message.length-1){
-                setNewMessage(m.action);
-            }
-        });
+        // message.map((m,index)=>{
+        //     if(index == message.length-1){
+        //         setNewMessage(m.action);
+        //     }
+        // });
         setCountNewMessages(countNewMessages+1);
     },[message])
 
@@ -80,8 +80,7 @@ export default function ChatContainer(props) {
 
     }
 
-    function updateMsg(userData){
-                  
+    function updateMsg(userData){                 
         let newMsg = { type:'chat', 
                          username:userData.username, 
                          uid:userData.uid, 
@@ -94,10 +93,10 @@ export default function ChatContainer(props) {
     function ready() {
         const socketReady = socket;
         socketReady.on('login', (o) => {
-            updateSysMsg(o,'Join the room')
+            updateSysMsg(o,'Join the chat')
         })
         socketReady.on('exitChatbox', (o) => {
-            updateSysMsg(o,'Leave the room')
+            updateSysMsg(o,'Leave the chat')
         })
         socketReady.on('message', (userData) => {
             updateMsg(userData)
@@ -106,23 +105,12 @@ export default function ChatContainer(props) {
     }
 
     function send(){
-
-        var click = document.getElementById('record-box').addEventListener('click', function(e){
-            console.log(e.target.id);
-        })
-        if (click === null){
-            socket.emit('message', { uid:uid, username:user,message:textbox.current.value})
-            textbox.current.value = ''
-        }
-        else{
-            socket.emit('message', { uid:uid, username:user+' to '+click,message:textbox.current.value})
-            textbox.current.value = ''
-        }
-
+        socket.emit('message', { uid:uid, username:user,message:textbox.current.value})
+        textbox.current.value = ''
     }
     return (
         <div className="fullChatBox">
-            <div className="chatConatiner" ref={chatBubble}><p id="chatBubble" className="chatBubble">{newMessage} : {countNewMessages}</p>
+            <div className="chatConatiner" ref={chatBubble}><p id="chatBubble" className="chatBubble">You have {countNewMessages} new messages</p>
             <div id="record-box" className="chatBox">
             {
                 message.map((m, index)=>

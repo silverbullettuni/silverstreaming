@@ -97,7 +97,6 @@
   border: 1px solid black;
   outline: none;
   font-size: 12px;
-  font-family: arial;
   box-shadow: black 0 0 0.5rem;
   overflow: auto;
 }
@@ -116,7 +115,6 @@
   border: 1px solid black;
   outline: none;
   font-size: 12px;
-  font-family: arial;
   box-shadow: black 0 0 0.5rem;
   bottom: 5px;
   left: 7px;
@@ -153,6 +151,7 @@
   margin: 0;
   text-overflow:ellipsis;
   overflow:hidden;
+  color: antiquewhite;
 }
 
 .text {
