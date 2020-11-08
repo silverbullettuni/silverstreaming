@@ -23,10 +23,11 @@ export default function ChatContainer(props) {
 
     useEffect(() => {
         setUser(data.participant)
-        setUid(data.uid)
+        setUid(data.uid)  
+        // keep scroll bar at the bottom
         document.getElementById('record-box').scrollTop = document.getElementById('record-box').scrollHeight;
     },[message])
-
+    var i = 0
     useEffect(()=>{
         ready();
     },[])
@@ -37,13 +38,12 @@ export default function ChatContainer(props) {
 
 
     function updateSysMsg(o,action){
-        // let msg = message;
         const newMsg = { type:'system', 
                          username:o.user.username, 
                          uid:o.user.uid, 
                          action:action,
                          msgId:generateMsgId()}
-        // msg = message.concat(newMsg);
+        
         setOnlineCount(o.onlineCount);
         setOnlineUsers(o.onlineUsers);
         setMessage(message=>[...message,newMsg]);
@@ -59,6 +59,7 @@ export default function ChatContainer(props) {
     }
 
     function updateMsg(userData){
+                  
         let newMsg = { type:'chat', 
                          username:userData.username, 
                          uid:userData.uid, 
@@ -83,18 +84,13 @@ export default function ChatContainer(props) {
     }
 
     function send(){
-        // const message = textbox.current.value
-        // const list = chat
-        // list.push({user:user, txt:message})
-        // setChat(message => [...message])
+
+        document.getElementById('record-box').addEventListener('click', function(e){
+            console.log(e.target.id);
+        })
 
         socket.emit('message', { uid:uid, username:user,message:textbox.current.value})
         textbox.current.value = ''
-        
-        // keep scroll bar at the bottom
-        // setInterval(function(){
-        //     document.getElementById('record-box').scrollTop = document.getElementById('record-box').scrollHeight;
-        // }, 200)
     }
 
     return (
@@ -103,22 +99,21 @@ export default function ChatContainer(props) {
                 <div id="record-box">
                 {
                     message.map((m, index)=>
-                        <p key={index}><span className='name'>{m.username}:</span><span className='text'>{m.action}</span></p>
+                        <p key={index}><span className='name' id={m.username}>{m.username}:</span><span className='text'>{m.action}</span></p>
                     )
                 }   
                 </div>
                     
-                <div className="online-count" align='right' 
-                    ref={userList} >
+                <div className="online-count" align='right' ref={userList} >
                     <p>
                         Online Users: {onlineCount}
                     </p>                    
                 </div>
-                <div className="online-users">
+                <div className="online-users" id="users">
                     {
-                        userHtml.map((u, index) => 
-                            <li key={index}>
-                                {u}
+                        userHtml.sort().map((users, index) => 
+                            <li key={index} id={users}>
+                                {users}
                             </li>
                         )
                     }
