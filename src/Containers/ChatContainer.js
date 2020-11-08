@@ -14,21 +14,43 @@ export default function ChatContainer(props) {
     const [onlineUsers, setOnlineUsers] = useState({});
     const [onlineCount, setOnlineCount] = useState(0);
     const [userHtml, setUserHtml] = useState([]);
+    const [newMessage, setNewMessage] = useState("");
+    const [countNewMessages, setCountNewMessages] = useState(-1);
 
     const ENDPOINT = window.location.hostname + ":4000";
     const socket = socketIOClient(ENDPOINT)
    
     const textbox = useRef();
     const userList = useRef();
+    const chatBubble = useRef();
 
     useEffect(() => {
         setUser(data.participant)
-        setUid(data.uid)  
-        // keep scroll bar at the bottom
+        setUid(data.uid)
         document.getElementById('record-box').scrollTop = document.getElementById('record-box').scrollHeight;
+        message.map((m,index)=>{
+            if(index == message.length-1){
+                setNewMessage(m.action);
+            }
+        });
+        setCountNewMessages(countNewMessages+1);
     },[message])
-    var i = 0
+
     useEffect(()=>{
+        if(countNewMessages > 0){
+            document.getElementById('chatBubble').setAttribute('style','color:red');
+        }
+        document.getElementsByClassName('chatConatiner')[0].addEventListener("mouseover", ()=>{
+            document.getElementById('record-box').setAttribute('style','display: block');
+            document.getElementById('send-box').setAttribute('style','display: flex');
+            document.getElementById('chatBubble').setAttribute('style','display: none');
+            setCountNewMessages(0);
+        });
+        document.getElementsByClassName('chatConatiner')[0].addEventListener("mouseleave", ()=>{
+            document.getElementById('record-box').removeAttribute('style');
+            document.getElementById('send-box').removeAttribute('style');
+            document.getElementById('chatBubble').removeAttribute('style');
+        });
         ready();
     },[])
 
@@ -85,48 +107,55 @@ export default function ChatContainer(props) {
 
     function send(){
 
-        document.getElementById('record-box').addEventListener('click', function(e){
+        var click = document.getElementById('record-box').addEventListener('click', function(e){
             console.log(e.target.id);
         })
+        if (click === null){
+            socket.emit('message', { uid:uid, username:user,message:textbox.current.value})
+            textbox.current.value = ''
+        }
+        else{
+            socket.emit('message', { uid:uid, username:user+' to '+click,message:textbox.current.value})
+            textbox.current.value = ''
+        }
 
-        socket.emit('message', { uid:uid, username:user,message:textbox.current.value})
-        textbox.current.value = ''
     }
-
     return (
-        <div className="container">
-            <div className="display-flex">
-                <div id="record-box">
-                {
-                    message.map((m, index)=>
-                        <p key={index}><span className='name' id={m.username}>{m.username}:</span><span className='text'>{m.action}</span></p>
-                    )
-                }   
+        <div className="fullChatBox">
+            <div className="chatConatiner" ref={chatBubble}><p id="chatBubble" className="chatBubble">{newMessage} : {countNewMessages}</p>
+            <div id="record-box" className="chatBox">
+            {
+                message.map((m, index)=>
+                    <p className="messages" key={index}><span className='name'>{m.username}:</span><span className='text'>{m.action}</span></p>
+                )
+            }
+            </div> 
+            <div id="send-box" className="sendBox">
+                <textarea rows="1" cols="50"
+                ref={textbox} 
+                className='text'></textarea>
+                <div className="button">
+                    <button type='submit' onClick={send}>Send</button>
                 </div>
-                    
-                <div className="online-count" align='right' ref={userList} >
-                    <p>
-                        Online Users: {onlineCount}
-                    </p>                    
+            </div>
+              
+        </div>
+                
+            <div className="userList"
+                ref={userList} >
+                <div className="userListHeader">
+                    Online Users: {onlineCount}
                 </div>
-                <div className="online-users" id="users">
+                <div className="userListList">
                     {
-                        userHtml.sort().map((users, index) => 
-                            <li key={index} id={users}>
-                                {users}
+                        userHtml.sort().map((user, index) => 
+                            <li key={index}>
+                                {user}
                             </li>
                         )
                     }
-                </div>
-            </div> 
-            <div id="send-box">
-                    <textarea rows="1" cols="80" 
-                    ref={textbox} 
-                    className='text'></textarea>
-                    <div className="button">
-                        <button type='submit' onClick={send}>Send</button>
-                    </div>
-                </div>         
-        </div>
-    );
+                </div>                
+            </div>       
+    </div>
+);
 }
