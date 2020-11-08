@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, createContext } from 'react'
+import React, { useState, useEffect, useRef, createContext, useCallback } from 'react'
 import ChatContainer from './ChatContainer';
 import ParticipantsContainer from './ParticipantsContainer';
-import socketIOClient from "socket.io-client";
+import { socket } from "../Services/socket";
 
 const config = {
   iceServers: [
@@ -16,8 +16,6 @@ const config = {
   ]
 };
 
-const ENDPOINT = window.location.hostname + ":4000";
-
 export const broadcasterContext = createContext();
 
 export default function BroadcastContainer(props) {
@@ -25,8 +23,7 @@ export default function BroadcastContainer(props) {
     const audioSelect = useRef();
     const videoSelect = useRef();
     const videoElement = useRef();
-    const selfVideoElement = useRef();
-    const socket = socketIOClient(ENDPOINT);
+    const selfVideoElement = useRef(null);
 
     const testParticipants = [
       { id: "1", src: "1s" },
@@ -42,59 +39,76 @@ export default function BroadcastContainer(props) {
 
     const [participants, setParticipants] = useState(testParticipants); // temp
     const [peers, setPeers] = useState(new Map());
+    const [peerStreams, setPeerStreams] = useState(new Map());
     const [selectedParticipant, setSelectedParticipant] = useState(undefined);
 
     function selectParticipant(participant){
       setSelectedParticipant(participant);
     }
 
-    const [broadcaster, setBroadcaster] = useState([])
-    useEffect(() => {
-      let user = window.prompt('Please enter your username ');
-      if (!user){ user = Date.now() }
-      setBroadcaster(user);
-    },[])
-
     useEffect(() => {
       getStream()
         .then(getDevices)
-        .then(gotDevices);
+        .then(gotDevices)
+        .then(() => socket.emit("broadcaster"))
     }, [])
 
     function refreshStream(){
       let stream = selfVideoElement.current.srcObject;       
-        if(stream)
-        {
-          stream.getTracks().forEach(track => {
-            setPeers(prev => {
-              const newPeers = new Map(prev);
-              newPeers.forEach(peer => {
-                let sender = peer.getSenders().find(s => s.track.kind == track.kind)
-                sender.replaceTrack(track);
+      if(stream)
+      {
+        stream.getTracks().forEach(track => {
+          setPeers(prev => {
+            const newPeers = new Map(prev);
+            newPeers.forEach(peer => {
+              let sender = peer.getSenders().find(s =>{
+                if(!s.track)
+                {
+                  return false;
+                }
+                return s.track.kind == track.kind;
               })
-
-              return newPeers;
+              if(sender)
+              {
+                console.log("replacing track")
+                sender.replaceTrack(track);
+              }
+              else {
+                console.log("adding track")
+                peer.addTrack(track, stream);
+              }
+              
             })
 
-          });       
-        }
+            return newPeers;
+          })
+
+        });       
+      }
     }
 
     useEffect(() => {
+
+      socket.on("connect", () => {
+        console.log("broadcaster connected as", socket.id)        
+      });
          
       socket.on("watcher", id => {
-        const peerConnection = new RTCPeerConnection(config);      
+        const peerConnection = new RTCPeerConnection(config);    
+        console.log("new watcher", id);  
 
-        let stream = selfVideoElement.current.srcObject;       
-        if(stream)
-        {
+        if(selfVideoElement.current){
+          let stream = selfVideoElement.current.srcObject;
           stream.getTracks().forEach(track => {
-            peerConnection.addTrack(track, stream)
-          });
+            peerConnection.addTrack(track, stream);          
+          })
         }
-
+                     
         peerConnection.ontrack = event => {
-          videoElement.current.srcObject = event.streams[0];     
+          setPeerStreams(prev => {
+            return new Map([...prev, [id, event.streams[0]]]);
+          })
+          //videoElement.current.srcObject = event.streams[0];     
         };
               
         peerConnection.onicecandidate = event => {
@@ -113,19 +127,15 @@ export default function BroadcastContainer(props) {
         setPeers(prev => {
           return new Map([...prev, [id, peerConnection]]);
         });
-
-      });    
-
-      return () => socket.disconnect();
-
-    }, []);
-
-    useEffect(() => {
+        
+      });       
 
       socket.on("answer", (id, description) => {
-        setPeers(prev => {
+        console.log("peer answered")
+        setPeers(prev => {          
           const newPeers = new Map(prev);
-          newPeers.get(id).setRemoteDescription(description);
+          let peer = newPeers.get(id);
+          peer.setRemoteDescription(description);
           return newPeers;
         })
       });
@@ -139,15 +149,36 @@ export default function BroadcastContainer(props) {
         
       });
 
-      socket.on("disconnectPeer", id => {         
+      socket.on("disconnectPeer", id => {   
+        console.log("Disconnected", id);
         setPeers(prev => {
           const newPeers = new Map(prev);
+          let peer = newPeers.get(id);
+          if(peer){
+            peer.close();
+          }
           newPeers.delete(id);
           return newPeers;
         });       
+        setPeerStreams(prev => {
+          const newPeerStreams = new Map(prev);
+          newPeerStreams.delete(id);
+          console.log(newPeerStreams);
+          return newPeerStreams;
+        });
       });
 
-    }, [peers]);
+      return () => {
+        //console.log("Closing host socket connection")
+        if (window.stream) {
+          window.stream.getTracks().forEach(track => {
+            track.stop();
+          });
+        }
+        //socket.close();
+      }
+
+    }, []);
 
     function getDevices() {
       return navigator.mediaDevices.enumerateDevices();
@@ -196,7 +227,7 @@ export default function BroadcastContainer(props) {
       );
       selfVideoElement.current.srcObject = stream;
       refreshStream();
-      socket.emit("broadcaster");
+      
     }
     
     function handleError(error) {
@@ -224,11 +255,11 @@ export default function BroadcastContainer(props) {
                 ref={selfVideoElement}
             />
 
-            <ParticipantsContainer participants={participants} selectParticipant={selectParticipant}/>
+            <ParticipantsContainer participants={participants} peerStreams={peerStreams} selectParticipant={selectParticipant}/>
 
-            <broadcasterContext.Provider value={broadcaster}>
-              <ChatContainer/>
-            </broadcasterContext.Provider>         
+            
+            
+                  
 
         </div>
     );

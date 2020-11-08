@@ -3,16 +3,13 @@ import {useParams} from "react-router-dom";
 import BroadcastContainer from './BroadcastContainer';
 import ViewContainer from './ViewContainer';
 
-import socketIOClient from "socket.io-client";
+import { socket } from "../Services/socket";
 
 export const DataContext = createContext();
  
 export default function InfoContainer(props){
-
-    const ENDPOINT = window.location.hostname + ":4000";
     
     const [uid, setUid] = useState('');
-    const socket = socketIOClient(ENDPOINT);
     const [participant, setParticipant] = useState('');
 
     const [isExit, setIsExit] = useState(false);
@@ -25,13 +22,24 @@ export default function InfoContainer(props){
         uid:uid
     };
     
-    
+    useEffect(() => {
+        socket.connect();
+        socket.on("connect", () => {
+            console.log("connected as", socket.id)            
+        });
+        return () => {
+            console.log("Closing info socket connection")
+            socket.disconnect();
+          }
+    }, [])
 
     useEffect(() => {
         inputUsername();
         window.onbeforeunload = function () {
             setIsExit(true);
-            socket.emit('exitChatbox')
+            socket.emit('exitChatbox');
+            console.log("unload")
+            socket.disconnect();
         }
     },[isExit])
  

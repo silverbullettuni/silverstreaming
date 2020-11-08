@@ -3,6 +3,7 @@ import { unstable_renderSubtreeIntoContainer } from 'react-dom';
 import {useParams} from 'react-router-dom';
 import socketIOClient from "socket.io-client";
 import MessageContainer from './Message';
+import { socket } from "../Services/socket";
 
 import { DataContext } from './InfoContainer'
 
@@ -19,10 +20,6 @@ export default function ChatContainer(props) {
     const [onlineUsers, setOnlineUsers] = useState({});
     const [onlineCount, setOnlineCount] = useState(0);
     const [userHtml, setUserHtml] = useState([]);
-
-    const ENDPOINT = window.location.hostname + ":4000";
-
-    const socket = socketIOClient(ENDPOINT)
    
     const textbox = useRef();
     const userList = useRef();

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
 
 import ChatContainer from './ChatContainer';
-import socketIOClient from "socket.io-client";
 import LeaveSessionButton from '../Components/LeaveSessionButton';
 import MuteMicButton from '../Components/MuteMicButton';
+
+import { socket } from "../Services/socket";
 
 const config = {
     iceServers: [
@@ -18,13 +19,12 @@ const config = {
     ]
 };
 
-const ENDPOINT = window.location.hostname + ":4000";
-
 export default function ViewContainer(props) {
 
     const [hostConnection, setHostConnection] = useState(new RTCPeerConnection(config))
-    const socket = socketIOClient(ENDPOINT);
     const videoElement = useRef();
+    const [hostStream, setHostStream] = useState(null);
+    const [selfStream, setSelfStream] = useState(null);
     const selfVideoElement = useRef();
     const audioSelect = useRef();
     const videoSelect = useRef();
@@ -36,10 +36,19 @@ export default function ViewContainer(props) {
         stream.getTracks().forEach(track => {
           setHostConnection(prev => {
             const host = prev;
-            let sender = host.getSenders().find(s => s.track.kind == track.kind)
+            let sender = host.getSenders().find(s => {
+              if(!s.track)
+              {
+                return false;
+              }
+              return s.track.kind == track.kind;
+            })
             if(sender)
             {
               sender.replaceTrack(track);
+            }
+            else {
+              host.addTrack(track, stream);
             }
             
             return host;
@@ -49,76 +58,94 @@ export default function ViewContainer(props) {
     }
 
     useEffect(() => {
-        
-        socket.on("offer", (id, description) => {
-          let peerConnection = new RTCPeerConnection(config);
-          peerConnection
-            .setRemoteDescription(description)
-            .then(() => peerConnection.createAnswer())
-            .then(sdp => peerConnection.setLocalDescription(sdp))
-            .then(() => {
-              console.log("answer " + peerConnection.localDescription);
-              socket.emit("answer", id, peerConnection.localDescription);
-            });
-
-          let stream = selfVideoElement.current.srcObject;       
-          if(stream)
-          {
-            stream.getTracks().forEach(track => {
-              peerConnection.addTrack(track, stream)
-            });
-          }
-
-          peerConnection.ontrack = event => {
-            videoElement.current.srcObject = event.streams[0];     
-          };
-
-          peerConnection.onicecandidate = event => {
-            if (event.candidate) {
-              socket.emit("candidate", id, event.candidate);
-            }
-          };
-
-          setHostConnection(peerConnection);
-
+      getStream()
+        .then(getDevices)
+        .then(gotDevices)
+        .then(() => {
+          console.log(selfVideoElement.current)
+          console.log("Emit watcher")
+          socket.emit("watcher")
         });
-               
-        socket.on("candidate", (id, candidate) => {
-          setHostConnection(prev => {
-            let host = prev;
-            host
-              .addIceCandidate(new RTCIceCandidate(candidate))
-              .catch(e => console.error(e));
-            return host;
-          })
-        });
+    }, [])
+
+    useEffect(() => {
+
+      socket.on("connect", () => {
+        console.log("viewer connected as", socket.id);   
+      });
         
-        socket.on("connect", () => {
-          socket.emit("watcher");
-        });
-        
-        socket.on("broadcaster", () => {
-          socket.emit("watcher");
-        });
-        
-        socket.on("disconnectPeer", () => {
+      socket.on("offer", (id, description) => {
+        let hostPeerConnection = new RTCPeerConnection(config);
+        hostPeerConnection
+          .setRemoteDescription(description)
+          .then(() => hostPeerConnection.createAnswer())
+          .then(sdp => hostPeerConnection.setLocalDescription(sdp))
+          .then(() => {
+            socket.emit("answer", id, hostPeerConnection.localDescription);
+          });
+
+
+        let stream = selfVideoElement.current.srcObject;
+        stream.getTracks().forEach(track => {
+          hostPeerConnection.addTrack(track, stream);
           
-          setHostConnection(prev => {
-            let host = prev;
-            host.close();
-            return undefined;
-          })
-        });
+        })
+        
+         
+        hostPeerConnection.ontrack = event => {
+          setHostStream(event.streams[0]);    
+        };
+        
 
-        return () => socket.disconnect();
+        hostPeerConnection.onicecandidate = event => {
+          if (event.candidate) {             
+            socket.emit("candidate", id, event.candidate);
+          }
+        };
+
+        setHostConnection(hostPeerConnection);
+
+      });
+             
+      socket.on("candidate", (id, candidate) => {
+        setHostConnection(prev => {
+          let host = prev;
+          host
+            .addIceCandidate(new RTCIceCandidate(candidate))
+            .catch(e => console.error(e));
+          return host;
+        })
+      });
+      
+      socket.on("broadcaster", () => {
+        console.log("broadcaster!")
+        //socket.emit("watcher");
+      });
+      
+      socket.on("disconnectPeer", () => {
+        
+        setHostConnection(prev => {
+          let host = prev;
+          host.close();
+          return undefined;
+        })
+      });
+
+      return () => {
+        //console.log("Closing viewer socket connection")
+        if (window.stream) {
+          window.stream.getTracks().forEach(track => {
+            track.stop();
+          });
+        }
+        //socket.close();
+      }
 
     }, []);
 
     useEffect(() => {
-      getStream()
-        .then(getDevices)
-        .then(gotDevices);
-    }, [])
+      videoElement.current.srcObject = hostStream; 
+    }, [hostStream])
 
     function getDevices() {
       return navigator.mediaDevices.enumerateDevices();
@@ -166,6 +193,7 @@ export default function ViewContainer(props) {
         option => option.text === stream.getVideoTracks()[0].label
       );
       selfVideoElement.current.srcObject = stream;
+      setSelfStream(stream);
       refreshStream();
     }
     
@@ -196,7 +224,7 @@ export default function ViewContainer(props) {
                 <MuteMicButton />
                 <LeaveSessionButton />
             </div>     
-            <ChatContainer/>
+            
 
         </div>
     );
