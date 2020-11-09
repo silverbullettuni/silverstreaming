@@ -13,6 +13,7 @@ export default function InfoContainer(props) {
     const socket = socketIOClient(ENDPOINT);
     const [participant, setParticipant] = useState("");
 
+
     const [isExit, setIsExit] = useState(false);
 
     const { wb } = useParams();
@@ -22,12 +23,25 @@ export default function InfoContainer(props) {
         participant: participant,
         uid: uid,
     };
-
+    // Set interval time to check it is refresh page or close page
+    useEffect(()=>{
+        let beforeunloadTime = 0, intervalTime = 0;
+        window.onbeforeunload = function() {
+            beforeunloadTime = new Date().getTime();
+            alert(beforeunloadTime)
+        };
+        window.onunload = function() {
+            intervalTime = new Date().getTime - beforeunloadTime;
+            if (intervalTime <= 5){
+                socket.emit('exitChatbox')
+            }
+        }
+    },[])
+ 
     useEffect(() => {
         inputUsername();
         window.onbeforeunload = function () {
             setIsExit(true);
-            socket.emit("exitChatbox");
             if (wb == "broadcast") {
                 socket.emit("streamerTimeout");
             }
