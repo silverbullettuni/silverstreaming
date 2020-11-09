@@ -3,20 +3,22 @@ import React, { useState, useEffect, useRef } from 'react'
 import ChatContainer from './ChatContainer';
 import LeaveSessionButton from '../Components/LeaveSessionButton';
 import MuteMicButton from '../Components/MuteMicButton';
+import CameraOffButton from '../Components/CameraOffButton';
+import CameraOnButton from '../Components/CameraOnButton';
 
 import { socket } from "../Services/socket";
 
 const config = {
-    iceServers: [
-        { 
-          "urls": "stun:stun.l.google.com:19302",
-        },
-        // { 
-        //   "urls": "turn:TURN_IP?transport=tcp",
-        //   "username": "TURN_USERNAME",
-        //   "credential": "TURN_CREDENTIALS"
-        // }
-    ]
+  iceServers: [
+    {
+      "urls": "stun:stun.l.google.com:19302",
+    },
+    // { 
+    //   "urls": "turn:TURN_IP?transport=tcp",
+    //   "username": "TURN_USERNAME",
+    //   "credential": "TURN_CREDENTIALS"
+    // }
+  ]
 };
 
 export default function ViewContainer(props) {
@@ -48,6 +50,7 @@ export default function ViewContainer(props) {
         socket.off("candidate", candidate);      
         socket.off("broadcaster", broadcaster);     
         socket.off("disconnectPeer", hostDisconnect);
+        socket.off("streamerTimeouted", streamerTimeout);
       }
     }, [])
 
@@ -56,11 +59,16 @@ export default function ViewContainer(props) {
       socket.on("candidate", candidate);      
       socket.on("broadcaster", broadcaster);     
       socket.on("disconnectPeer", hostDisconnect);
+      socket.on("streamerTimeouted", streamerTimeout);
       socket.emit("watcher");
     }
 
     function hostDisconnect() { 
       hostRef.current.close();    
+    }
+  
+    function streamerTimeout(){
+      window.location.reload();
     }
 
     function offer(id, description) {
@@ -194,6 +202,7 @@ export default function ViewContainer(props) {
                 autoPlay 
                 controls 
                 playsInline
+                poster={process.env.PUBLIC_URL + "/drew-graham-PVyhz0wmHdo-unsplash.jpg"}
                 ref={videoElement}
             />
             <video 

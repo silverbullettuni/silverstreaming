@@ -4,6 +4,12 @@ WORKDIR /app
 
 ENV PATH /app/node_modules/.bin:$PATH
 
+# ENV HTTPS=true
+# ENV SSL_CRT_FILE=cert.cert
+# ENV SSL_KEY_FILE=key.key
+ENV PORT=80
+
+
 # install app dependencies
 COPY package.json ./
 COPY package-lock.json ./
@@ -12,7 +18,7 @@ RUN npm install react-scripts@3.4.1 -g --silent
 
 COPY . ./
 
-EXPOSE 3000
+EXPOSE 80
 
 # start app
 CMD ["npm", "start"]

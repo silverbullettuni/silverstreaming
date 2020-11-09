@@ -1,5 +1,12 @@
-import React, { useRef, useEffect} from 'react'
-import LeaveSessionButton from '../Components/LeaveSessionButton'; 
+import React, {createRef, useRef, useEffect} from 'react'
+import StreamThumbnail from '../Components/StreamThumbail';
+import LeaveSessionButton from '../Components/LeaveSessionButton';
+import InviteLinkButton from '../Components/InviteLinkButton';
+import CameraOffButton from '../Components/CameraOffButton';
+import CameraOnButton from '../Components/CameraOnButton';
+import MuteMicButton from '../Components/MuteMicButton';
+  
+
 
 export default function ParticipantsContainer(props) {
 
@@ -32,6 +39,11 @@ export default function ParticipantsContainer(props) {
         }
     }
 
+    function getWatchUrl(){
+        var url = window.location.href;
+        document.getElementById("watchUrl").innerHTML = url;
+    }
+
     function selectParticipant(participant){
         props.selectParticipant(participant);
     }
@@ -43,6 +55,10 @@ export default function ParticipantsContainer(props) {
                 <button onClick={() => toggleMuteAll(false)}>Unmute all</button>
             </div>
             <div className="leaveButton">
+                <MuteMicButton />
+                <CameraOffButton />
+                <CameraOnButton />
+                <InviteLinkButton />
                 <LeaveSessionButton />
             </div>           
             <div className="thumbnails">

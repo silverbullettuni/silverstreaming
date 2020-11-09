@@ -1,7 +1,10 @@
-import React, { useState, useEffect, useRef, createContext, useCallback } from 'react'
+import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
+
 import ChatContainer from './ChatContainer';
 import ParticipantsContainer from './ParticipantsContainer';
 import { socket } from "../Services/socket";
+
+import { DataContext } from './InfoContainer'
 
 const config = {
   iceServers: [
@@ -24,6 +27,8 @@ export default function BroadcastContainer(props) {
     const videoSelect = useRef();
     const videoElement = useRef();
     const selfVideoElement = useRef(null);
+
+    const data = useContext(DataContext);
 
     const testParticipants = [
       { id: "1", src: "1s" },
@@ -240,7 +245,8 @@ export default function BroadcastContainer(props) {
                 className="mainVideoPlayer"
                 autoPlay 
                 controls 
-                playsInline
+                playsInline       
+                poster={process.env.PUBLIC_URL + "/michael-afonso-z8Tul255kGg-unsplash.jpg"}
                 src={selectedParticipant?.src}
                 ref={videoElement}
             />
@@ -258,9 +264,3 @@ export default function BroadcastContainer(props) {
         </div>
     );
 }
-
-
-
-
-
-

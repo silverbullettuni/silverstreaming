@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useRef, useContext, createContext } from 'react';
-import { unstable_renderSubtreeIntoContainer } from 'react-dom';
-import {useParams} from 'react-router-dom';
 import socketIOClient from "socket.io-client";
+
 import MessageContainer from './Message';
 import { socket } from "../Services/socket";
 
@@ -14,22 +13,45 @@ export default function ChatContainer(props) {
     
     const [uid, setUid] = useState([])
     const [user, setUser] = useState([])
-    const [room, setRoom] = useState('');
     const [message, setMessage] = useState([]);
-    const [chat, setChat ] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState({});
     const [onlineCount, setOnlineCount] = useState(0);
     const [userHtml, setUserHtml] = useState([]);
+
+    //const [newMessage, setNewMessage] = useState("");
+    const [countNewMessages, setCountNewMessages] = useState(-1);
    
     const textbox = useRef();
     const userList = useRef();
+    const chatBubble = useRef();
 
     useEffect(() => {
         setUser(data.participant)
         setUid(data.uid)
+        document.getElementById('record-box').scrollTop = document.getElementById('record-box').scrollHeight;
+        // message.map((m,index)=>{
+        //     if(index == message.length-1){
+        //         setNewMessage(m.action);
+        //     }
+        // });
+        setCountNewMessages(countNewMessages+1);
     },[message])
 
     useEffect(()=>{
+        if(countNewMessages > 0){
+            document.getElementById('chatBubble').setAttribute('style','color:red');
+        }
+        document.getElementsByClassName('chatConatiner')[0].addEventListener("mouseover", ()=>{
+            document.getElementById('record-box').setAttribute('style','display: block');
+            document.getElementById('send-box').setAttribute('style','display: flex');
+            document.getElementById('chatBubble').setAttribute('style','display: none');
+            setCountNewMessages(0);
+        });
+        document.getElementsByClassName('chatConatiner')[0].addEventListener("mouseleave", ()=>{
+            document.getElementById('record-box').removeAttribute('style');
+            document.getElementById('send-box').removeAttribute('style');
+            document.getElementById('chatBubble').removeAttribute('style');
+        });
         ready();
     },[])
 
@@ -39,20 +61,18 @@ export default function ChatContainer(props) {
 
 
     function updateSysMsg(o,action){
-        let msg = message
         const newMsg = { type:'system', 
                          username:o.user.username, 
                          uid:o.user.uid, 
                          action:action,
                          msgId:generateMsgId()}
-        msg = message.concat(newMsg);
+        
         setOnlineCount(o.onlineCount);
         setOnlineUsers(o.onlineUsers);
-        setMessage(msg);
+        setMessage(message=>[...message,newMsg]);
 
         const users = JSON.parse(JSON.stringify(o.onlineUsers)); 
 
-        // console.log(JSON.stringify(users))
         let html = [];
         for (let key in users){
             html.push(users[key])
@@ -61,24 +81,23 @@ export default function ChatContainer(props) {
 
     }
 
-    function updateMsg(userData){
-        let msg = message
+    function updateMsg(userData){                 
         let newMsg = { type:'chat', 
                          username:userData.username, 
                          uid:userData.uid, 
                          action:userData.message,
                          msgId:generateMsgId()}
-        msg = message.concat(newMsg);
-        setMessage(msg);
+
+        setMessage(message=>[...message,newMsg]);
     }
 
     function ready() {
         const socketReady = socket;
         socketReady.on('login', (o) => {
-            updateSysMsg(o,'login')
+            updateSysMsg(o,'Join the chat')
         })
         socketReady.on('exitChatbox', (o) => {
-            updateSysMsg(o,'exitChatbox')
+            updateSysMsg(o,'Leave the chat')
         })
         socketReady.on('message', (userData) => {
             updateMsg(userData)
@@ -87,47 +106,45 @@ export default function ChatContainer(props) {
     }
 
     function send(){
-        // const message = textbox.current.value
-        // const list = chat
-        // list.push({user:user, txt:message})
-        // setChat(message => [...message])
-
         socket.emit('message', { uid:uid, username:user,message:textbox.current.value})
         textbox.current.value = ''
     }
-
-
     return (
-        <div className="container">
-            <div className="display-flex">
-                
-                <MessageContext.Provider value={message}>
-                    <MessageContainer/>
-                </MessageContext.Provider>
-                <div className="online-count" align='right' 
-                    ref={userList} >
-                    <p>
-                        Online Users: {onlineCount}
-                    </p>                    
+        <div className="fullChatBox">
+            <div className="chatConatiner" ref={chatBubble}><p id="chatBubble" className="chatBubble">You have {countNewMessages} new messages</p>
+            <div id="record-box" className="chatBox">
+            {
+                message.map((m, index)=>
+                    <p className="messages" key={index}><span className='name'>{m.username}:</span><span className='text'>{m.action}</span></p>
+                )
+            }
+            </div> 
+            <div id="send-box" className="sendBox">
+                <textarea rows="1" cols="50"
+                ref={textbox} 
+                className='text'></textarea>
+                <div className="button">
+                    <button type='submit' onClick={send}>Send</button>
                 </div>
-                <div className="online-users">
+            </div>
+              
+        </div>
+                
+            <div className="userList"
+                ref={userList} >
+                <div className="userListHeader">
+                    Online Users: {onlineCount}
+                </div>
+                <div className="userListList">
                     {
-                        userHtml.map((u, index) => 
+                        userHtml.sort().map((user, index) => 
                             <li key={index}>
-                                {u}
+                                {user}
                             </li>
                         )
                     }
-                </div>
-            </div> 
-            <div id="send-box">
-                    <textarea rows="1" cols="80" 
-                    ref={textbox} 
-                    className='text'></textarea>
-                    <div className="button">
-                        <button type='submit' onClick={send}>Send</button>
-                    </div>
-                </div>         
-        </div>
-    );
+                </div>                
+            </div>       
+    </div>
+);
 }
