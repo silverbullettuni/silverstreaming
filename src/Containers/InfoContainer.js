@@ -1,30 +1,30 @@
-import React, { useState, useEffect, createContext, useRef } from 'react';
-import {useParams} from "react-router-dom";
+import React, { useState, useEffect, createContext, useRef } from "react";
+import { useParams } from "react-router-dom";
 import socketIOClient from "socket.io-client";
 
-import BroadcastContainer from './BroadcastContainer';
-import ViewContainer from './ViewContainer';
+import BroadcastContainer from "./BroadcastContainer";
+import ViewContainer from "./ViewContainer";
 
 export const DataContext = createContext();
- 
-export default function InfoContainer(props){
 
+export default function InfoContainer(props) {
     const ENDPOINT = window.location.hostname + ":4000";
+    const [uid, setUid] = useState("");
     const socket = socketIOClient(ENDPOINT);
-    
-    const [uid, setUid] = useState('');
-    const [participant, setParticipant] = useState('');
+    const [participant, setParticipant] = useState("");
 
-    const {wb} = useParams();
- 
+
+    const [isExit, setIsExit] = useState(false);
+
+    const { wb } = useParams();
+
     // Variable for all data
     const data = {
-        participant:participant,
-        uid:uid
+        participant: participant,
+        uid: uid,
     };
-
+    // Set interval time to check it is refresh page or close page
     useEffect(()=>{
-        inputUsername();
         let beforeunloadTime = 0, intervalTime = 0;
         window.onbeforeunload = function() {
             beforeunloadTime = new Date().getTime();
@@ -38,49 +38,62 @@ export default function InfoContainer(props){
         }
     },[])
  
+    useEffect(() => {
+        inputUsername();
+        window.onbeforeunload = function () {
+            setIsExit(true);
+            if (wb == "broadcast") {
+                socket.emit("streamerTimeout");
+            }
+        };
+        if (wb == "broadcast") {
+            socket.emit("resetStreamerTimeout");
+        }
+    }, [isExit]);
+
     function generateUid() {
-        return new Date().getTime() + "" + Math.floor(Math.random()*9+1)
+        return new Date().getTime() + "" + Math.floor(Math.random() * 9 + 1);
     }
 
-    function inputUsername(){
-        if (window.sessionStorage.getItem('userData') === null){
-            let participant = window.prompt('Please enter your username ');
+    function inputUsername() {
+        if (window.sessionStorage.getItem("userData") === null) {
+            let participant = window.prompt("Please enter your username ");
             let uid = generateUid();
-            if (!participant){ participant =  'guest' + uid}
+            if (!participant) {
+                participant = "guest" + uid;
+            }
             setParticipant(participant);
             setUid(uid);
 
-            var obj = {uid:uid, username:participant}
-            var str = JSON.stringify(obj)
-            
-            window.sessionStorage.setItem('userData', str)
+            var obj = { uid: uid, username: participant };
+            var str = JSON.stringify(obj);
 
-            if(participant != ''){
-                socket.emit('login',{uid:uid, username:participant})
+            window.sessionStorage.setItem("userData", str);
+
+            if (participant != "") {
+                socket.emit("login", { uid: uid, username: participant });
             }
-        }else{
-            let getUser = window.sessionStorage.getItem('userData');
-            var obj = JSON.parse(getUser)
+        } else {
+            let getUser = window.sessionStorage.getItem("userData");
+            var obj = JSON.parse(getUser);
             setUid(obj.uid);
             setParticipant(obj.username);
-            
-            if(participant != ''){
-                socket.emit('login',{uid:uid, username:participant})
+            if (participant != "") {
+                socket.emit("login", { uid: uid, username: participant });
             }
         }
-         
     }
- 
-    if(wb == "watch"){
-        return(
+
+    if (wb == "watch") {
+        return (
             <div className="container">
                 <DataContext.Provider value={data}>
-                    <ViewContainer/>
+                    <ViewContainer />
                 </DataContext.Provider>
             </div>
         );
-    }else if(wb == "broadcast"){
-        return(
+    } else if (wb == "broadcast") {
+        return (
             <div className="container">
                 <DataContext.Provider value={data}>
                     <BroadcastContainer />
@@ -88,5 +101,4 @@ export default function InfoContainer(props){
             </div>
         );
     }
- 
 }
