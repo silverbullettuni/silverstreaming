@@ -4,8 +4,8 @@ WORKDIR /app
 
 ENV PATH /app/node_modules/.bin:$PATH
 ENV HTTPS=true
-ENV SSL_CRT_FILE=~/reactcert/61619066_silverstream.dy.fi3000.cert
-ENV SSL_KEY_FILE=~/reactcert/61619066_silverstream.dy.fi3000.key
+ENV SSL_CRT_FILE=cert.cert
+ENV SSL_KEY_FILE=key.key
 
 
 # install app dependencies
