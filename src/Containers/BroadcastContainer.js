@@ -50,11 +50,103 @@ export default function BroadcastContainer(props) {
       getStream()
         .then(getDevices)
         .then(gotDevices)
-        .then(() => socket.emit("broadcaster"))
+        .then(setupListeners)
+
+      return () => {
+        if (window.stream) {
+          window.stream.getTracks().forEach(track => {
+            track.stop();
+          });
+        }
+        socket.off("watcher", watcher);       
+        socket.off("answer", answer);
+        socket.off("candidate", candidate);
+        socket.off("disconnectPeer", peerDisconnected);
+      }
     }, [])
 
+    function setupListeners(){
+      socket.on("watcher", watcher);       
+      socket.on("answer", answer);
+      socket.on("candidate", candidate);
+      socket.on("disconnectPeer", peerDisconnected);
+      socket.emit("broadcaster");
+    }
+
+    function watcher(id) {
+      const peerConnection = new RTCPeerConnection(config);    
+      console.log("new watcher", id);  
+
+
+      let stream = window.stream;
+      stream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, stream);          
+      })
+                       
+      peerConnection.ontrack = event => {
+        setPeerStreams(prev => {
+          return new Map([...prev, [id, event.streams[0]]]);
+        })  
+      };
+            
+      peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+          socket.emit("candidate", id, event.candidate);
+        }
+      };
+      
+      peerConnection
+        .createOffer()
+        .then(sdp => peerConnection.setLocalDescription(sdp))
+        .then(() => {
+          socket.emit("offer", id, peerConnection.localDescription);
+        });
+      
+      setPeers(prev => {
+        return new Map([...prev, [id, peerConnection]]);
+      });
+      
+    }
+
+    function answer(id, description) {
+      setPeers(prev => {          
+        const newPeers = new Map(prev);
+        let peer = newPeers.get(id);
+        peer.setRemoteDescription(description);
+        return newPeers;
+      })
+    }
+
+    function candidate(id, candidate) {
+      setPeers(prev => {
+        const newPeers = new Map(prev);
+        newPeers.get(id).addIceCandidate(new RTCIceCandidate(candidate));
+        return newPeers;
+      })
+      
+    }
+
+    function peerDisconnected(id) {   
+      console.log("Disconnected", id);
+      setPeers(prev => {
+        const newPeers = new Map(prev);
+        let peer = newPeers.get(id);
+        if(peer){
+          peer.close();
+        }
+        newPeers.delete(id);
+        return newPeers;
+      });       
+      setPeerStreams(prev => {
+        const newPeerStreams = new Map(prev);
+        newPeerStreams.delete(id);
+        console.log(newPeerStreams);
+        return newPeerStreams;
+      });
+    }
+
     function refreshStream(){
-      let stream = selfVideoElement.current.srcObject;       
+      let stream = window.stream;       
       if(stream)
       {
         stream.getTracks().forEach(track => {
@@ -70,11 +162,9 @@ export default function BroadcastContainer(props) {
               })
               if(sender)
               {
-                console.log("replacing track")
                 sender.replaceTrack(track);
               }
               else {
-                console.log("adding track")
                 peer.addTrack(track, stream);
               }
               
@@ -86,99 +176,6 @@ export default function BroadcastContainer(props) {
         });       
       }
     }
-
-    useEffect(() => {
-
-      socket.on("connect", () => {
-        console.log("broadcaster connected as", socket.id)        
-      });
-         
-      socket.on("watcher", id => {
-        const peerConnection = new RTCPeerConnection(config);    
-        console.log("new watcher", id);  
-
-        if(selfVideoElement.current){
-          let stream = selfVideoElement.current.srcObject;
-          stream.getTracks().forEach(track => {
-            peerConnection.addTrack(track, stream);          
-          })
-        }
-                     
-        peerConnection.ontrack = event => {
-          setPeerStreams(prev => {
-            return new Map([...prev, [id, event.streams[0]]]);
-          })
-          //videoElement.current.srcObject = event.streams[0];     
-        };
-              
-        peerConnection.onicecandidate = event => {
-          if (event.candidate) {
-            socket.emit("candidate", id, event.candidate);
-          }
-        };
-        
-        peerConnection
-          .createOffer()
-          .then(sdp => peerConnection.setLocalDescription(sdp))
-          .then(() => {
-            socket.emit("offer", id, peerConnection.localDescription);
-          });
-        
-        setPeers(prev => {
-          return new Map([...prev, [id, peerConnection]]);
-        });
-        
-      });       
-
-      socket.on("answer", (id, description) => {
-        console.log("peer answered")
-        setPeers(prev => {          
-          const newPeers = new Map(prev);
-          let peer = newPeers.get(id);
-          peer.setRemoteDescription(description);
-          return newPeers;
-        })
-      });
-
-      socket.on("candidate", (id, candidate) => {
-        setPeers(prev => {
-          const newPeers = new Map(prev);
-          newPeers.get(id).addIceCandidate(new RTCIceCandidate(candidate));
-          return newPeers;
-        })
-        
-      });
-
-      socket.on("disconnectPeer", id => {   
-        console.log("Disconnected", id);
-        setPeers(prev => {
-          const newPeers = new Map(prev);
-          let peer = newPeers.get(id);
-          if(peer){
-            peer.close();
-          }
-          newPeers.delete(id);
-          return newPeers;
-        });       
-        setPeerStreams(prev => {
-          const newPeerStreams = new Map(prev);
-          newPeerStreams.delete(id);
-          console.log(newPeerStreams);
-          return newPeerStreams;
-        });
-      });
-
-      return () => {
-        //console.log("Closing host socket connection")
-        if (window.stream) {
-          window.stream.getTracks().forEach(track => {
-            track.stop();
-          });
-        }
-        //socket.close();
-      }
-
-    }, []);
 
     function getDevices() {
       return navigator.mediaDevices.enumerateDevices();
@@ -256,9 +253,6 @@ export default function BroadcastContainer(props) {
             />
 
             <ParticipantsContainer participants={participants} peerStreams={peerStreams} selectParticipant={selectParticipant}/>
-
-            
-            
                   
 
         </div>

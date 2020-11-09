@@ -24,11 +24,8 @@ export default function InfoContainer(props){
     
     useEffect(() => {
         socket.connect();
-        socket.on("connect", () => {
-            console.log("connected as", socket.id)            
-        });
         return () => {
-            console.log("Closing info socket connection")
+            console.log("Closing socket connection")
             socket.disconnect();
           }
     }, [])
@@ -38,7 +35,6 @@ export default function InfoContainer(props){
         window.onbeforeunload = function () {
             setIsExit(true);
             socket.emit('exitChatbox');
-            console.log("unload")
             socket.disconnect();
         }
     },[isExit])
