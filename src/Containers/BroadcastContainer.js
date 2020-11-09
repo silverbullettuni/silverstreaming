@@ -178,7 +178,8 @@ export default function BroadcastContainer(props) {
                 className="mainVideoPlayer"
                 autoPlay 
                 controls 
-                playsInline
+                playsInline       
+                poster={process.env.PUBLIC_URL + "/michael-afonso-z8Tul255kGg-unsplash.jpg"}
                 src={selectedParticipant?.src}
                 ref={videoElement}
             />  
