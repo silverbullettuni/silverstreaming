@@ -3,9 +3,9 @@ FROM node:13.12.0-alpine
 WORKDIR /app
 
 ENV PATH /app/node_modules/.bin:$PATH
-ENV HTTPS=true
-ENV SSL_CRT_FILE=cert.cert
-ENV SSL_KEY_FILE=key.key
+# ENV HTTPS=true
+# ENV SSL_CRT_FILE=cert.cert
+# ENV SSL_KEY_FILE=key.key
 
 
 # install app dependencies
