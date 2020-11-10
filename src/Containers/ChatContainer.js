@@ -1,6 +1,9 @@
 import React, {useState, useEffect, useRef, useContext, createContext } from 'react';
 import socketIOClient from "socket.io-client";
 
+import MessageContainer from './Message';
+import { socket } from "../Services/socket";
+
 import { DataContext } from './InfoContainer'
 
 export const MessageContext = createContext();
@@ -14,11 +17,9 @@ export default function ChatContainer(props) {
     const [onlineUsers, setOnlineUsers] = useState({});
     const [onlineCount, setOnlineCount] = useState(0);
     const [userHtml, setUserHtml] = useState([]);
+
     //const [newMessage, setNewMessage] = useState("");
     const [countNewMessages, setCountNewMessages] = useState(-1);
-
-    const ENDPOINT = window.location.hostname + ":4000";
-    const socket = socketIOClient(ENDPOINT)
    
     const textbox = useRef();
     const userList = useRef();
