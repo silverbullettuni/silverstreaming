@@ -187,6 +187,7 @@ export default function BroadcastContainer(props) {
             <select ref={audioSelect}/>
             <select ref={videoSelect}/>
             <video 
+                id="streamerVideo"
                 className="mainVideoPlayer"
                 autoPlay 
                 controls 
