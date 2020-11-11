@@ -38,8 +38,8 @@ export default function ParticipantsContainer(props) {
     return (
         <div className="container">
             <div className="muteButtons">
-                <button onClick={() => toggleMuteAll(true)}>Mute all</button>
-                <button onClick={() => toggleMuteAll(false)}>Unmute all</button>
+                <button id="muteAllButton" onClick={() => toggleMuteAll(true)}>Mute all</button>
+                <button id="unMuteAllButton" onClick={() => toggleMuteAll(false)}>Unmute all</button>
             </div>
             <div className="leaveButton">
                 <LeaveSessionButton />
