@@ -48,7 +48,7 @@ export default function ParticipantsContainer(props) {
             <div className="thumbnails">
                 {
                     props.participants?.map((participant, index) => {
-                        return  <div className="streamThumbnail" key={index-1} onClick={() => selectParticipant(participant)}>
+                        return  <div className="streamThumbnail" id={index+1} key={index-1} onClick={() => selectParticipant(participant)}>
                                     <video 
                                         className="participantVideoPlayer"
                                         autoPlay 

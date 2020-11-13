@@ -156,7 +156,7 @@ export default function BroadcastContainer(props) {
 
     return (
         <div className="container">
-            <span>{selectedParticipant?.id}</span>
+            <span id='currentParticipantId' >{selectedParticipant?.id}</span>
             <video 
                 id="streamerVideo"
                 className="mainVideoPlayer"
