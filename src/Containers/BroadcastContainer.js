@@ -48,6 +48,8 @@ export default function BroadcastContainer(props) {
     const [selectedParticipant, setSelectedParticipant] = useState(undefined);
 
     function selectParticipant(participant){
+      let selected = peerStreams.get(participant)
+      videoElement.current.srcObject = selected;
       setSelectedParticipant(participant);
     }
 
@@ -238,7 +240,7 @@ export default function BroadcastContainer(props) {
 
     return (
         <div className="container">
-            <span>{selectedParticipant?.id}</span>
+            <span>{selectedParticipant}</span>
             <select ref={audioSelect} onChange={getStream}/>
             <select ref={videoSelect} onChange={getStream}/>
             <video 
@@ -248,7 +250,6 @@ export default function BroadcastContainer(props) {
                 controls 
                 playsInline       
                 poster={process.env.PUBLIC_URL + "/michael-afonso-z8Tul255kGg-unsplash.jpg"}
-                src={selectedParticipant?.src}
                 ref={videoElement}
             />
             <video 
