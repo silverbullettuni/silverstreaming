@@ -30,27 +30,23 @@ export default function BroadcastContainer(props) {
 
     const data = useContext(DataContext);
 
-    const testParticipants = [
-      { id: "1", src: "1s" },
-      { id: "2", src: "2s" },
-      { id: "3", src: "3s" },
-      { id: "4", src: "4s" },
-      { id: "5", src: "5s" },
-      { id: "6", src: "6s" },
-      { id: "7", src: "7s" },
-      { id: "8", src: "8s" },
-      { id: "9", src: "9s" },
-    ]
-
-    const [participants, setParticipants] = useState(testParticipants); // temp
     const [peers, setPeers] = useState(new Map());
     const [peerStreams, setPeerStreams] = useState(new Map());
     const [selectedParticipant, setSelectedParticipant] = useState(undefined);
 
     function selectParticipant(participant){
       let selected = peerStreams.get(participant)
-      videoElement.current.srcObject = selected;
+      if(videoElement.current.srcObject == selfVideoElement.current.srcObject){
+        videoElement.current.muted = false;
+      }
+      videoElement.current.srcObject = selected;     
       setSelectedParticipant(participant);
+    }
+
+    function selectSelf(){
+      videoElement.current.srcObject = selfVideoElement.current.srcObject;
+      videoElement.current.muted = true;
+      setSelectedParticipant(undefined);
     }
 
     useEffect(() => {
@@ -240,27 +236,29 @@ export default function BroadcastContainer(props) {
 
     return (
         <div className="container">
-            <span>{selectedParticipant}</span>
             <select ref={audioSelect} onChange={getStream}/>
             <select ref={videoSelect} onChange={getStream}/>
-            <video 
-                id="streamerVideo"
-                className="mainVideoPlayer"
-                autoPlay 
-                controls 
-                playsInline       
-                poster={process.env.PUBLIC_URL + "/michael-afonso-z8Tul255kGg-unsplash.jpg"}
-                ref={videoElement}
-            />
-            <video 
-                className="selfVideoPlayer"
-                autoPlay 
-                controls 
-                playsInline
-                ref={selfVideoElement}
-            />
-
-            <ParticipantsContainer participants={participants} peerStreams={peerStreams} selectParticipant={selectParticipant}/>
+            <div className="mainVideoContainer">
+              <video 
+                  id="streamerVideo"
+                  className="mainVideoPlayer"
+                  autoPlay 
+                  controls 
+                  playsInline       
+                  poster={process.env.PUBLIC_URL + "/michael-afonso-z8Tul255kGg-unsplash.jpg"}
+                  ref={videoElement}
+              />
+              <video 
+                  className="selfVideoPlayer"
+                  autoPlay 
+                  muted
+                  playsInline
+                  onClick={selectSelf}
+                  ref={selfVideoElement}
+              />
+            </div>
+            
+            <ParticipantsContainer peerStreams={peerStreams} selectParticipant={selectParticipant}/>
                   
 
         </div>

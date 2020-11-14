@@ -41,8 +41,21 @@
 
 }
 
+.mainVideoContainer {
+  display: grid;
+}
+
 .mainVideoPlayer {
   width: 100%;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.selfVideoPlayer {
+  max-width: 20rem;
+  box-shadow: 5px 5px 10px black;
+  grid-column: 1;
+  grid-row: 1;
 }
 
 .thumbnails {
