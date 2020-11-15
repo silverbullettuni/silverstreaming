@@ -13,7 +13,7 @@ class InviteLinkButton extends React.Component {
   render() {
     return (
       <CopyToClipboard text={this.handleClick()}>
-        <button>Copy invite link</button>
+        <button onClick={() => alert("Copied to clipboard")}>Copy invite link</button>
       </CopyToClipboard>
     );
   }
