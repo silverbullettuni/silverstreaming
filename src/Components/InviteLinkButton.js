@@ -1,18 +1,20 @@
 import React from 'react'
 
+import {CopyToClipboard} from 'react-copy-to-clipboard';
+
 
 class InviteLinkButton extends React.Component {
     handleClick = () => { 
       var url = window.location.href;
       var watchUrl = url.replace('broadcast/','watch/');
-      window.open(watchUrl);
+      return watchUrl;
   };
   
   render() {
     return (
-      <button id="linkToStreamButton" onClick={this.handleClick}>
-        Link to stream
-      </button> 
+      <CopyToClipboard text={this.handleClick()}>
+        <button>Copy invite link</button>
+      </CopyToClipboard>
     );
   }
 }
