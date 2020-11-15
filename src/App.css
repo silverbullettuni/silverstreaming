@@ -67,12 +67,36 @@
   background-color: #333;
 }
 
+.fullChatBox .fullChatBubble{
+  position: fixed;
+  display: block;
+  right: 10px;
+  bottom: 50px;
+  border: none;
+  width: 270px;
+  transition: .35s ease-in-out;
+  text-align: right;
+}
+
+.fullChatBox .fullChatBubble .chatBubble{
+  position: relative;
+  border: 1px solid rgb(207, 252, 252);
+  border-radius: 5px;
+  box-shadow: black 0 0 0.5rem;
+  margin: 5px;
+  padding: 5px;
+  width: fit-content;
+  float: right;
+  clear: right;
+  transition: .35s ease-in-out;
+}
+
 .fullChatBox .chatConatiner{
   position: fixed;
   display: block;
-  right: 1rem;
-  bottom: 1rem;
-  border: 1px solid rgb(207, 252, 252);;
+  right: 10px;
+  bottom: 10px;
+  border: 1px solid rgb(207, 252, 252);
   border-radius: 5px;
   box-shadow: black 0 0 0.5rem;
   width: 270px;
@@ -84,14 +108,14 @@
   align-content: center;
 }
 
-.fullChatBox .chatConatiner:hover{
+/* .fullChatBox .chatConatiner:hover{
   height: 300px;
-}
+} */
 
 .fullChatBox .chatConatiner .chatBox{
   display: none;
   width: 95%;
-  height: 65%;
+  height: 60%;
   position: absolute;
   background-color: #333;
   border: 1px solid black;
@@ -99,6 +123,35 @@
   font-size: 12px;
   box-shadow: black 0 0 0.5rem;
   overflow: auto;
+  top: 30px;
+}
+
+.closeButton {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  width: 15px;
+  height: 15px;
+  opacity: 0.3;
+  display: none;
+}
+.closeButton:hover {
+  cursor: pointer;
+  opacity: 1;
+}
+.closeButton:before, .closeButton:after {
+  position: absolute;
+  left: 15px;
+  content: ' ';
+  height: 18px;
+  width: 1px;
+  background-color: rgb(196, 196, 196);
+}
+.closeButton:before {
+  transform: rotate(45deg);
+}
+.closeButton:after {
+  transform: rotate(-45deg);
 }
 
 .fullChatBox .chatConatiner .chatBox .messages{
@@ -117,7 +170,6 @@
   font-size: 12px;
   box-shadow: black 0 0 0.5rem;
   bottom: 5px;
-  left: 7px;
 }
 
 .fullChatBox .chatConatiner .sendBox .button{
@@ -147,7 +199,7 @@
   list-style-type: none;
 }
 
-.chatBubble{
+.chatFrame{
   margin: 0;
   text-overflow:ellipsis;
   overflow:hidden;
