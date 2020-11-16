@@ -196,22 +196,25 @@ export default function ViewContainer(props) {
         <div className="container">
             <select ref={audioSelect} onChange={getStream}/>
             <select ref={videoSelect} onChange={getStream}/>
-            <video 
-                id="viewerVideo"
-                className="mainVideoPlayer"
-                autoPlay 
-                controls 
-                playsInline
-                poster={process.env.PUBLIC_URL + "/drew-graham-PVyhz0wmHdo-unsplash.jpg"}
-                ref={videoElement}
-            />
-            <video 
-                className="selfVideoPlayer"
-                autoPlay 
-                controls 
-                playsInline
-                ref={selfVideoElement}
-            />
+            <div className="mainVideoContainer">
+              <video 
+                  id="viewerVideo"
+                  className="mainVideoPlayer"
+                  autoPlay 
+                  controls 
+                  playsInline
+                  poster={process.env.PUBLIC_URL + "/drew-graham-PVyhz0wmHdo-unsplash.jpg"}
+                  ref={videoElement}
+              />
+              <video 
+                  className="selfVideoPlayer"
+                  autoPlay 
+                  playsInline
+                  muted
+                  ref={selfVideoElement}
+              />
+            </div>
+            
             <div className="leaveButton">
                 <MuteMicButton />
                 <LeaveSessionButton />
