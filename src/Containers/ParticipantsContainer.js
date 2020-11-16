@@ -59,7 +59,7 @@ export default function ParticipantsContainer(props) {
                 <CameraOffButton />
                 <CameraOnButton />
                 <InviteLinkButton />
-                <LeaveSessionButton />
+                <LeaveSessionButton isBroadcaster={props.isBroadcaster} />
             </div>           
             <div className="thumbnails">
                 {

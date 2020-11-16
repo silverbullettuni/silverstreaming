@@ -260,7 +260,7 @@ export default function BroadcastContainer(props) {
                 ref={selfVideoElement}
             />
 
-            <ParticipantsContainer participants={participants} peerStreams={peerStreams} selectParticipant={selectParticipant}/>
+            <ParticipantsContainer participants={participants} peerStreams={peerStreams} selectParticipant={selectParticipant} isBroadcaster={true}/>
                   
 
         </div>
