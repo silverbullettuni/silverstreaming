@@ -102,6 +102,7 @@
   float: right;
   clear: right;
   transition: .35s ease-in-out;
+  color: antiquewhite;
 }
 
 .fullChatBox .chatConatiner{
