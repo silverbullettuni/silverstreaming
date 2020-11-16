@@ -21,6 +21,8 @@ export default function ChatContainer(props) {
     //const [newMessage, setNewMessage] = useState("");
     const [countNewMessages, setCountNewMessages] = useState(-1);
 
+    const [msgBubble, setMsgBubble] = useState([]);
+    const [timerFlag, setTimerFlag] = useState(false);
    
     const textbox = useRef();
     const userList = useRef();
