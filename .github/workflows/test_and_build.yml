@@ -20,5 +20,4 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci # Warnings are treated as errors
     - run: npm test
-    - run: testcafe chrome "testitiedosto.js"
     - run: npm run build --if-present

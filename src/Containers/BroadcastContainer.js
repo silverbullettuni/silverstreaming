@@ -238,6 +238,7 @@ export default function BroadcastContainer(props) {
         <div className="container">
             <select ref={audioSelect} onChange={getStream}/>
             <select ref={videoSelect} onChange={getStream}/>
+
             <div className="mainVideoContainer">
               <video 
                   id="streamerVideo"
@@ -258,7 +259,7 @@ export default function BroadcastContainer(props) {
               />
             </div>
             
-            <ParticipantsContainer peerStreams={peerStreams} selectParticipant={selectParticipant}/>
+            <ParticipantsContainer peerStreams={peerStreams} selectParticipant={selectParticipant} isBroadcaster={true}/>
                   
 
         </div>

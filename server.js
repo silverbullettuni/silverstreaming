@@ -53,6 +53,12 @@ io.sockets.on("connection", (socket) => {
     socket.to(broadcaster).emit("disconnectPeer", socket.id);
   });
 
+  socket.on("streamerDisconnect", () => {
+    console.log("Streamer ended session: ", socket.id);
+    socket.to(broadcaster).emit("disconnectPeer", socket.id);
+    io.emit("streamerTimeouted");
+  });
+
   socket.on("streamerTimeout", () => {
     console.log(
       "Streamer closed the window, waiting for 10 minutes to recover"
