@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
 
-import ChatContainer from './ChatContainer';
 import ParticipantsContainer from './ParticipantsContainer';
 import { socket } from "../Services/socket";
-
-import { DataContext } from './InfoContainer'
+import ChatContainer from "./ChatContainer";
+// import { DataContext } from './InfoContainer'
 
 const config = {
   iceServers: [
@@ -28,7 +27,7 @@ export default function BroadcastContainer(props) {
     const videoElement = useRef();
     const selfVideoElement = useRef(null);
 
-    const data = useContext(DataContext);
+    // const data = useContext(DataContext);
 
     const [peers, setPeers] = useState(new Map());
     const [peerStreams, setPeerStreams] = useState(new Map());
@@ -260,7 +259,7 @@ export default function BroadcastContainer(props) {
             </div>
             
             <ParticipantsContainer peerStreams={peerStreams} selectParticipant={selectParticipant} isBroadcaster={true}/>
-                  
+            <ChatContainer/>
 
         </div>
     );
