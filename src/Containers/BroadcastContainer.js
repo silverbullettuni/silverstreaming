@@ -237,8 +237,9 @@ export default function BroadcastContainer(props) {
     return (
         <div className="container">
             <select ref={audioSelect} onChange={getStream}/>
-            <select ref={videoSelect} onChange={getStream}/>
-
+            <select ref={videoSelect} onChange={getStream}/>  
+            
+            <span id='currentParticipantId' >{selectedParticipant?.id}</span>
             <div className="mainVideoContainer">
               <video 
                   id="streamerVideo"

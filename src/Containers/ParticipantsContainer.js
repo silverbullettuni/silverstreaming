@@ -51,8 +51,8 @@ export default function ParticipantsContainer(props) {
     return (
         <div className="container">
             <div className="muteButtons">
-                <button onClick={() => toggleMuteAll(true)}>Mute all</button>
-                <button onClick={() => toggleMuteAll(false)}>Unmute all</button>
+                <button id="muteAllButton" onClick={() => toggleMuteAll(true)}>Mute all</button>
+                <button id="unMuteAllButton" onClick={() => toggleMuteAll(false)}>Unmute all</button>
             </div>
             <div className="leaveButton">
                 <MuteMicButton />
@@ -65,7 +65,7 @@ export default function ParticipantsContainer(props) {
                 {
                     props.peerStreams.size > 0 ?
                     [...props.peerStreams.keys()].map((key, index) => {
-                        return  <div className="streamThumbnail" key={index-1} onClick={() => selectParticipant(key)}>
+                        return  <div className="streamThumbnail" id={index+1} key={index-1} onClick={() => selectParticipant(key)}>
                                     <video 
                                         className="participantVideoPlayer"
                                         autoPlay 
