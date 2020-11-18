@@ -31,7 +31,7 @@ export default function InfoContainer(props){
     }, [])
 
     // Set interval time to check it is refresh page or close page
-    useEffect(()=>{
+    /* useEffect(()=>{
         let beforeunloadTime = 0, intervalTime = 0;
         window.onbeforeunload = function() {
             beforeunloadTime = new Date().getTime();
@@ -43,13 +43,13 @@ export default function InfoContainer(props){
                 socket.emit('exitChatbox');
                 socket.disconnect();
             }
-        }
-    },[])
+        } 
+    },[])*/
  
     useEffect(() => {
         inputUsername();
         window.onbeforeunload = function () {
-            setIsExit(true);
+            socket.emit('exitChatbox')
             if (wb == "broadcast") {
                 socket.emit("streamerTimeout");
             }
@@ -57,7 +57,7 @@ export default function InfoContainer(props){
         if (wb == "broadcast") {
             socket.emit("resetStreamerTimeout");
         }
-    }, [isExit]);
+    }, []);
 
     function generateUid() {
         return new Date().getTime() + "" + Math.floor(Math.random() * 9 + 1);
