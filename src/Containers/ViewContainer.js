@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-import ChatContainer from './ChatContainer';
 import LeaveSessionButton from '../Components/LeaveSessionButton';
 import MuteMicButton from '../Components/MuteMicButton';
 import CameraOffButton from '../Components/CameraOffButton';
 import CameraOnButton from '../Components/CameraOnButton';
 
 import { socket } from "../Services/socket";
+import ChatContainer from "./ChatContainer";
 
 const config = {
   iceServers: [
@@ -220,7 +220,7 @@ export default function ViewContainer(props) {
                 <LeaveSessionButton />
             </div>     
             
-
+            <ChatContainer/>
         </div>
     );
 }

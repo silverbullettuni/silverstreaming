@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, createContext, useRef } from 'react';
 import {useParams} from "react-router-dom";
 import { socket } from "../Services/socket";
@@ -11,9 +10,6 @@ export default function InfoContainer(props){
     
     const [uid, setUid] = useState('');
     const [participant, setParticipant] = useState('');
-
-
-    const [isExit, setIsExit] = useState(false);
 
     const { wb } = useParams();
 
@@ -32,7 +28,7 @@ export default function InfoContainer(props){
     }, [])
 
     // Set interval time to check it is refresh page or close page
-    useEffect(()=>{
+    /* useEffect(()=>{
         let beforeunloadTime = 0, intervalTime = 0;
         window.onbeforeunload = function() {
             beforeunloadTime = new Date().getTime();
@@ -44,13 +40,13 @@ export default function InfoContainer(props){
                 socket.emit('exitChatbox');
                 socket.disconnect();
             }
-        }
-    },[])
+        } 
+    },[])*/
  
     useEffect(() => {
         inputUsername();
         window.onbeforeunload = function () {
-            setIsExit(true);
+            socket.emit('exitChatbox')
             if (wb == "broadcast") {
                 socket.emit("streamerTimeout");
             }
@@ -58,7 +54,7 @@ export default function InfoContainer(props){
         if (wb == "broadcast") {
             socket.emit("resetStreamerTimeout");
         }
-    }, [isExit]);
+    }, []);
 
     function generateUid() {
         return new Date().getTime() + "" + Math.floor(Math.random() * 9 + 1);
@@ -73,11 +69,11 @@ export default function InfoContainer(props){
             }
             setParticipant(participant);
             setUid(uid);
-
+/* 
             var obj = { uid: uid, username: participant };
             var str = JSON.stringify(obj);
 
-            window.sessionStorage.setItem("userData", str);
+            window.sessionStorage.setItem("userData", str); */
 
             if (participant != "") {
                 socket.emit("login", { uid: uid, username: participant });
