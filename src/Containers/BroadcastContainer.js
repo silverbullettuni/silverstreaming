@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef, useContext, createContext } from 'react'
+import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
+
 import ChatContainer from './ChatContainer';
 import ParticipantsContainer from './ParticipantsContainer';
-import socketIOClient from "socket.io-client";
+import { socket } from "../Services/socket";
 
-const peerConnections = {};
+import { DataContext } from './InfoContainer'
+
 const config = {
   iceServers: [
     { 
@@ -24,160 +26,243 @@ export default function BroadcastContainer(props) {
     const audioSelect = useRef();
     const videoSelect = useRef();
     const videoElement = useRef();
-    const socket = socketIOClient(window.location.origin);
+    const selfVideoElement = useRef(null);
 
-    const testParticipants = [
-      { id: "1", src: "1s" },
-      { id: "2", src: "2s" },
-      { id: "3", src: "3s" },
-      { id: "4", src: "4s" },
-      { id: "5", src: "5s" },
-      { id: "6", src: "6s" },
-      { id: "7", src: "7s" },
-      { id: "8", src: "8s" },
-      { id: "9", src: "9s" },
-    ]
+    const data = useContext(DataContext);
 
-    const [participants, setParticipants] = useState(testParticipants); // temp
-    const [selectedParticipant, setSelectedParticipant] = useState(testParticipants[0]);
+    const [peers, setPeers] = useState(new Map());
+    const [peerStreams, setPeerStreams] = useState(new Map());
+    const [selectedParticipant, setSelectedParticipant] = useState(undefined);
 
     function selectParticipant(participant){
+      let selected = peerStreams.get(participant)
+      if(videoElement.current.srcObject == selfVideoElement.current.srcObject){
+        videoElement.current.muted = false;
+      }
+      videoElement.current.srcObject = selected;     
       setSelectedParticipant(participant);
     }
 
-
-    const [broadcaster, setBroadcaster] = useState([])
-    useEffect(() => {
-      let user = window.prompt('Please enter your username ');
-      if (!user){ user = Date.now() }
-      setBroadcaster(user);
-    },[])
-
-    /*useEffect(() => {
-        getStream()
-            .then(getDevices)
-            .then(gotDevices);
-    }, [])
+    function selectSelf(){
+      videoElement.current.srcObject = selfVideoElement.current.srcObject;
+      videoElement.current.muted = true;
+      setSelectedParticipant(undefined);
+    }
 
     useEffect(() => {
-        
-        
+      getStream()
+        .then(getDevices)
+        .then(gotDevices)
+        .then(setupListeners)
 
-            socket.on("answer", (id, description) => {
-                peerConnections[id].setRemoteDescription(description);
-            });
-            
-            socket.on("watcher", id => {
-                const peerConnection = new RTCPeerConnection(config);
-                peerConnections[id] = peerConnection;
-            
-                let stream = videoElement.current.srcObject;
-                stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
-            
-                peerConnection.onicecandidate = event => {
-                if (event.candidate) {
-                    socket.emit("candidate", id, event.candidate);
-                }
-                };
-            
-                peerConnection
-                .createOffer()
-                .then(sdp => peerConnection.setLocalDescription(sdp))
-                .then(() => {
-                    socket.emit("offer", id, peerConnection.localDescription);
-                });
-            });
-            
-            socket.on("candidate", (id, candidate) => {
-                peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate));
-            });
-            
-            socket.on("disconnectPeer", id => {
-                peerConnections[id].close();
-                delete peerConnections[id];
-            });
-
-            return () => socket.disconnect();
-
-    }, []);
-
-    function getDevices() {
-        return navigator.mediaDevices.enumerateDevices();
-      }
-      
-      function gotDevices(deviceInfos) {
-        window.deviceInfos = deviceInfos;
-        for (const deviceInfo of deviceInfos) {
-          const option = document.createElement("option");
-          option.value = deviceInfo.deviceId;
-          if (deviceInfo.kind === "audioinput") {
-            option.text = deviceInfo.label || `Microphone ${audioSelect.current.length + 1}`;
-            audioSelect.current.appendChild(option);
-          } else if (deviceInfo.kind === "videoinput") {
-            option.text = deviceInfo.label || `Camera ${videoSelect.current.length + 1}`;
-            videoSelect.current.appendChild(option);
-          }
-        }
-      }
-      
-      function getStream() {
+      return () => {
         if (window.stream) {
           window.stream.getTracks().forEach(track => {
             track.stop();
           });
         }
-        const audioSource = audioSelect.current.value;
-        const videoSource = videoSelect.current.value;
-        const constraints = {
-          audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
-          video: { deviceId: videoSource ? { exact: videoSource } : undefined }
-        };
-        return navigator.mediaDevices
-          .getUserMedia(constraints)
-          .then(gotStream)
-          .catch(handleError);
+        socket.off("watcher", watcher);       
+        socket.off("answer", answer);
+        socket.off("candidate", candidate);
+        socket.off("disconnectPeer", peerDisconnected);
       }
+    }, [])
+
+    function setupListeners(){
+      socket.on("watcher", watcher);       
+      socket.on("answer", answer);
+      socket.on("candidate", candidate);
+      socket.on("disconnectPeer", peerDisconnected);
+      socket.emit("broadcaster");
+    }
+
+    function watcher(id) {
+      const peerConnection = new RTCPeerConnection(config);    
+      console.log("new watcher", id);  
+
+
+      let stream = window.stream;
+      stream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, stream);          
+      })
+                       
+      peerConnection.ontrack = event => {
+        setPeerStreams(prev => {
+          return new Map([...prev, [id, event.streams[0]]]);
+        })  
+      };
+            
+      peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+          socket.emit("candidate", id, event.candidate);
+        }
+      };
       
-      function gotStream(stream) {
-        window.stream = stream;
-        audioSelect.current.selectedIndex = [...audioSelect.current.options].findIndex(
-          option => option.text === stream.getAudioTracks()[0].label
-        );
-        videoSelect.current.selectedIndex = [...videoSelect.current.options].findIndex(
-          option => option.text === stream.getVideoTracks()[0].label
-        );
-        videoElement.current.srcObject = stream;
-        socket.emit("broadcaster");
+      peerConnection
+        .createOffer()
+        .then(sdp => peerConnection.setLocalDescription(sdp))
+        .then(() => {
+          socket.emit("offer", id, peerConnection.localDescription);
+        });
+      
+      setPeers(prev => {
+        return new Map([...prev, [id, peerConnection]]);
+      });
+      
+    }
+
+    function answer(id, description) {
+      setPeers(prev => {          
+        const newPeers = new Map(prev);
+        let peer = newPeers.get(id);
+        peer.setRemoteDescription(description);
+        return newPeers;
+      })
+    }
+
+    function candidate(id, candidate) {
+      setPeers(prev => {
+        const newPeers = new Map(prev);
+        newPeers.get(id).addIceCandidate(new RTCIceCandidate(candidate));
+        return newPeers;
+      })
+      
+    }
+
+    function peerDisconnected(id) {   
+      console.log("Disconnected", id);
+      setPeers(prev => {
+        const newPeers = new Map(prev);
+        let peer = newPeers.get(id);
+        if(peer){
+          peer.close();
+        }
+        newPeers.delete(id);
+        return newPeers;
+      });       
+      setPeerStreams(prev => {
+        const newPeerStreams = new Map(prev);
+        newPeerStreams.delete(id);
+        console.log(newPeerStreams);
+        return newPeerStreams;
+      });
+    }
+
+    function refreshStream(){
+      let stream = window.stream;       
+      if(stream)
+      {
+        stream.getTracks().forEach(track => {
+          setPeers(prev => {
+            const newPeers = new Map(prev);
+            newPeers.forEach(peer => {
+              let sender = peer.getSenders().find(s =>{
+                if(!s.track)
+                {
+                  return false;
+                }
+                return s.track.kind == track.kind;
+              })
+              if(sender)
+              {
+                sender.replaceTrack(track);
+              }
+              else {
+                peer.addTrack(track, stream);
+              }
+              
+            })
+
+            return newPeers;
+          })
+
+        });       
       }
+    }
+
+    function getDevices() {
+      return navigator.mediaDevices.enumerateDevices();
+    }
       
-      function handleError(error) {
-        console.error("Error: ", error);
-      }*/
+    function gotDevices(deviceInfos) {
+      window.deviceInfos = deviceInfos;
+      for (const deviceInfo of deviceInfos) {
+        const option = document.createElement("option");
+        option.value = deviceInfo.deviceId;
+        if (deviceInfo.kind === "audioinput") {
+          option.text = deviceInfo.label || `Microphone ${audioSelect.current.length + 1}`;
+          audioSelect.current.appendChild(option);
+        } else if (deviceInfo.kind === "videoinput") {
+          option.text = deviceInfo.label || `Camera ${videoSelect.current.length + 1}`;
+          videoSelect.current.appendChild(option);
+        }
+      }
+    }
+    
+    function getStream() {
+      if (window.stream) {
+        window.stream.getTracks().forEach(track => {
+          track.stop();
+        });
+      }
+      const audioSource = audioSelect.current.value;
+      const videoSource = videoSelect.current.value;
+      const constraints = {
+        audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
+        video: { deviceId: videoSource ? { exact: videoSource } : undefined }
+      };
+      return navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then(gotStream)
+        .catch(handleError);
+    }
+    
+    function gotStream(stream) {
+      window.stream = stream;
+      audioSelect.current.selectedIndex = [...audioSelect.current.options].findIndex(
+        option => option.text === stream.getAudioTracks()[0].label
+      );
+      videoSelect.current.selectedIndex = [...videoSelect.current.options].findIndex(
+        option => option.text === stream.getVideoTracks()[0].label
+      );
+      selfVideoElement.current.srcObject = stream;
+      refreshStream();
+      
+    }
+    
+    function handleError(error) {
+      console.error("Error: ", error);
+    }
 
     return (
         <div className="container">
+            <select ref={audioSelect} onChange={getStream}/>
+            <select ref={videoSelect} onChange={getStream}/>  
+            
             <span id='currentParticipantId' >{selectedParticipant?.id}</span>
-            <video 
-                id="streamerVideo"
-                className="mainVideoPlayer"
-                autoPlay 
-                controls 
-                playsInline
-                src={selectedParticipant?.src}
-            />  
-
-            <ParticipantsContainer participants={participants} selectParticipant={selectParticipant}/>
-
-            <broadcasterContext.Provider value={broadcaster}>
-              <ChatContainer/>
-            </broadcasterContext.Provider>         
+            <div className="mainVideoContainer">
+              <video 
+                  id="streamerVideo"
+                  className="mainVideoPlayer"
+                  autoPlay 
+                  controls 
+                  playsInline       
+                  poster={process.env.PUBLIC_URL + "/michael-afonso-z8Tul255kGg-unsplash.jpg"}
+                  ref={videoElement}
+              />
+              <video 
+                  className="selfVideoPlayer"
+                  autoPlay 
+                  muted
+                  playsInline
+                  onClick={selectSelf}
+                  ref={selfVideoElement}
+              />
+            </div>
+            
+            <ParticipantsContainer peerStreams={peerStreams} selectParticipant={selectParticipant} isBroadcaster={true}/>
+                  
 
         </div>
     );
 }
-
-
-
-
-
-

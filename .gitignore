@@ -2,9 +2,11 @@
 /dist
 /node_modules
 /data
+/build
 
 # Ignore files related to API keys
 .env
+/sslcert
 
 # Logs
 logs
