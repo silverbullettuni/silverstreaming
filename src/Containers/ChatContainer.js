@@ -103,7 +103,10 @@ export default function ChatContainer(props) {
             html.push(users[key])
         }
         setUserHtml(html)
-
+        // user data sessionStorage
+        var obj = { uid: o.user.uid, username: user };
+        var str = JSON.stringify(obj);
+        window.sessionStorage.setItem("userData", str);
     }
 
     function updateMsg(userData){                 

@@ -76,7 +76,8 @@ io.sockets.on("connection", (socket) => {
   });
 
   socket.on("login", (userData) => {
-    socket.id = userData.uid;
+    
+    userData.uid = socket.id;
 
     if (!(userData.uid in onlineUsers)) {
       onlineUsers[userData.uid] = userData.username;

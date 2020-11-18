@@ -11,9 +11,6 @@ export default function InfoContainer(props){
     const [uid, setUid] = useState('');
     const [participant, setParticipant] = useState('');
 
-
-    const [isExit, setIsExit] = useState(false);
-
     const { wb } = useParams();
 
     // Variable for all data
@@ -72,11 +69,11 @@ export default function InfoContainer(props){
             }
             setParticipant(participant);
             setUid(uid);
-
+/* 
             var obj = { uid: uid, username: participant };
             var str = JSON.stringify(obj);
 
-            window.sessionStorage.setItem("userData", str);
+            window.sessionStorage.setItem("userData", str); */
 
             if (participant != "") {
                 socket.emit("login", { uid: uid, username: participant });
