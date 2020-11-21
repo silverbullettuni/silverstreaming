@@ -99,9 +99,9 @@ export default function ChatContainer(props) {
                 document.getElementsByClassName('userConatiner')[0].setAttribute(
                     'style','height: 400px; width: 300px; border-radius: 1px; background-color: #333;');
             }
-            document.getElementById('userFrame').setAttribute('style','display: none');
-            document.getElementById('userListList').setAttribute('style','display: block;');
             document.getElementById('closeButton2').setAttribute('style','display: block;');
+            document.getElementById('userFrame').setAttribute('style','display: none');
+            document.getElementById('userListList').setAttribute('style','visibility: visible');
             isUsersOpen = true;
         });
         document.getElementById('closeButton2').addEventListener("click", (e)=>{
@@ -112,9 +112,9 @@ export default function ChatContainer(props) {
             else{
                 document.getElementsByClassName('userConatiner')[0].setAttribute('style','height: 15px;');
             }
-            document.getElementById('userListList').removeAttribute('style');
             document.getElementById('closeButton2').removeAttribute('style');
             document.getElementById('userFrame').removeAttribute('style');
+            document.getElementById('userListList').removeAttribute('style');
             isUsersOpen = false;
         });
         ready();
@@ -231,13 +231,13 @@ export default function ChatContainer(props) {
                 <div id="closeButton2" className="closeButton"></div>
                 <div id="user-box">
                     <div id="userListList" className="online-users">
-                    {
-                        userHtml.sort().map((user, index) =>
-                            <li>
-                                {user}
-                            </li>
-                        )
-                    }
+                        {
+                            userHtml.sort().map((user, index) =>
+                                <li>
+                                    {user}
+                                </li>
+                            )
+                        }
                     </div>
                 </div>
 

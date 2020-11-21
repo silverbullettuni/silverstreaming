@@ -278,6 +278,7 @@
 }
 
 .online-users {
+  visibility: hidden;
   text-align: left;
   color: antiquewhite;
   margin: 9px;
