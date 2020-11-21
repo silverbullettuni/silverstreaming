@@ -58,7 +58,7 @@ export default function ChatContainer(props) {
                 'style','height: 400px; width: 300px; border-radius: 1px');
             if (isUsersOpen) {
                 document.getElementsByClassName('userConatiner')[0].setAttribute(
-                    'style', 'left: 335px; height: 400px; width: 300px; border-radius: 1px');
+                    'style', 'left: 335px; height: 400px; width: 300px; border-radius: 1px; background-color: #333');
             }
             else {
                 document.getElementsByClassName('userConatiner')[0].setAttribute(
@@ -76,7 +76,7 @@ export default function ChatContainer(props) {
             document.getElementsByClassName('chatConatiner')[0].setAttribute('style','height: 15px;');
             if(isUsersOpen){
                 document.getElementsByClassName('userConatiner')[0].setAttribute(
-                    'style','height: 400px; width: 300px; border-radius: 1px');
+                    'style','height: 400px; width: 300px; border-radius: 1px; background-color: #333');
             }
             else{
                 document.getElementsByClassName('userConatiner')[0].setAttribute(
@@ -93,11 +93,11 @@ export default function ChatContainer(props) {
         document.getElementsByClassName('userConatiner')[0].addEventListener("click", ()=>{
             if(isChatOpen){
                 document.getElementsByClassName('userConatiner')[0].setAttribute(
-                    'style','height: 400px; width: 300px; border-radius: 1px; left: 335px');
+                    'style','height: 400px; width: 300px; border-radius: 1px; left: 335px; background-color: #333;');
             }
             else{
                 document.getElementsByClassName('userConatiner')[0].setAttribute(
-                    'style','height: 400px; width: 300px; border-radius: 1px');
+                    'style','height: 400px; width: 300px; border-radius: 1px; background-color: #333;');
             }
             document.getElementById('userFrame').setAttribute('style','display: none');
             document.getElementById('userListList').setAttribute('style','display: block;');
@@ -217,7 +217,7 @@ export default function ChatContainer(props) {
                     }
                 </div>
                 <div id="send-box" className="sendBox">
-                    <textarea rows="1" cols="50"
+                    <textarea rows="1" cols="38"
                         ref={textbox}
                         onKeyPress={sendMsg}
                         className='text'></textarea>
@@ -229,7 +229,7 @@ export default function ChatContainer(props) {
             </div>
             <div className="userConatiner" ref={userFrame}><p id="userFrame" className="userFrame"><FontAwesomeIcon icon={faUser} /> {onlineCount}</p>
                 <div id="closeButton2" className="closeButton"></div>
-                <div id="user-box" className="sendBox">
+                <div id="user-box">
                     <div id="userListList" className="online-users">
                     {
                         userHtml.sort().map((user, index) =>

@@ -106,6 +106,7 @@
   position: relative;
   border: 1px solid rgb(207, 252, 252);
   border-radius: 5px;
+  background-color: #333;
   box-shadow: black 0 0 0.5rem;
   margin: 5px;
   padding: 5px;
@@ -174,7 +175,7 @@
   top: 10px;
   width: 20px;
   height: 20px;
-  opacity: 0.8;
+  opacity: 0.7;
   display: none;
 }
 .closeButton:hover {
@@ -183,7 +184,7 @@
 }
 .closeButton:before, .closeButton:after {
   position: absolute;
-  left: 15px;
+  left: 10px;
   content: ' ';
   height: 18px;
   width: 1px;
@@ -276,6 +277,6 @@
 
 .online-users {
   text-align: left;
-  color: black;
-  margin: 10px;
+  color: antiquewhite;
+  margin: 9px;
 }
