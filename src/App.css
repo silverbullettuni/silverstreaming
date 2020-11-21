@@ -76,19 +76,30 @@
 
 .fullChatBox{
   position: relative;
-  height: 400px;
+  height: 20px;
   background-color: #333;
 }
 
 .fullChatBox .fullChatBubble{
   position: fixed;
   display: block;
-  right: 10px;
+  left: 10px;
   bottom: 50px;
   border: none;
   width: 270px;
   transition: .35s ease-in-out;
   text-align: right;
+}
+
+.fullUserBox .fullChatBubble{
+  position: fixed;
+  display: block;
+  left: 10px;
+  bottom: 50px;
+  border: none;
+  width: 270px;
+  transition: .35s ease-in-out;
+  text-align: left;
 }
 
 .fullChatBox .fullChatBubble .chatBubble{
@@ -99,8 +110,8 @@
   margin: 5px;
   padding: 5px;
   width: fit-content;
-  float: right;
-  clear: right;
+  float: left;
+  clear: left;
   transition: .35s ease-in-out;
   color: antiquewhite;
 }
@@ -108,12 +119,29 @@
 .fullChatBox .chatConatiner{
   position: fixed;
   display: block;
-  right: 10px;
+  left: 10px;
   bottom: 10px;
   border: 1px solid rgb(207, 252, 252);
-  border-radius: 5px;
+  border-radius: 50%;
   box-shadow: black 0 0 0.5rem;
-  width: 270px;
+  width: 40px;
+  height: 15px;
+  margin: 5px;
+  padding: 5px;
+  transition: height .35s ease-in-out;
+  justify-content: center;
+  align-content: center;
+}
+
+.fullChatBox .userConatiner{
+  position: fixed;
+  display: block;
+  left: 75px;
+  bottom: 10px;
+  border: 1px solid rgb(207, 252, 252);
+  border-radius: 50%;
+  box-shadow: black 0 0 0.5rem;
+  width: 40px;
   height: 15px;
   margin: 5px;
   padding: 5px;
@@ -144,9 +172,9 @@
   position: absolute;
   right: 15px;
   top: 10px;
-  width: 15px;
-  height: 15px;
-  opacity: 0.3;
+  width: 20px;
+  height: 20px;
+  opacity: 0.8;
   display: none;
 }
 .closeButton:hover {
@@ -159,7 +187,7 @@
   content: ' ';
   height: 18px;
   width: 1px;
-  background-color: rgb(196, 196, 196);
+  background-color: rgb(0, 0, 0);
 }
 .closeButton:before {
   transform: rotate(45deg);
@@ -201,7 +229,6 @@
   border: 1px solid rgb(207, 252, 252);
   border-radius: 5px;
   overflow: auto;
-  color: antiquewhite;
 }
 
 .userList .userListHeader{
@@ -209,6 +236,7 @@
 }
 
 .userList .userListList{
+  color: antiquewhite;
   text-decoration: none;
   list-style-type: none;
 }
@@ -217,7 +245,14 @@
   margin: 0;
   text-overflow:ellipsis;
   overflow:hidden;
-  color: antiquewhite;
+  color: black;
+}
+
+.userFrame{
+  margin: 0;
+  text-overflow:ellipsis;
+  overflow:hidden;
+  color: black;
 }
 
 .text {
@@ -241,6 +276,6 @@
 
 .online-users {
   text-align: left;
-  color: antiquewhite;
+  color: black;
   margin: 10px;
 }

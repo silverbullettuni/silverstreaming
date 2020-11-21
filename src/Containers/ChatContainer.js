@@ -4,6 +4,9 @@ import { socket } from "../Services/socket";
 
 import { DataContext } from './InfoContainer'
 
+import { faUser, faComments } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 export const MessageContext = createContext();
 
 export default function ChatContainer(props) {
@@ -23,8 +26,10 @@ export default function ChatContainer(props) {
     const [timerFlag, setTimerFlag] = useState(false);
    
     const textbox = useRef();
-    const userList = useRef();
     const chatFrame = useRef();
+    const userFrame = useRef();
+    var isChatOpen = false;
+    var isUsersOpen = false;
 
     useEffect(() => {
         setUser(data.participant)
@@ -49,22 +54,68 @@ export default function ChatContainer(props) {
 
     useEffect(()=>{
         document.getElementsByClassName('chatConatiner')[0].addEventListener("click", ()=>{
-            document.getElementsByClassName('chatConatiner')[0].setAttribute('style','height: 400px;');
+            document.getElementsByClassName('chatConatiner')[0].setAttribute(
+                'style','height: 400px; width: 300px; border-radius: 1px');
+            if (isUsersOpen) {
+                document.getElementsByClassName('userConatiner')[0].setAttribute(
+                    'style', 'left: 335px; height: 400px; width: 300px; border-radius: 1px');
+            }
+            else {
+                document.getElementsByClassName('userConatiner')[0].setAttribute(
+                    'style', 'left: 335px');
+            }
             document.getElementById('record-box').setAttribute('style','display: block');
             document.getElementById('closeButton').setAttribute('style','display: block;');
             document.getElementById('send-box').setAttribute('style','display: flex');
             document.getElementById('chatFrame').setAttribute('style','display: none');
             document.getElementById('fullChatBubble').setAttribute('style','display:none;');
+            isChatOpen = true;
         });
         document.getElementById('closeButton').addEventListener("click", (e)=>{
             e.stopPropagation();
             document.getElementsByClassName('chatConatiner')[0].setAttribute('style','height: 15px;');
+            if(isUsersOpen){
+                document.getElementsByClassName('userConatiner')[0].setAttribute(
+                    'style','height: 400px; width: 300px; border-radius: 1px');
+            }
+            else{
+                document.getElementsByClassName('userConatiner')[0].setAttribute(
+                    'style','left: 75px');
+            }
             document.getElementById('fullChatBubble').removeAttribute('style');
             document.getElementById('closeButton').removeAttribute('style');
             document.getElementById('record-box').removeAttribute('style');
             document.getElementById('send-box').removeAttribute('style');
             document.getElementById('chatFrame').removeAttribute('style');
             setCountNewMessages(0);
+            isChatOpen = false;
+        });
+        document.getElementsByClassName('userConatiner')[0].addEventListener("click", ()=>{
+            if(isChatOpen){
+                document.getElementsByClassName('userConatiner')[0].setAttribute(
+                    'style','height: 400px; width: 300px; border-radius: 1px; left: 335px');
+            }
+            else{
+                document.getElementsByClassName('userConatiner')[0].setAttribute(
+                    'style','height: 400px; width: 300px; border-radius: 1px');
+            }
+            document.getElementById('userFrame').setAttribute('style','display: none');
+            document.getElementById('userListList').setAttribute('style','display: block;');
+            document.getElementById('closeButton2').setAttribute('style','display: block;');
+            isUsersOpen = true;
+        });
+        document.getElementById('closeButton2').addEventListener("click", (e)=>{
+            e.stopPropagation();
+            if(isChatOpen){
+                document.getElementsByClassName('userConatiner')[0].setAttribute('style','height: 15px; left: 335px;');
+            }
+            else{
+                document.getElementsByClassName('userConatiner')[0].setAttribute('style','height: 15px;');
+            }
+            document.getElementById('userListList').removeAttribute('style');
+            document.getElementById('closeButton2').removeAttribute('style');
+            document.getElementById('userFrame').removeAttribute('style');
+            isUsersOpen = false;
         });
         ready();
     },[])
@@ -147,51 +198,50 @@ export default function ChatContainer(props) {
     return (
         <div className="fullChatBox">
             <div className="fullChatBubble" id="fullChatBubble">
-            {
-                msgBubble.map((m, index)=>
-                    <div className="chatBubble" key={index}>
-                        {m.action}
-                    </div>
-                )
-            }
-            </div>
-            
-            <div className="chatConatiner" ref={chatFrame}><p id="chatFrame" className="chatFrame">You have {countNewMessages} new messages</p>
-            <div id="closeButton" className="closeButton"></div>
-            <div id="record-box" className="chatBox">
-            {
-                message.map((m, index)=>
-                    <p className="messages" key={index}><span className='name'>{m.username}:</span><span className='text'>{m.action}</span></p>
-                )
-            }
-            </div> 
-            <div id="send-box" className="sendBox">
-                <textarea rows="1" cols="50"
-                ref={textbox}
-                onKeyPress={sendMsg}
-                className='text'></textarea>
-                <div className="button">
-                    <button type='submit' onClick={send}>Send</button>
-                </div>
-            </div>
-              
-            </div>
-                
-        <div className="userList"
-            ref={userList} >
-            <div className="userListHeader">
-                Online Users: {onlineCount}
-            </div>
-            <div className="userListList">
                 {
-                    userHtml.sort().map((user, index) => 
-                        <li key={index}>
-                            {user}
-                        </li>
+                    msgBubble.map((m, index) =>
+                        <div className="chatBubble" key={index}>
+                            {m.action}
+                        </div>
                     )
                 }
-            </div>                
-        </div>       
-    </div>
+            </div>
+
+            <div className="chatConatiner" ref={chatFrame}><p id="chatFrame" className="chatFrame"><FontAwesomeIcon icon={faComments}/> {countNewMessages}</p>
+                <div id="closeButton" className="closeButton"></div>
+                <div id="record-box" className="chatBox">
+                    {
+                        message.map((m, index) =>
+                            <p className="messages" key={index}><span className='name'>{m.username}:</span><span className='text'>{m.action}</span></p>
+                        )
+                    }
+                </div>
+                <div id="send-box" className="sendBox">
+                    <textarea rows="1" cols="50"
+                        ref={textbox}
+                        onKeyPress={sendMsg}
+                        className='text'></textarea>
+                    <div className="button">
+                        <button type='submit' onClick={send}>Send</button>
+                    </div>
+                </div>
+
+            </div>
+            <div className="userConatiner" ref={userFrame}><p id="userFrame" className="userFrame"><FontAwesomeIcon icon={faUser} /> {onlineCount}</p>
+                <div id="closeButton2" className="closeButton"></div>
+                <div id="user-box" className="sendBox">
+                    <div id="userListList" className="online-users">
+                    {
+                        userHtml.sort().map((user, index) =>
+                            <li>
+                                {user}
+                            </li>
+                        )
+                    }
+                    </div>
+                </div>
+
+            </div>
+        </div>
 );
 }
