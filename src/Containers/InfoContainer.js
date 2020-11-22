@@ -12,6 +12,8 @@ export default function InfoContainer(props){
     const [uid, setUid] = useState('');
     const [participant, setParticipant] = useState('');
 
+    const [formChanged, setForChanged] = useState(false);
+
     const { wb } = useParams();
 
     // Variable for all data
@@ -28,33 +30,27 @@ export default function InfoContainer(props){
             socket.disconnect();
           }
     }, [])
-
-    // Set interval time to check it is refresh page or close page
-    /* useEffect(()=>{
-        let beforeunloadTime = 0, intervalTime = 0;
-        window.onbeforeunload = function() {
-            beforeunloadTime = new Date().getTime();
-            alert(beforeunloadTime)
-        };
-        window.onunload = function() {
-            intervalTime = new Date().getTime - beforeunloadTime;
-            if (intervalTime <= 5){
-                socket.emit('exitChatbox');
-                socket.disconnect();
-            }
-        } 
-    },[])*/
  
     useEffect(() => {
         inputUsername();
-        window.onbeforeunload = function () {
-            socket.emit('exitChatbox')
-            if (wb == "broadcast") {
-                socket.emit("streamerTimeout");
+
+        setForChanged(false);
+        window.addEventListener('change', () => setForChanged(true));
+
+        window.addEventListener('beforeunload', function (e) {
+            if (!formChanged) {
+                socket.emit('exitChatbox')
+                if (wb == "broadcast") {
+                    socket.emit("streamerTimeout");
+                }
+                if (wb == "broadcast") {
+                    socket.emit("resetStreamerTimeout");
+                }
             }
-        };
-        if (wb == "broadcast") {
-            socket.emit("resetStreamerTimeout");
+
+        },false);
+        return () => {
+            socket.off('login',{ uid:uid, username:participant });
         }
     }, []);
 
@@ -71,11 +67,11 @@ export default function InfoContainer(props){
             }
             setParticipant(participant);
             setUid(uid);
-/* 
-            var obj = { uid: uid, username: participant };
+
+            var obj = { username: participant };
             var str = JSON.stringify(obj);
 
-            window.sessionStorage.setItem("userData", str); */
+            window.sessionStorage.setItem("userData", str); 
 
             if (participant != "") {
                 socket.emit("login", { uid: uid, username: participant });
@@ -85,9 +81,7 @@ export default function InfoContainer(props){
             var obj = JSON.parse(getUser);
             setUid(obj.uid);
             setParticipant(obj.username);
-            if (participant != "") {
-                socket.emit("login", { uid: uid, username: participant });
-            }
+            socket.emit("login", { uid: obj.uid, username: obj.username });
         }
     }
 
