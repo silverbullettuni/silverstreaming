@@ -3,6 +3,7 @@ import {useParams} from "react-router-dom";
 import { socket } from "../Services/socket";
 import BroadcastContainer from "./BroadcastContainer";
 import ViewContainer from "./ViewContainer";
+const resetMedia = new CustomEvent('resetMedia');
 
 export const DataContext = createContext();
  
@@ -20,6 +21,7 @@ export default function InfoContainer(props){
     };
     
     useEffect(() => {
+        window.dispatchEvent(resetMedia);
         socket.connect();
         return () => {
             console.log("Closing socket connection")

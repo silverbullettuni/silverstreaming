@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useParams, useHistory } from "react-router-dom";
 
 import LeaveSessionButton from '../Components/LeaveSessionButton';
 import MuteMicButton from '../Components/MuteMicButton';
@@ -23,6 +24,8 @@ const config = {
 
 export default function ViewContainer(props) {
 
+    let { sessionTokenId } = useParams();
+    let history = useHistory();
     const [hostConnection, setHostConnection] = useState(new RTCPeerConnection(config))
     const hostRef = useRef();
     hostRef.current = hostConnection;
@@ -47,6 +50,7 @@ export default function ViewContainer(props) {
         socket.off("broadcaster", broadcaster);     
         socket.off("disconnectPeer", hostDisconnect);
         socket.off("streamerTimeouted", streamerTimeout);
+        socket.off("roomAlreadyFull", roomAlreadyFull);
         window.removeEventListener('refreshStream', refreshStream);
       }
     }, [])
@@ -58,7 +62,8 @@ export default function ViewContainer(props) {
       socket.on("broadcaster", broadcaster);     
       socket.on("disconnectPeer", hostDisconnect);
       socket.on("streamerTimeouted", streamerTimeout);
-      socket.emit("watcher");
+      socket.on("roomAlreadyFull", roomAlreadyFull);
+      socket.emit("watcher", sessionTokenId);
     }
 
     function hostDisconnect() { 
@@ -66,7 +71,8 @@ export default function ViewContainer(props) {
     }
   
     function streamerTimeout(){
-      window.location.reload();
+      window.alert("The session has ended");
+      exit();
     }
 
     function offer(id, description) {
@@ -106,7 +112,16 @@ export default function ViewContainer(props) {
     }
 
     function broadcaster() {
-      socket.emit("watcher");
+      socket.emit("watcher", sessionTokenId);
+    }
+
+    function roomAlreadyFull(){
+      window.alert("Sorry but this session is full.");
+      exit();
+    }
+
+    function exit(){
+      history.push('/');
     }
 
     function refreshStream(){  
