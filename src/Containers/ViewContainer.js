@@ -31,14 +31,10 @@ export default function ViewContainer(props) {
     const [hostStream, setHostStream] = useState(null);
     const [selfStream, setSelfStream] = useState(null);
     const selfVideoElement = useRef();
-    const audioSelect = useRef();
-    const videoSelect = useRef();
 
     useEffect(() => {
-      getStream()
-        .then(getDevices)
-        .then(gotDevices)
-        .then(setupListeners)
+      setupListeners();
+      refreshStream();  
 
       return () => {
         if (window.stream) {
@@ -51,10 +47,12 @@ export default function ViewContainer(props) {
         socket.off("broadcaster", broadcaster);     
         socket.off("disconnectPeer", hostDisconnect);
         socket.off("streamerTimeouted", streamerTimeout);
+        window.removeEventListener('refreshStream', refreshStream);
       }
     }, [])
 
     function setupListeners(){ 
+      window.addEventListener('refreshStream', refreshStream);
       socket.on("offer", offer);            
       socket.on("candidate", candidate);      
       socket.on("broadcaster", broadcaster);     
@@ -81,10 +79,12 @@ export default function ViewContainer(props) {
           socket.emit("answer", id, hostPeerConnection.localDescription);
         });
 
-      window.stream.getTracks().forEach(track => {
-        hostPeerConnection.addTrack(track, window.stream);          
-      })
-                    
+      if(window.stream){
+        window.stream.getTracks().forEach(track => {
+          hostPeerConnection.addTrack(track, window.stream);          
+        })
+      }
+                          
       hostPeerConnection.ontrack = event => {
         setHostStream(event.streams[0]);    
       };
@@ -109,29 +109,30 @@ export default function ViewContainer(props) {
       socket.emit("watcher");
     }
 
-    function refreshStream(){
-      let stream = window.stream;       
-      if(stream)
-      {
-        stream.getTracks().forEach(track => {
-          
-          let sender = hostRef.current.getSenders().find(s => {
-            if(!s.track)
-            {
-              return false;
-            }
-            return s.track.kind == track.kind;
-          })
-          if(sender)
-          {
-            console.log("replace")
-            sender.replaceTrack(track);
-          }
-          else {
-            hostRef.current.addTrack(track, stream);
-          }
-        });       
+    function refreshStream(){  
+      let stream = window.stream;
+      if(!stream){
+        return;
       }
+      setSelfStream(stream);
+      stream.getTracks().forEach(track => {
+        
+        let sender = hostRef.current.getSenders().find(s => {
+          if(!s.track)
+          {
+            return false;
+          }
+          return s.track.kind == track.kind;
+        })
+        if(sender)
+        {
+          sender.replaceTrack(track);
+        }
+        else {
+          hostRef.current.addTrack(track, stream);
+        }
+      });       
+      
     }
 
     useEffect(() => {
@@ -139,63 +140,8 @@ export default function ViewContainer(props) {
       if (selfVideoElement.current && selfStream) selfVideoElement.current.srcObject = selfStream;
     });
 
-    function getDevices() {
-      return navigator.mediaDevices.enumerateDevices();
-    }
-      
-    function gotDevices(deviceInfos) {
-      window.deviceInfos = deviceInfos;
-      for (const deviceInfo of deviceInfos) {
-        const option = document.createElement("option");
-        option.value = deviceInfo.deviceId;
-        if (deviceInfo.kind === "audioinput") {
-          option.text = deviceInfo.label || `Microphone ${audioSelect.current.length + 1}`;
-          audioSelect.current.appendChild(option);
-        } else if (deviceInfo.kind === "videoinput") {
-          option.text = deviceInfo.label || `Camera ${videoSelect.current.length + 1}`;
-          videoSelect.current.appendChild(option);
-        }
-      }
-    }
-    
-    function getStream() {
-      if (window.stream) {
-        window.stream.getTracks().forEach(track => {
-          track.stop();
-        });
-      }
-      const audioSource = audioSelect.current.value;
-      const videoSource = videoSelect.current.value;
-      const constraints = {
-        audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
-        video: { deviceId: videoSource ? { exact: videoSource } : undefined }
-      };
-      return navigator.mediaDevices
-        .getUserMedia(constraints)
-        .then(gotStream)
-        .catch(handleError);
-    }
-    
-    function gotStream(stream) {
-      window.stream = stream;
-      audioSelect.current.selectedIndex = [...audioSelect.current.options].findIndex(
-        option => option.text === stream.getAudioTracks()[0].label
-      );
-      videoSelect.current.selectedIndex = [...videoSelect.current.options].findIndex(
-        option => option.text === stream.getVideoTracks()[0].label
-      );
-      setSelfStream(stream);
-      refreshStream();
-    }
-    
-    function handleError(error) {
-      console.error("Error: ", error);
-    }
-
     return (
         <div className="container">
-            <select ref={audioSelect} onChange={getStream}/>
-            <select ref={videoSelect} onChange={getStream}/>
             <div className="mainVideoContainer">
               <video 
                   id="viewerVideo"
