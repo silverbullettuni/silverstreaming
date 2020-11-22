@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-
-
+import AVSelect from './AVSelect';
 
 const Ul = styled.ul`
   list-style: none;
@@ -55,14 +54,7 @@ const Select = styled.select`
 const RightNav = ({ open }) => {
     return (
         <Ul open={open}>
-            <p>Select Webcam</p>
-            <Select>
-                <option value="0">Select Webcam</option>
-            </Select>
-            <p>Select Microphone</p>
-            <Select>
-                <option value="0">Select Audio</option>
-            </Select>
+            <AVSelect/>
             <p />
             <div>
             <p>Participant view</p>
