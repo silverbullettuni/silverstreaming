@@ -20,7 +20,6 @@ export default function ChatContainer(props) {
     const [countNewMessages, setCountNewMessages] = useState(-1);
 
     const [msgBubble, setMsgBubble] = useState([]);
-    const [timerFlag, setTimerFlag] = useState(false);
    
     const textbox = useRef();
     const userList = useRef();
@@ -103,10 +102,15 @@ export default function ChatContainer(props) {
             html.push(users[key])
         }
         setUserHtml(html)
-        // user data sessionStorage
-        var obj = { uid: o.user.uid, username: user };
-        var str = JSON.stringify(obj);
-        window.sessionStorage.setItem("userData", str);
+
+        if (action == 'Join the chat'){
+            var getUser = window.sessionStorage.getItem('userData');
+            // user data sessionStorage
+            var objUsername = JSON.parse(getUser)
+            var obj = { uid: o.user.uid, username : objUsername.username };
+            var str = JSON.stringify(obj);
+            window.sessionStorage.setItem("userData", str);
+        }
     }
 
     function updateMsg(userData){                 
