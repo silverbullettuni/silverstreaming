@@ -31,9 +31,6 @@ export default function InfoContainer(props){
             if (wb === "broadcast") {
                 socket.emit("streamerTimeout");
             }
-            if (wb === "broadcast") {
-                socket.emit("resetStreamerTimeout");
-            }
         }
       }, [formChanged, wb])
 
@@ -67,7 +64,9 @@ export default function InfoContainer(props){
     useEffect(() => {
         socket.connect();
         inputUsername();
-
+        if (wb === "broadcast") {
+            socket.emit("resetStreamerTimeout");
+        }
         setForChanged(false);
         window.addEventListener('change', setChange);
         window.addEventListener('beforeunload', setExit, false);
@@ -77,7 +76,7 @@ export default function InfoContainer(props){
             window.removeEventListener('change',setChange)
             window.removeEventListener('beforeunload',setExit)
         }
-    }, [setExit, inputUsername]);
+    }, [setExit, inputUsername, uid, participant]);
 
     function generateUid() {
         return new Date().getTime() + "" + Math.floor(Math.random() * 9 + 1);
