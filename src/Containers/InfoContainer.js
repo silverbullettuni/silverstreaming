@@ -21,7 +21,21 @@ export default function InfoContainer(props){
         participant: participant,
         uid: uid,
     };
-    
+
+    function setChange() {
+        setForChanged(true)
+    }
+    function setExit() {
+        if (!formChanged) {
+            socket.emit('exitChatbox')
+            if (wb == "broadcast") {
+                socket.emit("streamerTimeout");
+            }
+            if (wb == "broadcast") {
+                socket.emit("resetStreamerTimeout");
+            }
+        }
+    }
     useEffect(() => {
         window.dispatchEvent(resetMedia);
         socket.connect();
@@ -35,22 +49,13 @@ export default function InfoContainer(props){
         inputUsername();
 
         setForChanged(false);
-        window.addEventListener('change', () => setForChanged(true));
+        window.addEventListener('change', setChange);
+        window.addEventListener('beforeunload', setExit, false);
 
-        window.addEventListener('beforeunload', function (e) {
-            if (!formChanged) {
-                socket.emit('exitChatbox')
-                if (wb == "broadcast") {
-                    socket.emit("streamerTimeout");
-                }
-                if (wb == "broadcast") {
-                    socket.emit("resetStreamerTimeout");
-                }
-            }
-
-        },false);
         return () => {
             socket.off('login',{ uid:uid, username:participant });
+            window.removeEventListener('change',setChange)
+            window.removeEventListener('beforeunload',setExit)
         }
     }, []);
 
