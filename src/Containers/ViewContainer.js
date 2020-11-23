@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from 'react'
 
 import LeaveSessionButton from '../Components/LeaveSessionButton';
 import MuteMicButton from '../Components/MuteMicButton';
-import CameraOffButton from '../Components/CameraOffButton';
-import CameraOnButton from '../Components/CameraOnButton';
 
 import { socket } from "../Services/socket";
 import ChatContainer from "./ChatContainer";
@@ -122,7 +120,7 @@ export default function ViewContainer(props) {
           {
             return false;
           }
-          return s.track.kind == track.kind;
+          return s.track.kind === track.kind;
         })
         if(sender)
         {

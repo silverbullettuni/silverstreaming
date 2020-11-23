@@ -32,7 +32,7 @@ export default function BroadcastContainer(props) {
 
     function selectParticipant(participant){
       let selected = peerStreams.get(participant)
-      if(videoElement.current.srcObject == selfVideoElement.current.srcObject){
+      if(videoElement.current.srcObject === selfVideoElement.current.srcObject){
         videoElement.current.muted = false;
       }
       videoElement.current.srcObject = selected;     
@@ -157,7 +157,7 @@ export default function BroadcastContainer(props) {
               {
                 return false;
               }
-              return s.track.kind == track.kind;
+              return s.track.kind === track.kind;
             })
             if(sender)
             {

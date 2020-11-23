@@ -27,10 +27,10 @@ export default function InfoContainer(props){
     function setExit() {
         if (!formChanged) {
             socket.emit('exitChatbox')
-            if (wb == "broadcast") {
+            if (wb === "broadcast") {
                 socket.emit("streamerTimeout");
             }
-            if (wb == "broadcast") {
+            if (wb === "broadcast") {
                 socket.emit("resetStreamerTimeout");
             }
         }
@@ -70,7 +70,7 @@ export default function InfoContainer(props){
 
             window.sessionStorage.setItem("userData", str); 
 
-            if (participant != "") {
+            if (participant !== "") {
                 socket.emit("login", { uid: uid, username: participant });
             }
         } else {
@@ -82,7 +82,7 @@ export default function InfoContainer(props){
         }
     }
 
-    if (wb == "watch") {
+    if (wb === "watch") {
         return (
             <div className="container">
                 <DataContext.Provider value={data}>
@@ -90,7 +90,7 @@ export default function InfoContainer(props){
                 </DataContext.Provider>
             </div>
         );
-    } else if (wb == "broadcast") {
+    } else if (wb === "broadcast") {
         return (
             <div className="container">
                 <DataContext.Provider value={data}>

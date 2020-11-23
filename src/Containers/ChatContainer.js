@@ -35,10 +35,10 @@ export default function ChatContainer(props) {
         setUid(data.uid)
         document.getElementById('record-box').scrollTop = document.getElementById('record-box').scrollHeight;
         message.map((m,index)=>{
-            if(index == message.length-1){
+            if(index === message.length-1){
                 // setNewMessage(m.action);
-                if(msgBubble.length==5){
-                    let filteredArray = msgBubble.filter((_, i) => i != 0);
+                if(msgBubble.length===5){
+                    let filteredArray = msgBubble.filter((_, i) => i !== 0);
                     setMsgBubble(filteredArray);
                 }
                 const newMsg = {
@@ -154,7 +154,7 @@ export default function ChatContainer(props) {
         }
         setUserHtml(html)
 
-        if (action == 'Join the chat'){
+        if (action === 'Join the chat'){
             var getUser = window.sessionStorage.getItem('userData');
             // user data sessionStorage
             var objUsername = JSON.parse(getUser)
