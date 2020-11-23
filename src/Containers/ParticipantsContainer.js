@@ -1,5 +1,4 @@
-import React, {createRef, useRef, useEffect} from 'react'
-import StreamThumbnail from '../Components/StreamThumbail';
+import React, {useRef, useEffect} from 'react'
 import LeaveSessionButton from '../Components/LeaveSessionButton';
 import InviteLinkButton from '../Components/InviteLinkButton';
 import CameraOffButton from '../Components/CameraOffButton';

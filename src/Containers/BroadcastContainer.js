@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
+import React, { useState, useEffect, useRef, createContext } from 'react'
 
 import ParticipantsContainer from './ParticipantsContainer';
 import { socket } from "../Services/socket";

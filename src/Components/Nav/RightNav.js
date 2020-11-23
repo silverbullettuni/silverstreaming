@@ -39,18 +39,6 @@ const Button = styled.button`
   border-radius: 3px;
 `;
 
-const Select = styled.select`
-  /* Adapt the colors based on primary prop */
-  background: "white"};
-  color: "teal"};
-
-  font-size: 1em;
-  margin: 0em;
-  padding: 0.15em 1em;
-  border: 3px solid teal;
-  border-radius: 3px;
-`;
-
 const RightNav = ({ open }) => {
     return (
         <Ul open={open}>
