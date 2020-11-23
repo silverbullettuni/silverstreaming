@@ -38,11 +38,6 @@ export default function ParticipantsContainer(props) {
         }
     }
 
-    function getWatchUrl(){
-        var url = window.location.href;
-        document.getElementById("watchUrl").innerHTML = url;
-    }
-
     function selectParticipant(participant){
         props.selectParticipant(participant);
     }

@@ -7,8 +7,6 @@ import Navbar from './Components/Nav/Navbar'
 
 function App() {
 
-  const [viewerMode, setMode] = useState(true);
-
   return (
     <div className="App">
       <HashRouter basename="/">
