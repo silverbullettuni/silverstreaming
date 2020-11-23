@@ -23,7 +23,7 @@ function App() {
         <Navbar />
         <Switch>
           <Route path="/home" component={LandingContainer} />
-          <Route path="/info/:wb/:id" component={InfoContainer} /> 
+          <Route path="/info/:wb/:sessionTokenId" component={InfoContainer} /> 
           {/* <Route path="/watch/:id" component={ViewContainer} /> */}
           <Route exact path="/" render={() => (<Redirect to="/home" />)} />           
           {/* <Route path="/broadcast/:id" component={BroadcastContainer}/>       */}

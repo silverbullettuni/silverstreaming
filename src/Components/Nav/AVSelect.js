@@ -21,15 +21,18 @@ const AVSelect = () => {
     const videoSelect = useRef();
 
     useEffect(() => {
-      try {
-        getStream()
-        .then(getDevices)
-        .then(gotDevices)
-      }
-      catch(error){
+        try {
+          getStream()
+            .then(getDevices)
+            .then(gotDevices)
+        }
+        catch(error){
           handleError(error);
+        }
+      window.addEventListener('resetMedia', getStream);  
+      return () => {
+        window.removeEventListener('resetMedia', getStream);
       }
-  
     }, [])
 
     function getStream() {
