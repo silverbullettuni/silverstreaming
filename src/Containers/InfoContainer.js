@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect, createContext, useCallback } from 'react';
 import {useParams} from "react-router-dom";
 import { socket } from "../Services/socket";
 import BroadcastContainer from "./BroadcastContainer";
@@ -24,7 +24,8 @@ export default function InfoContainer(props){
     function setChange() {
         setForChanged(true)
     }
-    function setExit() {
+
+    const setExit = useCallback(() => {
         if (!formChanged) {
             socket.emit('exitChatbox')
             if (wb === "broadcast") {
@@ -34,28 +35,9 @@ export default function InfoContainer(props){
                 socket.emit("resetStreamerTimeout");
             }
         }
-    }
+      }, [formChanged, wb])
 
-    useEffect(() => {
-        socket.connect();
-        inputUsername();
-
-        setForChanged(false);
-        window.addEventListener('change', setChange);
-        window.addEventListener('beforeunload', setExit, false);
-
-        return () => {
-            socket.off('login',{ uid:uid, username:participant });
-            window.removeEventListener('change',setChange)
-            window.removeEventListener('beforeunload',setExit)
-        }
-    }, []);
-
-    function generateUid() {
-        return new Date().getTime() + "" + Math.floor(Math.random() * 9 + 1);
-    }
-
-    function inputUsername() {
+      const inputUsername = useCallback(() => {
         if (window.sessionStorage.getItem("userData") === null) {
             let participant = window.prompt("Please enter your username ");
             let uid = generateUid();
@@ -80,6 +62,25 @@ export default function InfoContainer(props){
             setParticipant(obj.username);
             socket.emit("login", { uid: obj.uid, username: obj.username });
         }
+      }, [])
+
+    useEffect(() => {
+        socket.connect();
+        inputUsername();
+
+        setForChanged(false);
+        window.addEventListener('change', setChange);
+        window.addEventListener('beforeunload', setExit, false);
+
+        return () => {
+            socket.off('login',{ uid:uid, username:participant });
+            window.removeEventListener('change',setChange)
+            window.removeEventListener('beforeunload',setExit)
+        }
+    }, [setExit, inputUsername]);
+
+    function generateUid() {
+        return new Date().getTime() + "" + Math.floor(Math.random() * 9 + 1);
     }
 
     if (wb === "watch") {
