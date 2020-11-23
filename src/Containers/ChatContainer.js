@@ -15,7 +15,6 @@ export default function ChatContainer(props) {
     const [uid, setUid] = useState([])
     const [user, setUser] = useState([])
     const [message, setMessage] = useState([]);
-    const [onlineUsers, setOnlineUsers] = useState({});
     const [onlineCount, setOnlineCount] = useState(0);
     const [userHtml, setUserHtml] = useState([]);
 
@@ -48,6 +47,7 @@ export default function ChatContainer(props) {
                 setMsgBubble(msgBubble=>[...msgBubble,newMsg]);
                 setCountNewMessages(countNewMessages+1);
             }
+            return null;
         });
     },[message])
 
@@ -143,7 +143,6 @@ export default function ChatContainer(props) {
                          msgId:generateMsgId()}
         
         setOnlineCount(o.onlineCount);
-        setOnlineUsers(o.onlineUsers);
         setMessage(message=>[...message,newMsg]);
 
         const users = JSON.parse(JSON.stringify(o.onlineUsers)); 

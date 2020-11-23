@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
 import { Route, Switch, Redirect, HashRouter, Link } from 'react-router-dom'
 import LandingContainer from './Containers/LandingContainer';
