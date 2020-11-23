@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, useContext, createContext } from 'react';
+import React, {useState, useEffect, useRef, useContext, createContext, useCallback } from 'react';
 
 import { socket } from "../Services/socket";
 
@@ -26,8 +26,59 @@ export default function ChatContainer(props) {
     const textbox = useRef();
     const chatFrame = useRef();
     const userFrame = useRef();
-    var isChatOpen = false;
-    var isUsersOpen = false;
+
+
+    const updateSysMsg = useCallback((o,action) => {
+        const newMsg = { type:'system', 
+        username:o.user.username, 
+        uid:o.user.uid, 
+        action:action,
+        msgId:generateMsgId()}
+
+        setOnlineCount(o.onlineCount);
+        setMessage(message=>[...message,newMsg]);
+
+        const users = JSON.parse(JSON.stringify(o.onlineUsers)); 
+
+        let html = [];
+        for (let key in users){
+        html.push(users[key])
+        }
+        setUserHtml(html)
+
+        if (action === 'Join the chat'){
+        var getUser = window.sessionStorage.getItem('userData');
+        // user data sessionStorage
+        var objUsername = JSON.parse(getUser)
+        var obj = { uid: o.user.uid, username : objUsername.username };
+        var str = JSON.stringify(obj);
+        window.sessionStorage.setItem("userData", str);
+        }
+    }, [])
+
+
+    const updateMsg = useCallback((userData) => {
+        let newMsg = { type:'chat', 
+        username:userData.username, 
+        uid:userData.uid, 
+        action:userData.message,
+        msgId:generateMsgId()}
+
+        setMessage(message=>[...message,newMsg]);
+      }, [])
+
+    const ready = useCallback(() => {
+        const socketReady = socket;
+        socketReady.on('login', (o) => {
+            updateSysMsg(o,'Join the chat')
+        })
+        socketReady.on('exitChatbox', (o) => {
+            updateSysMsg(o,'Leave the chat')
+        })
+        socketReady.on('message', (userData) => {
+            updateMsg(userData)
+        })
+      }, [updateSysMsg, updateMsg])
 
     useEffect(() => {
         setUser(data.participant)
@@ -49,9 +100,11 @@ export default function ChatContainer(props) {
             }
             return null;
         });
-    },[message])
+    },[message, countNewMessages, data.participant, data.uid, msgBubble])
 
     useEffect(()=>{
+        var isChatOpen = false;
+        var isUsersOpen = false;
         document.getElementsByClassName('chatConatiner')[0].addEventListener("click", ()=>{
             document.getElementsByClassName('chatConatiner')[0].setAttribute(
                 'style','height: 400px; width: 300px; border-radius: 1px');
@@ -117,7 +170,7 @@ export default function ChatContainer(props) {
             isUsersOpen = false;
         });
         ready();
-    },[])
+    },[ready])
 
     useEffect(()=>{
         const timer = setInterval(()=>{
@@ -134,58 +187,6 @@ export default function ChatContainer(props) {
         return new Date().getTime() + "" + Math.floor(Math.random()*899+100)
     }
 
-
-    function updateSysMsg(o,action){
-        const newMsg = { type:'system', 
-                         username:o.user.username, 
-                         uid:o.user.uid, 
-                         action:action,
-                         msgId:generateMsgId()}
-        
-        setOnlineCount(o.onlineCount);
-        setMessage(message=>[...message,newMsg]);
-
-        const users = JSON.parse(JSON.stringify(o.onlineUsers)); 
-
-        let html = [];
-        for (let key in users){
-            html.push(users[key])
-        }
-        setUserHtml(html)
-
-        if (action === 'Join the chat'){
-            var getUser = window.sessionStorage.getItem('userData');
-            // user data sessionStorage
-            var objUsername = JSON.parse(getUser)
-            var obj = { uid: o.user.uid, username : objUsername.username };
-            var str = JSON.stringify(obj);
-            window.sessionStorage.setItem("userData", str);
-        }
-    }
-
-    function updateMsg(userData){                 
-        let newMsg = { type:'chat', 
-                         username:userData.username, 
-                         uid:userData.uid, 
-                         action:userData.message,
-                         msgId:generateMsgId()}
-
-        setMessage(message=>[...message,newMsg]);
-    }
-
-    function ready() {
-        const socketReady = socket;
-        socketReady.on('login', (o) => {
-            updateSysMsg(o,'Join the chat')
-        })
-        socketReady.on('exitChatbox', (o) => {
-            updateSysMsg(o,'Leave the chat')
-        })
-        socketReady.on('message', (userData) => {
-            updateMsg(userData)
-        })
-
-    }
 
     function sendMsg(event){
             if(event.key === 'Enter'){

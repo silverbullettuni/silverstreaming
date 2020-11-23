@@ -34,6 +34,7 @@ export default function InfoContainer(props){
         }
       }, [formChanged, wb])
 
+
       const inputUsername = useCallback(() => {
         if (window.sessionStorage.getItem("userData") === null) {
             let participant = window.prompt("Please enter your username ");
