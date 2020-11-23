@@ -3,19 +3,16 @@ import React from 'react'
 class MuteMicButton extends React.Component {
     handleClick = () => {
 
-      var video=document.getElementById("viewerVideo"); 
-      if(video != null){
-        var video=document.getElementById("mainVideoPlayer"); 
-      }
+      let audioStream = window.stream;
+      const audioTracks = audioStream.getTracks();
 
-
-      if(video != null){
-        if(video.muted){
-          video.muted=false;
-          document.getElementById("toggleMicButton").innerHTML = "Mute microphone";
-        }else{
-          video.muted=true;
+      if(audioTracks != null){
+        if(audioTracks[0].enabled){
+          audioTracks[0].enabled = false;
           document.getElementById("toggleMicButton").innerHTML = "Unmute microphone";
+        }else{
+          audioTracks[0].enabled = true;
+          document.getElementById("toggleMicButton").innerHTML = "Mute microphone";
         }
       } 
 

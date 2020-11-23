@@ -1,19 +1,17 @@
-import React, { useState, useEffect, createContext, useRef } from "react";
-import { useParams } from "react-router-dom";
-import socketIOClient from "socket.io-client";
-
+import React, { useState, useEffect, createContext, useRef } from 'react';
+import {useParams} from "react-router-dom";
+import { socket } from "../Services/socket";
 import BroadcastContainer from "./BroadcastContainer";
 import ViewContainer from "./ViewContainer";
 
 export const DataContext = createContext();
+ 
+export default function InfoContainer(props){
+    
+    const [uid, setUid] = useState('');
+    const [participant, setParticipant] = useState('');
 
-export default function InfoContainer(props) {
-    const ENDPOINT = window.location.hostname + ":4000";
-    const [uid, setUid] = useState("");
-    const socket = socketIOClient(ENDPOINT);
-    const [participant, setParticipant] = useState("");
-
-    const [isExit, setIsExit] = useState(false);
+    const [formChanged, setForChanged] = useState(false);
 
     const { wb } = useParams();
 
@@ -23,19 +21,35 @@ export default function InfoContainer(props) {
         uid: uid,
     };
 
-    useEffect(() => {
-        inputUsername();
-        window.onbeforeunload = function () {
-            setIsExit(true);
-            socket.emit("exitChatbox");
+    function setChange() {
+        setForChanged(true)
+    }
+    function setExit() {
+        if (!formChanged) {
+            socket.emit('exitChatbox')
             if (wb == "broadcast") {
                 socket.emit("streamerTimeout");
             }
-        };
-        if (wb == "broadcast") {
-            socket.emit("resetStreamerTimeout");
+            if (wb == "broadcast") {
+                socket.emit("resetStreamerTimeout");
+            }
         }
-    }, [isExit]);
+    }
+
+    useEffect(() => {
+        socket.connect();
+        inputUsername();
+
+        setForChanged(false);
+        window.addEventListener('change', setChange);
+        window.addEventListener('beforeunload', setExit, false);
+
+        return () => {
+            socket.off('login',{ uid:uid, username:participant });
+            window.removeEventListener('change',setChange)
+            window.removeEventListener('beforeunload',setExit)
+        }
+    }, []);
 
     function generateUid() {
         return new Date().getTime() + "" + Math.floor(Math.random() * 9 + 1);
@@ -51,10 +65,10 @@ export default function InfoContainer(props) {
             setParticipant(participant);
             setUid(uid);
 
-            var obj = { uid: uid, username: participant };
+            var obj = { username: participant };
             var str = JSON.stringify(obj);
 
-            window.sessionStorage.setItem("userData", str);
+            window.sessionStorage.setItem("userData", str); 
 
             if (participant != "") {
                 socket.emit("login", { uid: uid, username: participant });
@@ -64,9 +78,7 @@ export default function InfoContainer(props) {
             var obj = JSON.parse(getUser);
             setUid(obj.uid);
             setParticipant(obj.username);
-            if (participant != "") {
-                socket.emit("login", { uid: uid, username: participant });
-            }
+            socket.emit("login", { uid: obj.uid, username: obj.username });
         }
     }
 

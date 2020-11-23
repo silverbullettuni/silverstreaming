@@ -22,14 +22,14 @@ app.use(express.static(__dirname + "/public"));
 io.sockets.on("error", (e) => console.log(e));
 
 io.sockets.on("connection", (socket) => {
+
   socket.on("broadcaster", () => {
-    console.log("broadcaster " + socket.id);
+    console.log("broadcaster", socket.id);
     broadcaster = socket.id;
     socket.broadcast.emit("broadcaster");
   });
 
   socket.on("watcher", () => {
-    console.log("watcher " + socket.id);
     socket.to(broadcaster).emit("watcher", socket.id);
   });
 
@@ -46,7 +46,14 @@ io.sockets.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
+    console.log("Disconnection: ", socket.id);
     socket.to(broadcaster).emit("disconnectPeer", socket.id);
+  });
+
+  socket.on("streamerDisconnect", () => {
+    console.log("Streamer ended session: ", socket.id);
+    socket.to(broadcaster).emit("disconnectPeer", socket.id);
+    io.emit("streamerTimeouted");
   });
 
   socket.on("streamerTimeout", () => {
@@ -66,7 +73,8 @@ io.sockets.on("connection", (socket) => {
   });
 
   socket.on("login", (userData) => {
-    socket.id = userData.uid;
+    
+    userData.uid = socket.id;
 
     if (!(userData.uid in onlineUsers)) {
       onlineUsers[userData.uid] = userData.username;
@@ -92,7 +100,7 @@ io.sockets.on("connection", (socket) => {
         onlineCount: onlineCount,
         user: userData,
       });
-      console.log(userData.username + " exits the room. ");
+      console.log(userData.username + " has been exited. ");
     }
   });
 

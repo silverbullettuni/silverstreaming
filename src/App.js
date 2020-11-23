@@ -3,6 +3,7 @@ import './App.css';
 import { Route, Switch, Redirect, HashRouter, Link } from 'react-router-dom'
 import LandingContainer from './Containers/LandingContainer';
 import InfoContainer from './Containers/InfoContainer';
+import Navbar from './Components/Nav/Navbar'
 
 function App() {
 
@@ -19,7 +20,7 @@ function App() {
         <Link to='/' className="AppHeader">
           Silverstreaming Demo
         </Link>
-      
+        <Navbar />
         <Switch>
           <Route path="/home" component={LandingContainer} />
           <Route path="/info/:wb/:id" component={InfoContainer} /> 
