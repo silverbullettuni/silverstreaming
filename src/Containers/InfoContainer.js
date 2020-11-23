@@ -76,7 +76,7 @@ export default function InfoContainer(props){
             window.removeEventListener('change',setChange)
             window.removeEventListener('beforeunload',setExit)
         }
-    }, [setExit, inputUsername, uid, participant]);
+    }, [setExit, inputUsername, uid, participant, wb]);
 
     function generateUid() {
         return new Date().getTime() + "" + Math.floor(Math.random() * 9 + 1);

@@ -47,7 +47,8 @@ export default function BroadcastContainer(props) {
 
     useEffect(() => {
       setupListeners();
-      refreshStream(); 
+      refreshStream();
+      console.log(peers)
 
       return () => {
         if (window.stream) {
@@ -61,7 +62,7 @@ export default function BroadcastContainer(props) {
         socket.off("disconnectPeer", peerDisconnected);
         window.removeEventListener('refreshStream', refreshStream);
       }
-    }, [])
+    }, [peers])
 
     function setupListeners(){
       window.addEventListener('refreshStream', refreshStream);
