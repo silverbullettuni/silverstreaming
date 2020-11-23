@@ -30,7 +30,7 @@ const AVSelect = () => {
           handleError(error);
       }
   
-    }, [])
+    })
 
     function getStream() {
       if (window.stream) {

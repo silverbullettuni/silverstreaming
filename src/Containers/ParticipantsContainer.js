@@ -30,7 +30,7 @@ export default function ParticipantsContainer(props) {
                 participantRefs.current.delete(ref);
             }
         }
-    }, [participantRefs.current.size]);
+    }, [participantRefs.current.size, props.peerStreams]);
 
     function toggleMuteAll(newState){
         for(let ref of participantRefs.current.values()){

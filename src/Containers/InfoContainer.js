@@ -75,7 +75,7 @@ export default function InfoContainer(props){
             }
         } else {
             let getUser = window.sessionStorage.getItem("userData");
-            var obj = JSON.parse(getUser);
+            obj = JSON.parse(getUser);
             setUid(obj.uid);
             setParticipant(obj.username);
             socket.emit("login", { uid: obj.uid, username: obj.username });

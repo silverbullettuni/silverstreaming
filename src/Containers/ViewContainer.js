@@ -47,17 +47,18 @@ export default function ViewContainer(props) {
         socket.off("streamerTimeouted", streamerTimeout);
         window.removeEventListener('refreshStream', refreshStream);
       }
+      function setupListeners(){ 
+        window.addEventListener('refreshStream', refreshStream);
+        socket.on("offer", offer);            
+        socket.on("candidate", candidate);      
+        socket.on("broadcaster", broadcaster);     
+        socket.on("disconnectPeer", hostDisconnect);
+        socket.on("streamerTimeouted", streamerTimeout);
+        socket.emit("watcher");
+      }
     }, [])
 
-    function setupListeners(){ 
-      window.addEventListener('refreshStream', refreshStream);
-      socket.on("offer", offer);            
-      socket.on("candidate", candidate);      
-      socket.on("broadcaster", broadcaster);     
-      socket.on("disconnectPeer", hostDisconnect);
-      socket.on("streamerTimeouted", streamerTimeout);
-      socket.emit("watcher");
-    }
+
 
     function hostDisconnect() { 
       hostRef.current.close();    
