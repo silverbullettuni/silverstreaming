@@ -53,13 +53,6 @@ export default function ParticipantsContainer(props) {
             <div className="muteButtons">
                 <button id="muteAllButton" onClick={() => toggleMuteAll(true)}>Mute all</button>
                 <button id="unMuteAllButton" onClick={() => toggleMuteAll(false)}>Unmute all</button>
-            </div>
-            <div className="leaveButton">
-                <MuteMicButton />
-                <CameraOffButton />
-                <CameraOnButton />
-                <InviteLinkButton />
-                <LeaveSessionButton isBroadcaster={props.isBroadcaster} />
             </div>           
             <div className="thumbnails">
                 {

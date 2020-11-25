@@ -12,8 +12,8 @@ class LeaveSessionButton extends React.Component {
   
   render() {
     return (
-          <Link to="/home">
-            <button id="leaveSessionButton" onClick={this.handleClick}>Leave session</button>
+          <Link id="leaveSessionButton" onClick={this.handleClick} to="/home">
+            Leave session
           </Link> 
     );
   }

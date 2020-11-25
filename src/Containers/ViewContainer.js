@@ -214,11 +214,7 @@ export default function ViewContainer(props) {
                   ref={selfVideoElement}
               />
             </div>
-            
-            <div className="leaveButton">
-                <MuteMicButton />
-                <LeaveSessionButton />
-            </div>     
+               
             
             <ChatContainer/>
         </div>
