@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
+import { useParams, useHistory  } from "react-router-dom";
 
 import ParticipantsContainer from './ParticipantsContainer';
 import { socket } from "../Services/socket";
@@ -22,6 +23,8 @@ export const broadcasterContext = createContext();
 
 export default function BroadcastContainer(props) {
 
+    let { sessionTokenId } = useParams();
+    let history = useHistory();
     const videoElement = useRef();
     const selfVideoElement = useRef(null);
 
@@ -55,6 +58,7 @@ export default function BroadcastContainer(props) {
             track.stop();
           });
         }
+        socket.off("broadcasterExists", broadcasterExists);
         socket.off("watcher", watcher);       
         socket.off("answer", answer);
         socket.off("candidate", candidate);
@@ -65,11 +69,21 @@ export default function BroadcastContainer(props) {
 
     function setupListeners(){
       window.addEventListener('refreshStream', refreshStream);
+      socket.on("broadcasterExists", broadcasterExists);
       socket.on("watcher", watcher);       
       socket.on("answer", answer);
       socket.on("candidate", candidate);
       socket.on("disconnectPeer", peerDisconnected);
-      socket.emit("broadcaster");
+      socket.emit("broadcaster", sessionTokenId);
+    }
+
+    function exit(){
+      history.push('/');
+    }
+
+    function broadcasterExists(){
+      window.alert("Another broadcaster already in session");
+      exit();
     }
 
     function watcher(id) {
