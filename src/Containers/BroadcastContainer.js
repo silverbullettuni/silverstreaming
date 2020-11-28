@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
+import { useParams, useHistory  } from "react-router-dom";
 
 import ParticipantsContainer from './ParticipantsContainer';
 import { socket } from "../Services/socket";
@@ -22,15 +23,14 @@ export const broadcasterContext = createContext();
 
 export default function BroadcastContainer(props) {
 
-    const audioSelect = useRef();
-    const videoSelect = useRef();
+    let { sessionTokenId } = useParams();
+    let history = useHistory();
     const videoElement = useRef();
     const selfVideoElement = useRef(null);
 
-    // const data = useContext(DataContext);
-
     const [peers, setPeers] = useState(new Map());
     const [peerStreams, setPeerStreams] = useState(new Map());
+    const [selfStream, setSelfStream] = useState(null);
     const [selectedParticipant, setSelectedParticipant] = useState(undefined);
 
     function selectParticipant(participant){
@@ -49,10 +49,8 @@ export default function BroadcastContainer(props) {
     }
 
     useEffect(() => {
-      getStream()
-        .then(getDevices)
-        .then(gotDevices)
-        .then(setupListeners)
+      setupListeners();
+      refreshStream(); 
 
       return () => {
         if (window.stream) {
@@ -60,25 +58,36 @@ export default function BroadcastContainer(props) {
             track.stop();
           });
         }
+        socket.off("broadcasterExists", broadcasterExists);
         socket.off("watcher", watcher);       
         socket.off("answer", answer);
         socket.off("candidate", candidate);
         socket.off("disconnectPeer", peerDisconnected);
+        window.removeEventListener('refreshStream', refreshStream);
       }
     }, [])
 
     function setupListeners(){
+      window.addEventListener('refreshStream', refreshStream);
+      socket.on("broadcasterExists", broadcasterExists);
       socket.on("watcher", watcher);       
       socket.on("answer", answer);
       socket.on("candidate", candidate);
       socket.on("disconnectPeer", peerDisconnected);
-      socket.emit("broadcaster");
+      socket.emit("broadcaster", sessionTokenId);
+    }
+
+    function exit(){
+      history.push('/');
+    }
+
+    function broadcasterExists(){
+      window.alert("Another broadcaster already in session");
+      exit();
     }
 
     function watcher(id) {
       const peerConnection = new RTCPeerConnection(config);    
-      console.log("new watcher", id);  
-
 
       let stream = window.stream;
       stream.getTracks().forEach(track => {
@@ -129,7 +138,7 @@ export default function BroadcastContainer(props) {
     }
 
     function peerDisconnected(id) {   
-      console.log("Disconnected", id);
+
       setPeers(prev => {
         const newPeers = new Map(prev);
         let peer = newPeers.get(id);
@@ -142,102 +151,51 @@ export default function BroadcastContainer(props) {
       setPeerStreams(prev => {
         const newPeerStreams = new Map(prev);
         newPeerStreams.delete(id);
-        console.log(newPeerStreams);
+
         return newPeerStreams;
       });
     }
 
     function refreshStream(){
-      let stream = window.stream;       
-      if(stream)
-      {
-        stream.getTracks().forEach(track => {
-          setPeers(prev => {
-            const newPeers = new Map(prev);
-            newPeers.forEach(peer => {
-              let sender = peer.getSenders().find(s =>{
-                if(!s.track)
-                {
-                  return false;
-                }
-                return s.track.kind == track.kind;
-              })
-              if(sender)
+      let stream = window.stream;    
+      if(!stream){
+        return;
+      }   
+      setSelfStream(stream);
+      stream.getTracks().forEach(track => {
+        setPeers(prev => {
+          const newPeers = new Map(prev);
+          newPeers.forEach(peer => {
+            let sender = peer.getSenders().find(s =>{
+              if(!s.track)
               {
-                sender.replaceTrack(track);
+                return false;
               }
-              else {
-                peer.addTrack(track, stream);
-              }
-              
+              return s.track.kind == track.kind;
             })
-
-            return newPeers;
+            if(sender)
+            {
+              sender.replaceTrack(track);
+            }
+            else {
+              peer.addTrack(track, stream);
+            }
+            
           })
 
-        });       
-      }
+          return newPeers;
+        })
+
+      });       
+      
     }
 
-    function getDevices() {
-      return navigator.mediaDevices.enumerateDevices();
-    }
-      
-    function gotDevices(deviceInfos) {
-      window.deviceInfos = deviceInfos;
-      for (const deviceInfo of deviceInfos) {
-        const option = document.createElement("option");
-        option.value = deviceInfo.deviceId;
-        if (deviceInfo.kind === "audioinput") {
-          option.text = deviceInfo.label || `Microphone ${audioSelect.current.length + 1}`;
-          audioSelect.current.appendChild(option);
-        } else if (deviceInfo.kind === "videoinput") {
-          option.text = deviceInfo.label || `Camera ${videoSelect.current.length + 1}`;
-          videoSelect.current.appendChild(option);
-        }
-      }
-    }
-    
-    function getStream() {
-      if (window.stream) {
-        window.stream.getTracks().forEach(track => {
-          track.stop();
-        });
-      }
-      const audioSource = audioSelect.current.value;
-      const videoSource = videoSelect.current.value;
-      const constraints = {
-        audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
-        video: { deviceId: videoSource ? { exact: videoSource } : undefined }
-      };
-      return navigator.mediaDevices
-        .getUserMedia(constraints)
-        .then(gotStream)
-        .catch(handleError);
-    }
-    
-    function gotStream(stream) {
-      window.stream = stream;
-      audioSelect.current.selectedIndex = [...audioSelect.current.options].findIndex(
-        option => option.text === stream.getAudioTracks()[0].label
-      );
-      videoSelect.current.selectedIndex = [...videoSelect.current.options].findIndex(
-        option => option.text === stream.getVideoTracks()[0].label
-      );
-      selfVideoElement.current.srcObject = stream;
-      refreshStream();
-      
-    }
-    
-    function handleError(error) {
-      console.error("Error: ", error);
-    }
+    useEffect(() => {
+      if (selfVideoElement.current && selfStream) selfVideoElement.current.srcObject = selfStream;
+    });
 
     return (
         <div className="container">
-            <select ref={audioSelect} onChange={getStream}/>
-            <select ref={videoSelect} onChange={getStream}/>  
-            
             <span id='currentParticipantId' >{selectedParticipant?.id}</span>
             <div className="mainVideoContainer">
               <video 

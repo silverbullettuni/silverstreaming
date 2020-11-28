@@ -1,14 +1,18 @@
 const express = require("express");
 const app = express();
 
+const TIMEOUT = 600000; // 10 minutes 600000
+const PORT = 4000;
+const HTTPSPORT = 8443;
+const MAXPARTICIPANTS = 20;
+const MAXROOMS = 5;
+const BROADCASTER = "broadcaster";
+
 let broadcaster;
 let onlineUsers = {};
 let onlineCount = 0;
 let timeout;
-const seconds = 600000; // 10 minutes 600000
-
-const port = 4000;
-const httpsPort = 8443;
+let rooms = new Map();
 
 const http = require("http");
 var https = require("https");
@@ -26,36 +30,103 @@ io.sockets.on("error", (e) => console.log(e));
 
 io.sockets.on("connection", (socket) => {
 
-  socket.on("broadcaster", () => {
+  socket.on(BROADCASTER, (tokenId) => {
     console.log("broadcaster", socket.id);
-    broadcaster = socket.id;
-    socket.broadcast.emit("broadcaster");
+    let room = rooms.get(tokenId);
+    if(room){
+      if(room.has(BROADCASTER)){
+          io.to(socket.id).emit("broadcasterExists");
+          return;
+      }
+      room.set(BROADCASTER, socket.id);
+    }
+    else{
+      let room = new Map();
+      room.set(BROADCASTER, socket.id);
+      rooms.set(tokenId, room);
+    }
+    socket.roomId = tokenId;
+    socket.join(tokenId);
+    console.log(rooms);
+    socket.to(tokenId).emit(BROADCASTER);
+    socket.isBroadcaster = true;
+    //broadcaster = socket.id;
+    //socket.broadcast.emit("broadcaster");
   });
 
-  socket.on("watcher", () => {
-    socket.to(broadcaster).emit("watcher", socket.id);
+  socket.on("watcher", (tokenId) => {
+    
+    let room = rooms.get(tokenId);
+
+    // If room exists
+    if(room){
+      let bc = room.get(BROADCASTER);
+      // If watcher not yet in the room
+      if(!room.has(tokenId)){
+        // If room is full
+        if(room.size >= MAXPARTICIPANTS){
+          io.to(socket.id).emit("roomAlreadyFull");
+          return;
+        }
+     
+        room.set(socket.id, "watcher");        
+      } 
+      if(bc){
+        io.to(bc).emit("watcher", socket.id);
+      }    
+           
+    }
+    else {
+      let room = new Map();
+      room.set(socket.id, "watcher");
+      rooms.set(tokenId, room);
+    }
+    socket.roomId = tokenId;
+    socket.join(tokenId);
+    console.log(rooms);
   });
 
   socket.on("offer", (id, message) => {
-    socket.to(id).emit("offer", socket.id, message);
+    io.to(id).emit("offer", socket.id, message);
   });
 
   socket.on("answer", (id, message) => {
-    socket.to(id).emit("answer", socket.id, message);
+    io.to(id).emit("answer", socket.id, message);
   });
 
   socket.on("candidate", (id, message) => {
-    socket.to(id).emit("candidate", socket.id, message);
+    io.to(id).emit("candidate", socket.id, message);
   });
 
   socket.on("disconnect", () => {
     console.log("Disconnection: ", socket.id);
-    socket.to(broadcaster).emit("disconnectPeer", socket.id);
+    if(!socket.roomId){
+      return;
+    }
+    let room = rooms.get(socket.roomId);
+    if(socket.isBroadcaster){
+      io.emit("streamerTimeouted");
+      room.delete(BROADCASTER)
+    }
+    else {
+      let bc = room.get(BROADCASTER);
+      if(bc){
+        io.to(bc).emit("disconnectPeer", socket.id);
+      }
+      room.delete(socket.id);
+    }
+    
+    socket.leave(socket.roomId);  
+    if(room.size == 0){
+      rooms.delete(socket.roomId);
+    }
+    socket.roomId = undefined;
+    
+    console.log(rooms)
   });
 
   socket.on("streamerDisconnect", () => {
     console.log("Streamer ended session: ", socket.id);
-    socket.to(broadcaster).emit("disconnectPeer", socket.id);
     io.emit("streamerTimeouted");
   });
 
@@ -65,9 +136,14 @@ io.sockets.on("connection", (socket) => {
     );
     timeout = setTimeout(() => {
       console.log("Timing out: disconnecting peer connection");
-      socket.to(broadcaster).emit("disconnectPeer", socket.id);
+      let room = rooms.get(socket.roomId);
+      let bc = room.get("broadcaster");
+      socket.to(bc).emit("disconnectPeer", socket.id);
+      socket.leave(socket.roomId);
+      room.delete(socket.id);
+      socket.roomId = undefined;
       io.emit("streamerTimeouted");
-    }, seconds);
+    }, TIMEOUT);
   });
 
   socket.on("resetStreamerTimeout", () => {
@@ -112,5 +188,5 @@ io.sockets.on("connection", (socket) => {
     console.log(chatData.username + ":" + chatData.message);
   });
 });
-server.listen(port, () => console.log(`Server is running on port ${port}`));
+server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 //httpsServer.listen(httpsPort, () => console.log(`Server is running on port ${httpsPort}`));
