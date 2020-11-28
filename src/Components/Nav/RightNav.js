@@ -1,6 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
+
+import MuteMicButton from '../../Components/MuteMicButton';
+import CameraOffButton from '../../Components/CameraOffButton';
+import CameraOnButton from '../../Components/CameraOnButton';
+import LeaveSessionButton from '../../Components/LeaveSessionButton';
+import InviteLinkButton from '../../Components/InviteLinkButton';
+
+
+
 import AVSelect from './AVSelect';
+
 
 const Ul = styled.ul`
   list-style: none;
@@ -63,11 +73,11 @@ const RightNav = ({ open }) => {
                     <Button>3 x 3</Button>
                     <Button>4 x 4</Button>
             </div>
-            <Button>Mute Microphone</Button>
-            <Button>Mute/Unmute Sound</Button>
-            <Button>Camera On/off</Button>
-            <Button>Copy Session Link</Button>
-            <Button>Leave Session</Button>
+            <MuteMicButton />
+            <CameraOnButton />
+            <CameraOffButton />
+            <InviteLinkButton />
+            <LeaveSessionButton />
         </Ul>
     )
 }
