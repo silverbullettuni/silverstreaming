@@ -26,6 +26,7 @@ export default function BroadcastContainer(props) {
     const selfVideoElement = useRef(null);
 
     const [peers, setPeers] = useState(new Map());
+    console.log(peers)
     const [peerStreams, setPeerStreams] = useState(new Map());
     const [selfStream, setSelfStream] = useState(null);
     const [selectedParticipant, setSelectedParticipant] = useState(undefined);
