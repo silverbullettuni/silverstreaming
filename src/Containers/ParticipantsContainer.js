@@ -1,11 +1,5 @@
 import React, {createRef, useRef, useEffect} from 'react'
-import StreamThumbnail from '../Components/StreamThumbail';
-import LeaveSessionButton from '../Components/LeaveSessionButton';
-import InviteLinkButton from '../Components/InviteLinkButton';
-import CameraOffButton from '../Components/CameraOffButton';
-import CameraOnButton from '../Components/CameraOnButton';
-import MuteMicButton from '../Components/MuteMicButton';
-  
+import StreamThumbnail from '../Components/StreamThumbail'; 
 
 
 export default function ParticipantsContainer(props) {
