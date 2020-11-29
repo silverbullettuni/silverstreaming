@@ -46,7 +46,12 @@ export default function BroadcastContainer(props) {
     }
 
     useEffect(() => {
-      setupListeners();
+      window.addEventListener('refreshStream', refreshStream);
+      socket.on("watcher", watcher);       
+      socket.on("answer", answer);
+      socket.on("candidate", candidate);
+      socket.on("disconnectPeer", peerDisconnected);
+      socket.emit("broadcaster");
       refreshStream();
 
       return () => {
@@ -63,14 +68,6 @@ export default function BroadcastContainer(props) {
       }
     }, [])
 
-    function setupListeners(){
-      window.addEventListener('refreshStream', refreshStream);
-      socket.on("watcher", watcher);       
-      socket.on("answer", answer);
-      socket.on("candidate", candidate);
-      socket.on("disconnectPeer", peerDisconnected);
-      socket.emit("broadcaster");
-    }
 
     function watcher(id) {
       const peerConnection = new RTCPeerConnection(config);    
