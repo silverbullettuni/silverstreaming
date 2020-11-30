@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const {OAuth2Client} = require('google-auth-library');
-const CLIENT_ID="0ZP6aXzaP__H9wcCu4YPgWJs";
+const CLIENT_ID="307901483170-m56a98qcu5hjrtknsttovn1niepmdfn2.apps.googleusercontent.com"; // add your own ID here
 const client = new OAuth2Client(CLIENT_ID);
 
 const TIMEOUT = 600000; // 10 minutes 600000

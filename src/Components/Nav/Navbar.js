@@ -24,7 +24,7 @@ const Navbar = () => {
 
   const responseGoogleSuccess = (response) => {
     setSignedIn(true)
-    localStorage.setItem('loginToken', response.token);
+    localStorage.setItem('loginToken', response.tokenId);
     console.log(response);
   }
   
