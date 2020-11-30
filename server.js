@@ -1,5 +1,11 @@
 const express = require("express");
 const app = express();
+const {OAuth2Client} = require('google-auth-library');
+var fs = require("fs");
+
+const CLIENT_ID="307901483170-m56a98qcu5hjrtknsttovn1niepmdfn2.apps.googleusercontent.com"; // add your own ID here
+const client = new OAuth2Client(CLIENT_ID);
+
 
 const TIMEOUT = 600000; // 10 minutes 600000
 const PORT = 4000;
@@ -13,6 +19,7 @@ let onlineUsers = {};
 let onlineCount = 0;
 let timeout;
 let rooms = new Map();
+let signedInUser;
 
 const http = require("http");
 var https = require("https");
@@ -31,11 +38,17 @@ io.sockets.on("error", (e) => console.log(e));
 io.sockets.on("connection", (socket) => {
 
   // Broadcaster connects
-  socket.on(BROADCASTER, (tokenId) => {
+  socket.on(BROADCASTER, (tokenId, loginToken) => {
+
     console.log("broadcaster", socket.id);
 
     // Get defined room if it exists
     let room = rooms.get(tokenId);
+    verify(loginToken).catch((err) => {
+      io.to(socket.id).emit("broadcastingNotAllowed");
+      console.error(err);
+      return;
+    });
     if(room){
       // If the room already has a broadcaster, deny entry
       if(room.has(BROADCASTER)){
@@ -206,5 +219,32 @@ io.sockets.on("connection", (socket) => {
     console.log(chatData.username + ":" + chatData.message);
   });
 });
+
+async function verify(token) {
+  const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: CLIENT_ID, 
+  });
+  const payload = ticket.getPayload();
+  const userid = payload['sub'];
+  console.log("Google user " + userid + " logged in.");
+  try{
+    isUserAllowed(userid)
+  }
+  catch {
+    () => {throw Error}
+  };
+}
+
+function isUserAllowed(userid) {
+  fs.readFile("broadcasters.txt", function(err, buf) {
+    const lines = buf.toString().split(/\r?\n/);
+    if(lines.indexOf(userid) > -1){
+      return;
+    }
+    throw Error;
+  });
+}
+
 server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 //httpsServer.listen(httpsPort, () => console.log(`Server is running on port ${httpsPort}`));

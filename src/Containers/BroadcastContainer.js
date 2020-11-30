@@ -64,6 +64,7 @@ export default function BroadcastContainer(props) {
           });
         }
         socket.off("broadcasterExists", broadcasterExists);
+        socket.off("broadcastingNotAllowed", broadcastingNotAllowed);
         socket.off("watcher", watcher);       
         socket.off("answer", answer);
         socket.off("candidate", candidate);
@@ -78,11 +79,12 @@ export default function BroadcastContainer(props) {
     function setupListeners(){
       window.addEventListener('refreshStream', refreshStream);
       socket.on("broadcasterExists", broadcasterExists);
+      socket.on("broadcastingNotAllowed", broadcastingNotAllowed);
       socket.on("watcher", watcher);       
       socket.on("answer", answer);
       socket.on("candidate", candidate);
       socket.on("disconnectPeer", peerDisconnected);
-      socket.emit("broadcaster", sessionTokenId);
+      socket.emit("broadcaster", sessionTokenId, localStorage.getItem('loginToken'));
     }
 
     /**
@@ -100,10 +102,18 @@ export default function BroadcastContainer(props) {
       exit();
     }
 
+
+    function broadcastingNotAllowed(){
+      window.alert("Broadcasting only allowed to permitted users.");
+      exit();
+    }
+
+
     /**
     * When a new watcher connects
     * @param {string} id new connection socket id
     */
+
     function watcher(id) {
       const peerConnection = new RTCPeerConnection(config);    
 
