@@ -13,19 +13,22 @@ const Nav = styled.nav`
   .logo {
     padding: 15px 0;
   }
-  .g-signin2{
-    
+  .googleLogin{
+    position: fixed;
+    top: 5px;
+    left: 20px;
+    z-index: 20;
   }
 
 `
 
 const Navbar = () => {
-  const [signedIn, setSignedIn] = useState(false);
+
 
   const responseGoogleSuccess = (response) => {
-    setSignedIn(true)
     localStorage.setItem('loginToken', response.tokenId);
     console.log(response);
+    window.location.reload(false);
   }
   
   const responseGoogle = (response) => {
@@ -33,17 +36,19 @@ const Navbar = () => {
   }
 
   function logout(){
-    setSignedIn(false)
     localStorage.removeItem('loginToken');
     console.log("Logged out");
+    window.location.reload(false);
   }
 
   function signInButton(){
-    if(signedIn===true){
+    if(localStorage.getItem('loginToken') !== null){
       return (
         <GoogleLogout
+        clientId="307901483170-m56a98qcu5hjrtknsttovn1niepmdfn2.apps.googleusercontent.com"
         buttonText="Logout"
         onLogoutSuccess={logout}
+        className="googleLogin"
       >
       </GoogleLogout>
       )
@@ -56,6 +61,7 @@ const Navbar = () => {
     onFailure={responseGoogle}
     cookiePolicy={'single_host_origin'}
     prompt={'consent'}
+    className="googleLogin"
     />)
     }
   }
