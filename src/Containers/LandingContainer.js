@@ -2,7 +2,9 @@ import React, { useState,  useRef } from 'react';
 
 import { Link } from 'react-router-dom';
 
-
+/**
+* Container for host/watch selection and session token generation
+*/
 export default function LandingContainer() {
 
     const [tokenId, setTokenId] = useState("");

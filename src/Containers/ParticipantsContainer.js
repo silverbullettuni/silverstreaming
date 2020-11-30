@@ -1,20 +1,11 @@
-import React, {createRef, useRef, useEffect} from 'react'
-import StreamThumbnail from '../Components/StreamThumbail'; 
-
+import React, {useRef, useEffect} from 'react'
 
 export default function ParticipantsContainer(props) {
 
     const participantRefs = useRef(new Map());
 
-    /*useEffect(() => {
-        console.log(props.peerStreams.size)
-        participantRefs.current = participantRefs.current.slice(0, props.peerStreams.size);
-        console.log(participantRefs.current)
-    }, [props.peerStreams.size]);*/
-
+    // Reset participant video players' sources when the participants change
     useEffect(() => {
-        console.log(participantRefs.current);
-
         for(let ref of participantRefs.current.keys()){
             let media = props.peerStreams.get(ref);
             let pref = participantRefs.current.get(ref);
@@ -31,11 +22,6 @@ export default function ParticipantsContainer(props) {
         for(let ref of participantRefs.current.values()){
             ref.muted = newState;
         }
-    }
-
-    function getWatchUrl(){
-        var url = window.location.href;
-        document.getElementById("watchUrl").innerHTML = url;
     }
 
     function selectParticipant(participant){
