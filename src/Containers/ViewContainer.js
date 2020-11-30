@@ -21,7 +21,9 @@ const config = {
     }
   ]
 };
-
+/**
+* ViewContainer contains the view and components for the stream participants/watchers
+*/
 export default function ViewContainer(props) {
 
     let { sessionTokenId } = useParams();
