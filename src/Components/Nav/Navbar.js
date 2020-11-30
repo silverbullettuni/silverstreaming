@@ -17,7 +17,8 @@ const Nav = styled.nav`
     position: fixed;
     top: 5px;
     left: 20px;
-    z-index: 20;
+    z-index: 2;
+    display: none;
   }
 
 `
