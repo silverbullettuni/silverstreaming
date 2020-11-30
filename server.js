@@ -219,9 +219,7 @@ async function verify(token) {
 
 function isUserAllowed(userid) {
   fs.readFile("broadcasters.txt", function(err, buf) {
-    console.log(buf);
     const lines = buf.toString().split(/\r?\n/);
-
     if(lines.indexOf(userid) > -1){
       return;
     }
