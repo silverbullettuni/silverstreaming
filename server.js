@@ -1,8 +1,11 @@
 const express = require("express");
 const app = express();
 const {OAuth2Client} = require('google-auth-library');
+var fs = require("fs");
+
 const CLIENT_ID="307901483170-m56a98qcu5hjrtknsttovn1niepmdfn2.apps.googleusercontent.com"; // add your own ID here
 const client = new OAuth2Client(CLIENT_ID);
+
 
 const TIMEOUT = 600000; // 10 minutes 600000
 const PORT = 4000;
@@ -206,6 +209,24 @@ async function verify(token) {
   const payload = ticket.getPayload();
   const userid = payload['sub'];
   console.log("Google user " + userid + " logged in.");
+  try{
+    isUserAllowed(userid)
+  }
+  catch {
+    () => {throw Error}
+  };
+}
+
+function isUserAllowed(userid) {
+  fs.readFile("broadcasters.txt", function(err, buf) {
+    console.log(buf);
+    const lines = buf.toString().split(/\r?\n/);
+
+    if(lines.indexOf(userid) > -1){
+      return;
+    }
+    throw Error;
+  });
 }
 
 server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
