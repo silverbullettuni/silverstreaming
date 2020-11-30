@@ -20,3 +20,4 @@ class InviteLinkButton extends React.Component {
 }
 
 export default InviteLinkButton;
+

@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useHistory } from "react-router-dom";
 
-import LeaveSessionButton from '../Components/LeaveSessionButton';
-import MuteMicButton from '../Components/MuteMicButton';
-import CameraOffButton from '../Components/CameraOffButton';
-import CameraOnButton from '../Components/CameraOnButton';
-
 import { socket } from "../Services/socket";
 import ChatContainer from "./ChatContainer";
 

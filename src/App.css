@@ -283,3 +283,11 @@
   color: antiquewhite;
   margin: 9px;
 }
+
+.selfVideoPlayer {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  z-index: 3;
+  width: 30%;
+}
