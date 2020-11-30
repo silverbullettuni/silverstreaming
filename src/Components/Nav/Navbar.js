@@ -21,10 +21,10 @@ const Nav = styled.nav`
 
 const Navbar = () => {
   const [signedIn, setSignedIn] = useState(false);
-  //const [name, setName] = useState(true);
 
   const responseGoogleSuccess = (response) => {
     setSignedIn(true)
+    localStorage.setItem('loginToken', response.token);
     console.log(response);
   }
   
@@ -34,6 +34,7 @@ const Navbar = () => {
 
   function logout(){
     setSignedIn(false)
+    localStorage.removeItem('loginToken');
     console.log("Logged out");
   }
 
@@ -49,7 +50,7 @@ const Navbar = () => {
     }
     else {
       return (<GoogleLogin
-    clientId="307901483170-m56a98qcu5hjrtknsttovn1niepmdfn2.apps.googleusercontent.com"
+    clientId="307901483170-m56a98qcu5hjrtknsttovn1niepmdfn2.apps.googleusercontent.com" // Change your own here
     buttonText="Login"
     onSuccess={responseGoogleSuccess}
     onFailure={responseGoogle}

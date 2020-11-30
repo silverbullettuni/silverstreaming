@@ -1,5 +1,8 @@
 const express = require("express");
 const app = express();
+const {OAuth2Client} = require('google-auth-library');
+const CLIENT_ID="0ZP6aXzaP__H9wcCu4YPgWJs";
+const client = new OAuth2Client(CLIENT_ID);
 
 const TIMEOUT = 600000; // 10 minutes 600000
 const PORT = 4000;
@@ -13,6 +16,7 @@ let onlineUsers = {};
 let onlineCount = 0;
 let timeout;
 let rooms = new Map();
+let signedInUser;
 
 const http = require("http");
 var https = require("https");
@@ -30,9 +34,14 @@ io.sockets.on("error", (e) => console.log(e));
 
 io.sockets.on("connection", (socket) => {
 
-  socket.on(BROADCASTER, (tokenId) => {
+  socket.on(BROADCASTER, (tokenId, loginToken) => {
     console.log("broadcaster", socket.id);
     let room = rooms.get(tokenId);
+    verify(loginToken).catch((err) => {
+      io.to(socket.id).emit("broadcastingNotAllowed");
+      console.error(err);
+      return;
+    });
     if(room){
       if(room.has(BROADCASTER)){
           io.to(socket.id).emit("broadcasterExists");
@@ -188,5 +197,16 @@ io.sockets.on("connection", (socket) => {
     console.log(chatData.username + ":" + chatData.message);
   });
 });
+
+async function verify(token) {
+  const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: CLIENT_ID, 
+  });
+  const payload = ticket.getPayload();
+  const userid = payload['sub'];
+  console.log("Google user " + userid + " logged in.");
+}
+
 server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 //httpsServer.listen(httpsPort, () => console.log(`Server is running on port ${httpsPort}`));
