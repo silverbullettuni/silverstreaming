@@ -41,7 +41,6 @@ io.sockets.on("connection", (socket) => {
   socket.on(BROADCASTER, (tokenId, loginToken) => {
 
     console.log("broadcaster", socket.id);
-
     // Get defined room if it exists
     let room = rooms.get(tokenId);
     verify(loginToken).catch((err) => {
@@ -237,6 +236,7 @@ async function verify(token) {
 }
 
 function isUserAllowed(userid) {
+  console.log(userId)
   fs.readFile("broadcasters.txt", function(err, buf) {
     const lines = buf.toString().split(/\r?\n/);
     if(lines.indexOf(userid) > -1){

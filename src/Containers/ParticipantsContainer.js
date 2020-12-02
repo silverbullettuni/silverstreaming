@@ -18,12 +18,20 @@ export default function ParticipantsContainer(props) {
         }
     }, [participantRefs.current.size]);
 
+    /**
+    * Set muted state of all participants
+    * @param {boolean} newState State to set muted to
+    */
     function toggleMuteAll(newState){
         for(let ref of participantRefs.current.values()){
             ref.muted = newState;
         }
     }
 
+    /**
+    * Invoke selection callback
+    * @param {string} participant Participant id
+    */
     function selectParticipant(participant){
         props.selectParticipant(participant);
     }

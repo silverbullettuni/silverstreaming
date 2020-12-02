@@ -26,6 +26,7 @@ const AVSelect = () => {
     const audioSelect = useRef();
     const videoSelect = useRef();
 
+    // Initial setup
     useEffect(() => {
         try {
           getStream()
@@ -105,7 +106,7 @@ const AVSelect = () => {
     }
     
     /**
-    * Handle errors.
+    * Log errors.
     */
     function handleError(error) {
       console.error("Error: ", error);

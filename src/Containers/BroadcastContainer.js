@@ -35,6 +35,10 @@ export default function BroadcastContainer(props) {
     const [selfStream, setSelfStream] = useState(null);
     const [selectedParticipant, setSelectedParticipant] = useState(undefined);
 
+    /**
+    * Select participant for main video view
+    * @param {string} participant participant id
+    */
     function selectParticipant(participant){
       let selected = peerStreams.get(participant)
       if(videoElement.current.srcObject == selfVideoElement.current.srcObject){
@@ -53,6 +57,7 @@ export default function BroadcastContainer(props) {
       setSelectedParticipant(undefined);
     }
 
+    // Initial setup
     useEffect(() => {
       setupListeners();
       refreshStream(); 
@@ -113,7 +118,6 @@ export default function BroadcastContainer(props) {
     * When a new watcher connects
     * @param {string} id new connection socket id
     */
-
     function watcher(id) {
       const peerConnection = new RTCPeerConnection(config);    
 
@@ -150,7 +154,7 @@ export default function BroadcastContainer(props) {
     /**
     * When a watcher answers connection offer
     * @param {string} id connection socket id
-    * @param {string} RTCSessionDescription localDescription of the broadcaster as set by the watcher
+    * @param {RTCSessionDescription} description localDescription of the broadcaster as set by the watcher
     */
     function answer(id, description) {
       setPeers(prev => {          
@@ -164,7 +168,7 @@ export default function BroadcastContainer(props) {
     /**
     * Add socket as an ICE candidate 
     * @param {string} id Connection socket id
-    * @param {string} RTCIceCandidate Candidate from the peer connection ICE event
+    * @param {RTCIceCandidate} candidate Candidate from the peer connection ICE event
     */
     function candidate(id, candidate) {
       setPeers(prev => {
@@ -235,6 +239,7 @@ export default function BroadcastContainer(props) {
       
     }
 
+    // Set source for self-video element when media stream is available and set
     useEffect(() => {
       if (selfVideoElement.current && selfStream) selfVideoElement.current.srcObject = selfStream;
     });
