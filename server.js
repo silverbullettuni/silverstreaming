@@ -24,6 +24,7 @@ let signedInUser;
 const http = require("http");
 var https = require("https");
 var fs = require("fs");
+const { exception } = require("console");
 //var privateKey  = fs.readFileSync('sslcert/18.191.139.1738443.key', 'utf8');
 //var certificate = fs.readFileSync('sslcert/18.191.139.1738443.cert', 'utf8');
 //var credentials = {key: privateKey, cert: certificate};
@@ -227,22 +228,22 @@ async function verify(token) {
   const payload = ticket.getPayload();
   const userid = payload['sub'];
   console.log("Google user " + userid + " logged in.");
-  try{
-    isUserAllowed(userid)
+  let isAllowed = await isUserAllowed(userid);
+  if(isAllowed){
+    return;
   }
-  catch {
-    () => {throw Error}
-  };
+  throw 'UserNotAllowedException'
 }
 
 function isUserAllowed(userid) {
-  console.log(userId)
-  fs.readFile("broadcasters.txt", function(err, buf) {
-    const lines = buf.toString().split(/\r?\n/);
-    if(lines.indexOf(userid) > -1){
-      return;
-    }
-    throw Error;
+  return new Promise((resolve, reject) => {
+    fs.readFile("broadcasters.txt", function(err, buf) {
+      const lines = buf.toString().split(/\r?\n/);
+      if(lines.indexOf(userid) > -1){
+        resolve(true);
+      }
+      resolve(false);
+    });
   });
 }
 
