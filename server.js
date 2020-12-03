@@ -182,14 +182,16 @@ io.sockets.on("connection", (socket) => {
     console.log("Streamer timeout reseted.");
   });
 
+  // connect user and list user and online count
   socket.on("login", (userData) => {
-    
+    // assign socket id to user
     userData.uid = socket.id;
-
+    // list all user info and count
     if (!(userData.uid in onlineUsers)) {
       onlineUsers[userData.uid] = userData.username;
       onlineCount++;
     }
+    // user login, list all online user and count
     io.emit("login", {
       onlineUsers: onlineUsers,
       onlineCount: onlineCount,
@@ -197,14 +199,14 @@ io.sockets.on("connection", (socket) => {
     });
     console.log(userData.username + " joins the room. ");
   });
-
+  // disconnect exit user
   socket.on("exitChatbox", () => {
     if (socket.id in onlineUsers) {
       var userData = { uid: socket.id, username: onlineUsers[socket.id] };
 
       delete onlineUsers[socket.id];
       onlineCount--;
-
+      // user logout, list all online user and count
       io.emit("exitChatbox", {
         onlineUsers: onlineUsers,
         onlineCount: onlineCount,
@@ -213,7 +215,7 @@ io.sockets.on("connection", (socket) => {
       console.log(userData.username + " has been exited. ");
     }
   });
-
+  // display all messages 
   socket.on("message", (chatData) => {
     io.emit("message", chatData);
     console.log(chatData.username + ":" + chatData.message);

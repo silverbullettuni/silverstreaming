@@ -6,7 +6,9 @@ import ViewContainer from "./ViewContainer";
 const resetMedia = new CustomEvent('resetMedia');
 
 export const DataContext = createContext();
- 
+/**
+* InfoContainer containes actions and data before view
+*/
 export default function InfoContainer(props){
     
     const [uid, setUid] = useState('');
@@ -22,9 +24,15 @@ export default function InfoContainer(props){
         uid: uid,
     };
 
+    /**
+    * Set boolean of page changed
+    */
     function setChange() {
         setForChanged(true)
     }
+    /**
+    * emit exitChatBox socket
+    */
     function setExit() {
         if (!formChanged) {
             socket.emit('exitChatbox')
@@ -36,6 +44,7 @@ export default function InfoContainer(props){
             }
         }
     }
+    // Initial setup
     useEffect(() => {
         window.dispatchEvent(resetMedia);
         socket.connect();
@@ -45,6 +54,7 @@ export default function InfoContainer(props){
           }
     }, [])
  
+    // Initial setup for login and exit
     useEffect(() => {
         inputUsername();
 
@@ -58,11 +68,15 @@ export default function InfoContainer(props){
             window.removeEventListener('beforeunload',setExit)
         }
     }, []);
-
+    /**
+    * Genrate a fixed UID to user
+    */
     function generateUid() {
         return new Date().getTime() + "" + Math.floor(Math.random() * 9 + 1);
     }
-
+    /**
+    * Input username and emit login socket
+    */
     function inputUsername() {
         if (window.sessionStorage.getItem("userData") === null) {
             let participant = window.prompt("Please enter your username ");

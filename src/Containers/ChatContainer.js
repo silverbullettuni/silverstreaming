@@ -8,7 +8,9 @@ import { faUser, faComments } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const MessageContext = createContext();
-
+/**
+* ChatContainer contains the view and components for the chat and user list
+*/
 export default function ChatContainer(props) {
     const data = useContext(DataContext);
     
@@ -19,7 +21,6 @@ export default function ChatContainer(props) {
     const [onlineCount, setOnlineCount] = useState(0);
     const [userHtml, setUserHtml] = useState([]);
 
-    //const [newMessage, setNewMessage] = useState("");
     const [countNewMessages, setCountNewMessages] = useState(-1);
 
     const [msgBubble, setMsgBubble] = useState([]);
@@ -30,13 +31,13 @@ export default function ChatContainer(props) {
     var isChatOpen = false;
     var isUsersOpen = false;
 
+    // Initial setup
     useEffect(() => {
         setUser(data.participant)
         setUid(data.uid)
         document.getElementById('record-box').scrollTop = document.getElementById('record-box').scrollHeight;
         message.map((m,index)=>{
             if(index == message.length-1){
-                // setNewMessage(m.action);
                 if(msgBubble.length==5){
                     let filteredArray = msgBubble.filter((_, i) => i != 0);
                     setMsgBubble(filteredArray);
@@ -51,6 +52,7 @@ export default function ChatContainer(props) {
         });
     },[message])
 
+    // Initial setup chat box style
     useEffect(()=>{
         document.getElementsByClassName('chatConatiner')[0].addEventListener("click", ()=>{
             document.getElementsByClassName('chatConatiner')[0].setAttribute(
@@ -119,6 +121,7 @@ export default function ChatContainer(props) {
         ready();
     },[])
 
+    // Initial setup chat bubble
     useEffect(()=>{
         const timer = setInterval(()=>{
             if(msgBubble.length > 0){
@@ -129,12 +132,16 @@ export default function ChatContainer(props) {
         return()=> clearInterval(timer);
     },[msgBubble])
 
-
+    /**
+    * Genrate a massage id for each message 
+    */
     function generateMsgId() {
         return new Date().getTime() + "" + Math.floor(Math.random()*899+100)
     }
 
-
+    /**
+    * Update all system massages and user list
+    */
     function updateSysMsg(o,action){
         const newMsg = { type:'system', 
                          username:o.user.username, 
@@ -163,7 +170,9 @@ export default function ChatContainer(props) {
             window.sessionStorage.setItem("userData", str);
         }
     }
-
+    /**
+    * Update each massages in chat box
+    */
     function updateMsg(userData){                 
         let newMsg = { type:'chat', 
                          username:userData.username, 
@@ -173,7 +182,9 @@ export default function ChatContainer(props) {
 
         setMessage(message=>[...message,newMsg]);
     }
-
+    /**
+    * connect socket 
+    */
     function ready() {
         const socketReady = socket;
         socketReady.on('login', (o) => {
@@ -187,18 +198,23 @@ export default function ChatContainer(props) {
         })
 
     }
-
+    /**
+    * Send massage button click
+    */
     function sendMsg(event){
             if(event.key === 'Enter'){
                 event.preventDefault();
                 send();
             }
         }
-
+    /**
+    * Send and emit each message 
+    */
     function send(){
         socket.emit('message', { uid:uid, username:user,message:textbox.current.value})
         textbox.current.value = ''
     }
+    
     return (
         <div className="fullChatBox">
             <div className="fullChatBubble" id="fullChatBubble">
