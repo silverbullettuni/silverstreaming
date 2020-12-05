@@ -14,9 +14,9 @@ const Nav = styled.nav`
     padding: 15px 0;
   }
   .googleLogin{
-    position: fixed;
+    position: absolute;
     top: 5px;
-    left: 20px;
+    right: 70px;
     z-index: 2;
     display: none;
   }
