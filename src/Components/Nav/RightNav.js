@@ -5,10 +5,9 @@ import MuteMicButton from '../../Components/MuteMicButton';
 import CameraToggleButton from '../../Components/CameraToggleButton';
 import LeaveSessionButton from '../../Components/LeaveSessionButton';
 import InviteLinkButton from '../../Components/InviteLinkButton';
-
 import AVSelect from './AVSelect';
 
-
+// Style changes for the nav bar
 const Ul = styled.ul`
   list-style: none;
   display: flex;
@@ -51,13 +50,6 @@ const RightNav = ({ open }) => {
         <Ul open={open}>
             <AVSelect/>
             <p />
-            <div>
-            <p>Participant view</p>
-                    <Button>Single</Button>
-                    <Button>2 x 2</Button>
-                    <Button>3 x 3</Button>
-                    <Button>4 x 4</Button>
-            </div>
             <MuteMicButton />
             <CameraToggleButton />
             <InviteLinkButton />

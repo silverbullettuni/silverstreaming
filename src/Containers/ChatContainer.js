@@ -28,6 +28,8 @@ export default function ChatContainer(props) {
     const textbox = useRef();
     const chatFrame = useRef();
     const userFrame = useRef();
+    // These 2 variables are used to keep the other windows open and closed accordingly
+    // when closing or opening one of these menus
     var isChatOpen = false;
     var isUsersOpen = false;
 

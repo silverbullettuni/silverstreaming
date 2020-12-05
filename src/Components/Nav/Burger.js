@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import RightNav from './RightNav';
 
+// This file is for the creation of the burger menu button and it's style
+
 const StyledBurger = styled.div`
   width: 2rem;
   height: 2rem;

@@ -10,6 +10,7 @@ export default function LandingContainer() {
     const [tokenId, setTokenId] = useState("");
     const tokenInput = useRef();
   
+    // This function generates a generic 12 letter string from this set of characters
     function generateToken(){
         let token = '';
         const chars = "ABCDEFGHJKLMNPQRSTUVXYZabcdefghijklmnopqrstuvwxyz23456789"

@@ -2,7 +2,7 @@ import React from 'react'
 
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 
-
+// Returns the invite link button that is done with the CopyToClipboard react library
 class InviteLinkButton extends React.Component {
     handleClick = () => { 
       var url = window.location.href;
