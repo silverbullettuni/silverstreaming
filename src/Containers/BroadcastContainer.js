@@ -29,7 +29,7 @@ export default function BroadcastContainer(props) {
     let history = useHistory();
     const videoElement = useRef();
     const selfVideoElement = useRef(null);
-
+    //eslint-disable-next-line
     const [peers, setPeers] = useState(new Map());
     const [peerStreams, setPeerStreams] = useState(new Map());
     const [selfStream, setSelfStream] = useState(null);
