@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
+import React, { useState, useEffect, useRef, createContext} from 'react'
 import { useParams, useHistory  } from "react-router-dom";
 
 import ParticipantsContainer from './ParticipantsContainer';

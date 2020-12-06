@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './App.css';
 import { Route, Switch, Redirect, HashRouter, Link } from 'react-router-dom'
 import LandingContainer from './Containers/LandingContainer';
@@ -6,13 +6,6 @@ import InfoContainer from './Containers/InfoContainer';
 import Navbar from './Components/Nav/Navbar'
 
 function App() {
-
-  const [viewerMode, setMode] = useState(true);
-
-  function handleClick(e) {
-    e.preventDefault();
-    setMode(!viewerMode);
-  }
 
   return (
     <div className="App">
