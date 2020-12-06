@@ -76,9 +76,7 @@ export default function BroadcastContainer(props) {
         socket.off("disconnectPeer", peerDisconnected);
         window.removeEventListener('refreshStream', refreshStream);
       }
-    }, [])
-
-    /**
+          /**
     * Set up all socket listeners as well as a listener for the stream refresh event sent by the AV selects
     */
     function setupListeners(){
@@ -91,27 +89,31 @@ export default function BroadcastContainer(props) {
       socket.on("disconnectPeer", peerDisconnected);
       socket.emit("broadcaster", sessionTokenId, localStorage.getItem('loginToken'));
     }
-
-    /**
+       /**
     * Return to landing page
     */
-    function exit(){
-      history.push('/');
-    }
+   function exit(){
+    history.push('/');
+  }
 
-    /**
-    * When a broadcaster is already in the room
-    */
-    function broadcasterExists(){
-      window.alert("Another broadcaster already in session");
-      exit();
-    }
+  /**
+  * When a broadcaster is already in the room
+  */
+  function broadcasterExists(){
+    window.alert("Another broadcaster already in session");
+    exit();
+  }
 
 
-    function broadcastingNotAllowed(){
-      window.alert("Broadcasting only allowed to permitted users.");
-      exit();
-    }
+  function broadcastingNotAllowed(){
+    window.alert("Broadcasting only allowed to permitted users.");
+    exit();
+  }
+    }, [history, sessionTokenId])
+
+
+
+ 
 
 
     /**
