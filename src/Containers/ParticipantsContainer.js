@@ -16,7 +16,7 @@ export default function ParticipantsContainer(props) {
                 participantRefs.current.delete(ref);
             }
         }
-    }, [participantRefs.current.size]);
+    }, [participantRefs.current.size, props.peerStreams]);
 
     /**
     * Set muted state of all participants

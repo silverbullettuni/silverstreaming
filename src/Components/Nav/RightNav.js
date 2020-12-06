@@ -33,17 +33,6 @@ const Ul = styled.ul`
   }
 `;
 
-const Button = styled.button`
-  /* Adapt the colors based on primary prop */
-  background: "white"};
-  color: "teal"};
-
-  font-size: 1em;
-  margin: 0.5em;
-  padding: 0.2em 1em;
-  border: 2px solid teal;
-  border-radius: 3px;
-`;
 
 const RightNav = ({ open }) => {
     return (

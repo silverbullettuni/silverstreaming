@@ -51,7 +51,6 @@ export default function ViewContainer(props) {
         socket.off("roomAlreadyFull", roomAlreadyFull);
         window.removeEventListener('refreshStream', refreshStream);
       }
-    }, [])
 
     /**
     * Set up all socket listeners as well as a listener for the stream refresh event sent by the AV selects
@@ -66,6 +65,39 @@ export default function ViewContainer(props) {
       socket.on("roomAlreadyFull", roomAlreadyFull);
       socket.emit("watcher", sessionTokenId);
     }
+        /**
+    * When broadcaster connects
+    */
+   function broadcaster() {
+    socket.emit("watcher", sessionTokenId);
+  }
+
+  /**
+  * When the room is full.
+  */
+  function roomAlreadyFull(){
+    window.alert("Sorry but this session is full.");
+    exit();
+  }
+
+    /**
+    * When the broadcaster has disconnected (timeout)
+    */
+   function streamerTimeout(){
+    window.alert("The session has ended");
+    exit();
+  }
+
+
+    /**
+    * Return to landing page
+    */
+   function exit(){
+    history.push('/');
+  }
+
+    }, [sessionTokenId, history])
+
 
     /**
     * When the broadcaster disconnects
@@ -74,13 +106,7 @@ export default function ViewContainer(props) {
       hostRef.current.close();    
     }
   
-    /**
-    * When the broadcaster has disconnected (timeout)
-    */
-    function streamerTimeout(){
-      window.alert("The session has ended");
-      exit();
-    }
+  
 
     /**
     * When the broadcaster sends a connection offer 
@@ -128,27 +154,8 @@ export default function ViewContainer(props) {
           .catch(e => console.error(e));
     }
 
-    /**
-    * When broadcaster connects
-    */
-    function broadcaster() {
-      socket.emit("watcher", sessionTokenId);
-    }
 
-    /**
-    * When the room is full.
-    */
-    function roomAlreadyFull(){
-      window.alert("Sorry but this session is full.");
-      exit();
-    }
 
-    /**
-    * Return to landing page
-    */
-    function exit(){
-      history.push('/');
-    }
 
     /**
     * Refresh self-stream and tracks for all connected peers
@@ -166,7 +173,7 @@ export default function ViewContainer(props) {
           {
             return false;
           }
-          return s.track.kind == track.kind;
+          return s.track.kind === track.kind;
         })
         if(sender)
         {
