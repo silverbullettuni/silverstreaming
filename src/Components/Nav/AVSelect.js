@@ -40,7 +40,7 @@ const AVSelect = () => {
       return () => {
         window.removeEventListener('resetMedia', getStream);
       }
-    }, [])
+    })
 
     /**
     * Get user media stream based on current selections of the audio/video selects

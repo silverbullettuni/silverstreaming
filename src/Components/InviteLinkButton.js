@@ -9,7 +9,7 @@ class InviteLinkButton extends React.Component {
       var watchUrl = url.replace('broadcast/','watch/');
       return watchUrl;
   };
-  
+// Button for copying the link  
   render() {
     return (
       <CopyToClipboard text={this.handleClick()}>

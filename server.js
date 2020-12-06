@@ -9,28 +9,18 @@ const client = new OAuth2Client(CLIENT_ID);
 
 const TIMEOUT = 600000; // 10 minutes 600000
 const PORT = 4000;
-const HTTPSPORT = 8443;
 const MAXPARTICIPANTS = 20;
-const MAXROOMS = 5;
 const BROADCASTER = "broadcaster";
 
-let broadcaster;
 let onlineUsers = {};
 let onlineCount = 0;
 let timeout;
 let rooms = new Map();
-let signedInUser;
 
 const http = require("http");
-var https = require("https");
 var fs = require("fs");
-const { exception } = require("console");
-//var privateKey  = fs.readFileSync('sslcert/18.191.139.1738443.key', 'utf8');
-//var certificate = fs.readFileSync('sslcert/18.191.139.1738443.cert', 'utf8');
-//var credentials = {key: privateKey, cert: certificate};
 
 const server = http.createServer(app);
-//var httpsServer = https.createServer(credentials, app);
 const io = require("socket.io")(server);
 app.use(express.static(__dirname + "/public"));
 
@@ -160,6 +150,7 @@ io.sockets.on("connection", (socket) => {
     socket.to(socket.roomId).emit("streamerTimeouted");
   });
 
+  /* Handle streamer unintentionally leaving the the room */
   socket.on("streamerTimeout", () => {
     console.log(
       "Streamer closed the window, waiting for 10 minutes to recover"
@@ -177,6 +168,7 @@ io.sockets.on("connection", (socket) => {
     }, TIMEOUT);
   });
 
+  /* Reset shutdown timer */
   socket.on("resetStreamerTimeout", () => {
     clearTimeout(timeout);
     console.log("Streamer timeout reseted.");
@@ -222,6 +214,7 @@ io.sockets.on("connection", (socket) => {
   });
 });
 
+/* Verifies the Google user is valid and found on the allowed broadcasters list */
 async function verify(token) {
   const ticket = await client.verifyIdToken({
       idToken: token,
@@ -239,6 +232,7 @@ async function verify(token) {
   throw 'UserNotAllowedException'
 }
 
+/* Ensures the logged in Google user is found in the broadcaster list */ 
 function isUserAllowed(email) {
   return new Promise((resolve, reject) => {
     fs.readFile("broadcasters.txt", function(err, buf) {
@@ -252,4 +246,3 @@ function isUserAllowed(email) {
 }
 
 server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
-//httpsServer.listen(httpsPort, () => console.log(`Server is running on port ${httpsPort}`));

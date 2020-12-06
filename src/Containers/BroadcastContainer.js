@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
+import React, { useState, useEffect, useRef, createContext} from 'react'
 import { useParams, useHistory  } from "react-router-dom";
 
 import ParticipantsContainer from './ParticipantsContainer';
@@ -29,7 +29,7 @@ export default function BroadcastContainer(props) {
     let history = useHistory();
     const videoElement = useRef();
     const selfVideoElement = useRef(null);
-
+    //eslint-disable-next-line
     const [peers, setPeers] = useState(new Map());
     const [peerStreams, setPeerStreams] = useState(new Map());
     const [selfStream, setSelfStream] = useState(null);
@@ -41,7 +41,7 @@ export default function BroadcastContainer(props) {
     */
     function selectParticipant(participant){
       let selected = peerStreams.get(participant)
-      if(videoElement.current.srcObject == selfVideoElement.current.srcObject){
+      if(videoElement.current.srcObject === selfVideoElement.current.srcObject){
         videoElement.current.muted = false;
       }
       videoElement.current.srcObject = selected;     
@@ -76,9 +76,7 @@ export default function BroadcastContainer(props) {
         socket.off("disconnectPeer", peerDisconnected);
         window.removeEventListener('refreshStream', refreshStream);
       }
-    }, [])
-
-    /**
+          /**
     * Set up all socket listeners as well as a listener for the stream refresh event sent by the AV selects
     */
     function setupListeners(){
@@ -91,27 +89,31 @@ export default function BroadcastContainer(props) {
       socket.on("disconnectPeer", peerDisconnected);
       socket.emit("broadcaster", sessionTokenId, localStorage.getItem('loginToken'));
     }
-
-    /**
+       /**
     * Return to landing page
     */
-    function exit(){
-      history.push('/');
-    }
+   function exit(){
+    history.push('/');
+  }
 
-    /**
-    * When a broadcaster is already in the room
-    */
-    function broadcasterExists(){
-      window.alert("Another broadcaster already in session");
-      exit();
-    }
+  /**
+  * When a broadcaster is already in the room
+  */
+  function broadcasterExists(){
+    window.alert("Another broadcaster already in session");
+    exit();
+  }
 
 
-    function broadcastingNotAllowed(){
-      window.alert("Broadcasting only allowed to permitted users.");
-      exit();
-    }
+  function broadcastingNotAllowed(){
+    window.alert("Broadcasting only allowed to permitted users.");
+    exit();
+  }
+    }, [history, sessionTokenId])
+
+
+
+ 
 
 
     /**
@@ -220,7 +222,7 @@ export default function BroadcastContainer(props) {
               {
                 return false;
               }
-              return s.track.kind == track.kind;
+              return s.track.kind === track.kind;
             })
             if(sender)
             {

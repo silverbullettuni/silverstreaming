@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Burger from './Burger';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
