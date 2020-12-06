@@ -51,7 +51,7 @@ export default function ChatContainer(props) {
             }
             return null;
         });
-    },[message])
+    },[message]) // eslint-disable-line react-hooks/exhaustive-deps
 
     // Initial setup chat box style
     useEffect(()=>{
@@ -124,7 +124,7 @@ export default function ChatContainer(props) {
             isUsersOpen = false;
         });
         ready();
-    },[])
+    },[]) // eslint-disable-line react-hooks/exhaustive-deps
 
     // Initial setup chat bubble
     useEffect(()=>{
