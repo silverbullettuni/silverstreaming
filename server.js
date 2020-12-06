@@ -228,20 +228,22 @@ async function verify(token) {
       audience: CLIENT_ID, 
   });
   const payload = ticket.getPayload();
+  console.log(payload)
   const userid = payload['sub'];
+  const email = payload['email'];
   console.log("Google user " + userid + " logged in.");
-  let isAllowed = await isUserAllowed(userid);
+  let isAllowed = await isUserAllowed(email);
   if(isAllowed){
     return;
   }
   throw 'UserNotAllowedException'
 }
 
-function isUserAllowed(userid) {
+function isUserAllowed(email) {
   return new Promise((resolve, reject) => {
     fs.readFile("broadcasters.txt", function(err, buf) {
       const lines = buf.toString().split(/\r?\n/);
-      if(lines.indexOf(userid) > -1){
+      if(lines.indexOf(email) > -1){
         resolve(true);
       }
       resolve(false);
