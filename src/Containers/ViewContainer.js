@@ -166,7 +166,7 @@ export default function ViewContainer(props) {
           {
             return false;
           }
-          return s.track.kind == track.kind;
+          return s.track.kind === track.kind;
         })
         if(sender)
         {

@@ -7,7 +7,7 @@ class CameraToggleButton extends React.Component {
 
       const check = document.getElementById("toggleCameraButton").innerHTML;
  
-      if (check == "Turn Camera Off") {
+      if (check === "Turn Camera Off") {
         document.getElementById("toggleCameraButton").innerHTML = "Turn Camera On";
         tracks[1].enabled = false;
       }
