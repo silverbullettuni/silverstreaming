@@ -30,6 +30,30 @@ export default function InfoContainer(props){
     function setChange() {
         setForChanged(true)
     }
+
+    // Initial setup
+    useEffect(() => {
+        window.dispatchEvent(resetMedia);
+        socket.connect();
+        return () => {
+            console.log("Closing socket connection")
+            socket.disconnect();
+          }
+    }, [])
+ 
+    // Initial setup for login and exit
+    useEffect(() => {
+        inputUsername();
+        setForChanged(false);
+        window.addEventListener('change', setChange);
+        window.addEventListener('beforeunload', setExit, false);
+
+        return () => {
+            socket.off('login',{ uid:uid, username:participant });
+            window.removeEventListener('change',setChange)
+            window.removeEventListener('beforeunload',setExit)
+        }
+
     /**
     * emit exitChatBox socket
     */
@@ -44,65 +68,43 @@ export default function InfoContainer(props){
             }
         }
     }
-    // Initial setup
-    useEffect(() => {
-        window.dispatchEvent(resetMedia);
-        socket.connect();
-        return () => {
-            console.log("Closing socket connection")
-            socket.disconnect();
-          }
-    }, [])
- 
-    // Initial setup for login and exit
-    useEffect(() => {
-        inputUsername();
-
-        setForChanged(false);
-        window.addEventListener('change', setChange);
-        window.addEventListener('beforeunload', setExit, false);
-
-        return () => {
-            socket.off('login',{ uid:uid, username:participant });
-            window.removeEventListener('change',setChange)
-            window.removeEventListener('beforeunload',setExit)
-        }
-    }, []);
-    /**
+        /**
     * Genrate a fixed UID to user
     */
-    function generateUid() {
-        return new Date().getTime() + "" + Math.floor(Math.random() * 9 + 1);
-    }
-    /**
-    * Input username and emit login socket
-    */
-    function inputUsername() {
-        if (window.sessionStorage.getItem("userData") === null) {
-            let participant = window.prompt("Please enter your username ");
-            let uid = generateUid();
-            if (!participant) {
-                participant = "guest" + uid;
-            }
-            setParticipant(participant);
-            setUid(uid);
-
-            var obj = { username: participant };
-            var str = JSON.stringify(obj);
-
-            window.sessionStorage.setItem("userData", str); 
-
-            if (participant !== "") {
-                socket.emit("login", { uid: uid, username: participant });
-            }
-        } else {
-            let getUser = window.sessionStorage.getItem("userData");
-            var obj = JSON.parse(getUser);
-            setUid(obj.uid);
-            setParticipant(obj.username);
-            socket.emit("login", { uid: obj.uid, username: obj.username });
+   function generateUid() {
+    return new Date().getTime() + "" + Math.floor(Math.random() * 9 + 1);
+}
+/**
+* Input username and emit login socket
+*/
+function inputUsername() {
+    if (window.sessionStorage.getItem("userData") === null) {
+        let participantTemp = window.prompt("Please enter your username ");
+        let uidTemp = generateUid();
+        if (!participantTemp) {
+            participantTemp = "guest" + uidTemp;
         }
+        setParticipant(participantTemp);
+        setUid(uidTemp);
+
+        var obj = { username: participantTemp};
+        var str = JSON.stringify(obj);
+
+        window.sessionStorage.setItem("userData", str); 
+
+        if (participantTemp !== "") {
+            socket.emit("login", { uid: uid, username: participantTemp });
+        }
+    } else {
+        let getUser = window.sessionStorage.getItem("userData");
+        var userObj = JSON.parse(getUser);
+        setUid(userObj.uid);
+        setParticipant(userObj.username);
+        socket.emit("login", { uid: userObj.uid, username: userObj.username });
     }
+}
+    }, [formChanged, wb]); // eslint-disable-line react-hooks/exhaustive-deps
+
 
     if (wb === "watch") {
         return (

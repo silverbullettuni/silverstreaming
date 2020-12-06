@@ -17,7 +17,8 @@ export default function ChatContainer(props) {
     const [uid, setUid] = useState([])
     const [user, setUser] = useState([])
     const [message, setMessage] = useState([]);
-    const [onlineUsers, setOnlineUsers] = useState({});
+    //eslint-disable-next-line
+    const [onlineUsers, setOnlineUsers] = useState({}); 
     const [onlineCount, setOnlineCount] = useState(0);
     const [userHtml, setUserHtml] = useState([]);
 
@@ -28,10 +29,7 @@ export default function ChatContainer(props) {
     const textbox = useRef();
     const chatFrame = useRef();
     const userFrame = useRef();
-    // These 2 variables are used to keep the other windows open and closed accordingly
-    // when closing or opening one of these menus
-    var isChatOpen = false;
-    var isUsersOpen = false;
+
 
     // Initial setup
     useEffect(() => {
@@ -51,11 +49,16 @@ export default function ChatContainer(props) {
                 setMsgBubble(msgBubble=>[...msgBubble,newMsg]);
                 setCountNewMessages(countNewMessages+1);
             }
+            return null;
         });
     },[message])
 
     // Initial setup chat box style
     useEffect(()=>{
+        // These 2 variables are used to keep the other windows open and closed accordingly
+        // when closing or opening one of these menus
+        var isChatOpen = false;
+        var isUsersOpen = false;
         document.getElementsByClassName('chatConatiner')[0].addEventListener("click", ()=>{
             document.getElementsByClassName('chatConatiner')[0].setAttribute(
                 'style','height: 400px; width: 300px; border-radius: 1px');
