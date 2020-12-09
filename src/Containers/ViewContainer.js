@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useHistory } from "react-router-dom";
 
-import LeaveSessionButton from '../Components/LeaveSessionButton';
-import MuteMicButton from '../Components/MuteMicButton';
-import CameraOffButton from '../Components/CameraOffButton';
-import CameraOnButton from '../Components/CameraOnButton';
-
 import { socket } from "../Services/socket";
 import ChatContainer from "./ChatContainer";
 
@@ -21,7 +16,9 @@ const config = {
     }
   ]
 };
-
+/**
+* ViewContainer contains the view and components for the stream participants/watchers
+*/
 export default function ViewContainer(props) {
 
     let { sessionTokenId } = useParams();
@@ -35,6 +32,7 @@ export default function ViewContainer(props) {
     const [selfStream, setSelfStream] = useState(null);
     const selfVideoElement = useRef();
 
+    // Initial setup
     useEffect(() => {
       setupListeners();
       refreshStream();  
@@ -53,8 +51,10 @@ export default function ViewContainer(props) {
         socket.off("roomAlreadyFull", roomAlreadyFull);
         window.removeEventListener('refreshStream', refreshStream);
       }
-    }, [])
 
+    /**
+    * Set up all socket listeners as well as a listener for the stream refresh event sent by the AV selects
+    */
     function setupListeners(){ 
       window.addEventListener('refreshStream', refreshStream);
       socket.on("offer", offer);            
@@ -65,16 +65,54 @@ export default function ViewContainer(props) {
       socket.on("roomAlreadyFull", roomAlreadyFull);
       socket.emit("watcher", sessionTokenId);
     }
+        /**
+    * When broadcaster connects
+    */
+   function broadcaster() {
+    socket.emit("watcher", sessionTokenId);
+  }
 
+  /**
+  * When the room is full.
+  */
+  function roomAlreadyFull(){
+    window.alert("Sorry but this session is full.");
+    exit();
+  }
+
+    /**
+    * When the broadcaster has disconnected (timeout)
+    */
+   function streamerTimeout(){
+    window.alert("The session has ended");
+    exit();
+  }
+
+
+    /**
+    * Return to landing page
+    */
+   function exit(){
+    history.push('/');
+  }
+
+    }, [sessionTokenId, history])
+
+
+    /**
+    * When the broadcaster disconnects
+    */
     function hostDisconnect() { 
       hostRef.current.close();    
     }
   
-    function streamerTimeout(){
-      window.alert("The session has ended");
-      exit();
-    }
+  
 
+    /**
+    * When the broadcaster sends a connection offer 
+    * @param {string} id Connection socket id
+    * @param {RTCSessionDescription} description localDescription of this watcher as set by the broadcaster
+    */
     function offer(id, description) {
       const hostPeerConnection = new RTCPeerConnection(config);
       hostPeerConnection
@@ -105,25 +143,23 @@ export default function ViewContainer(props) {
 
     }
 
+    /**
+    * Add socket as an ICE candidate 
+    * @param {string} id Connection socket id
+    * @param {RTCIceCandidate} candidate Candidate from the peer connection ICE event
+    */
     function candidate(id, candidate) {
       hostRef.current 
           .addIceCandidate(new RTCIceCandidate(candidate))
           .catch(e => console.error(e));
     }
 
-    function broadcaster() {
-      socket.emit("watcher", sessionTokenId);
-    }
 
-    function roomAlreadyFull(){
-      window.alert("Sorry but this session is full.");
-      exit();
-    }
 
-    function exit(){
-      history.push('/');
-    }
 
+    /**
+    * Refresh self-stream and tracks for all connected peers
+    */
     function refreshStream(){  
       let stream = window.stream;
       if(!stream){
@@ -137,7 +173,7 @@ export default function ViewContainer(props) {
           {
             return false;
           }
-          return s.track.kind == track.kind;
+          return s.track.kind === track.kind;
         })
         if(sender)
         {
@@ -150,6 +186,7 @@ export default function ViewContainer(props) {
       
     }
 
+    // Set source for broadcaster video element and self-video element when their respective streams are available and set
     useEffect(() => {
       if (videoElement.current && hostStream) videoElement.current.srcObject = hostStream;
       if (selfVideoElement.current && selfStream) selfVideoElement.current.srcObject = selfStream;
@@ -175,11 +212,7 @@ export default function ViewContainer(props) {
                   ref={selfVideoElement}
               />
             </div>
-            
-            <div className="leaveButton">
-                <MuteMicButton />
-                <LeaveSessionButton />
-            </div>     
+               
             
             <ChatContainer/>
         </div>

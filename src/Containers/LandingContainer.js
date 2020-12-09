@@ -2,12 +2,15 @@ import React, { useState,  useRef } from 'react';
 
 import { Link } from 'react-router-dom';
 
-
+/**
+* Container for host/watch selection and session token generation
+*/
 export default function LandingContainer() {
 
     const [tokenId, setTokenId] = useState("");
     const tokenInput = useRef();
   
+    // This function generates a generic 12 letter string from this set of characters
     function generateToken(){
         let token = '';
         const chars = "ABCDEFGHJKLMNPQRSTUVXYZabcdefghijklmnopqrstuvwxyz23456789"

@@ -6,6 +6,7 @@ class MuteMicButton extends React.Component {
       let audioStream = window.stream;
       const audioTracks = audioStream.getTracks();
 
+      // Checks if audio is enabled or not so changes the button text accordingly
       if(audioTracks != null){
         if(audioTracks[0].enabled){
           audioTracks[0].enabled = false;
@@ -18,6 +19,7 @@ class MuteMicButton extends React.Component {
 
   };
   
+  // Returns this react component
   render() {
     return (
       <button id="toggleMicButton" onClick={this.handleClick}>

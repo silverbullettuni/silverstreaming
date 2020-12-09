@@ -1,7 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
+
+import MuteMicButton from '../../Components/MuteMicButton';
+import CameraToggleButton from '../../Components/CameraToggleButton';
+import LeaveSessionButton from '../../Components/LeaveSessionButton';
+import InviteLinkButton from '../../Components/InviteLinkButton';
 import AVSelect from './AVSelect';
 
+// Style changes for the nav bar
 const Ul = styled.ul`
   list-style: none;
   display: flex;
@@ -27,47 +33,16 @@ const Ul = styled.ul`
   }
 `;
 
-const Button = styled.button`
-  /* Adapt the colors based on primary prop */
-  background: "white"};
-  color: "teal"};
-
-  font-size: 1em;
-  margin: 0.5em;
-  padding: 0.2em 1em;
-  border: 2px solid teal;
-  border-radius: 3px;
-`;
-
-const Select = styled.select`
-  /* Adapt the colors based on primary prop */
-  background: "white"};
-  color: "teal"};
-
-  font-size: 1em;
-  margin: 0em;
-  padding: 0.15em 1em;
-  border: 3px solid teal;
-  border-radius: 3px;
-`;
 
 const RightNav = ({ open }) => {
     return (
         <Ul open={open}>
             <AVSelect/>
             <p />
-            <div>
-            <p>Participant view</p>
-                    <Button> Single </Button>
-                    <Button>2 x 2</Button>
-                    <Button>3 x 3</Button>
-                    <Button>4 x 4</Button>
-            </div>
-            <Button>Mute Microphone</Button>
-            <Button>Mute/Unmute Sound</Button>
-            <Button>Camera On/off</Button>
-            <Button>Copy Session Link</Button>
-            <Button>Leave Session</Button>
+            <MuteMicButton />
+            <CameraToggleButton />
+            <InviteLinkButton />
+            <LeaveSessionButton />
         </Ul>
     )
 }

@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef, createContext, useContext } from 'react'
+import React, { useState, useEffect, useRef, createContext} from 'react'
 import { useParams, useHistory  } from "react-router-dom";
 
 import ParticipantsContainer from './ParticipantsContainer';
 import { socket } from "../Services/socket";
 import ChatContainer from "./ChatContainer";
-// import { DataContext } from './InfoContainer'
 
 const config = {
   iceServers: [
@@ -21,33 +20,44 @@ const config = {
 
 export const broadcasterContext = createContext();
 
+/**
+* BroadcastContainer contains the view and components for the streamer
+*/
 export default function BroadcastContainer(props) {
 
     let { sessionTokenId } = useParams();
     let history = useHistory();
     const videoElement = useRef();
     const selfVideoElement = useRef(null);
-
+    //eslint-disable-next-line
     const [peers, setPeers] = useState(new Map());
     const [peerStreams, setPeerStreams] = useState(new Map());
     const [selfStream, setSelfStream] = useState(null);
     const [selectedParticipant, setSelectedParticipant] = useState(undefined);
 
+    /**
+    * Select participant for main video view
+    * @param {string} participant participant id
+    */
     function selectParticipant(participant){
       let selected = peerStreams.get(participant)
-      if(videoElement.current.srcObject == selfVideoElement.current.srcObject){
+      if(videoElement.current.srcObject === selfVideoElement.current.srcObject){
         videoElement.current.muted = false;
       }
       videoElement.current.srcObject = selected;     
       setSelectedParticipant(participant);
     }
 
+    /**
+    * Select self-stream for the main video view
+    */
     function selectSelf(){
       videoElement.current.srcObject = selfVideoElement.current.srcObject;
       videoElement.current.muted = true;
       setSelectedParticipant(undefined);
     }
 
+    // Initial setup
     useEffect(() => {
       setupListeners();
       refreshStream(); 
@@ -59,33 +69,57 @@ export default function BroadcastContainer(props) {
           });
         }
         socket.off("broadcasterExists", broadcasterExists);
+        socket.off("broadcastingNotAllowed", broadcastingNotAllowed);
         socket.off("watcher", watcher);       
         socket.off("answer", answer);
         socket.off("candidate", candidate);
         socket.off("disconnectPeer", peerDisconnected);
         window.removeEventListener('refreshStream', refreshStream);
       }
-    }, [])
-
+          /**
+    * Set up all socket listeners as well as a listener for the stream refresh event sent by the AV selects
+    */
     function setupListeners(){
       window.addEventListener('refreshStream', refreshStream);
       socket.on("broadcasterExists", broadcasterExists);
+      socket.on("broadcastingNotAllowed", broadcastingNotAllowed);
       socket.on("watcher", watcher);       
       socket.on("answer", answer);
       socket.on("candidate", candidate);
       socket.on("disconnectPeer", peerDisconnected);
-      socket.emit("broadcaster", sessionTokenId);
+      socket.emit("broadcaster", sessionTokenId, localStorage.getItem('loginToken'));
     }
+       /**
+    * Return to landing page
+    */
+   function exit(){
+    history.push('/');
+  }
 
-    function exit(){
-      history.push('/');
-    }
+  /**
+  * When a broadcaster is already in the room
+  */
+  function broadcasterExists(){
+    window.alert("Another broadcaster already in session");
+    exit();
+  }
 
-    function broadcasterExists(){
-      window.alert("Another broadcaster already in session");
-      exit();
-    }
 
+  function broadcastingNotAllowed(){
+    window.alert("Broadcasting only allowed to permitted users.");
+    exit();
+  }
+    }, [history, sessionTokenId])
+
+
+
+ 
+
+
+    /**
+    * When a new watcher connects
+    * @param {string} id new connection socket id
+    */
     function watcher(id) {
       const peerConnection = new RTCPeerConnection(config);    
 
@@ -119,6 +153,11 @@ export default function BroadcastContainer(props) {
       
     }
 
+    /**
+    * When a watcher answers connection offer
+    * @param {string} id connection socket id
+    * @param {RTCSessionDescription} description localDescription of the broadcaster as set by the watcher
+    */
     function answer(id, description) {
       setPeers(prev => {          
         const newPeers = new Map(prev);
@@ -128,6 +167,11 @@ export default function BroadcastContainer(props) {
       })
     }
 
+    /**
+    * Add socket as an ICE candidate 
+    * @param {string} id Connection socket id
+    * @param {RTCIceCandidate} candidate Candidate from the peer connection ICE event
+    */
     function candidate(id, candidate) {
       setPeers(prev => {
         const newPeers = new Map(prev);
@@ -137,6 +181,10 @@ export default function BroadcastContainer(props) {
       
     }
 
+    /**
+    * When a watcher disconnects
+    * @param {string} id Connection socket id
+    */
     function peerDisconnected(id) {   
 
       setPeers(prev => {
@@ -156,6 +204,9 @@ export default function BroadcastContainer(props) {
       });
     }
 
+    /**
+    * Refresh self-stream and tracks for all connected peers
+    */
     function refreshStream(){
       let stream = window.stream;    
       if(!stream){
@@ -171,7 +222,7 @@ export default function BroadcastContainer(props) {
               {
                 return false;
               }
-              return s.track.kind == track.kind;
+              return s.track.kind === track.kind;
             })
             if(sender)
             {
@@ -190,6 +241,7 @@ export default function BroadcastContainer(props) {
       
     }
 
+    // Set source for self-video element when media stream is available and set
     useEffect(() => {
       if (selfVideoElement.current && selfStream) selfVideoElement.current.srcObject = selfStream;
     });

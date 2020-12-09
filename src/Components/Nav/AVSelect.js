@@ -13,13 +13,20 @@ const Select = styled.select`
   border-radius: 3px;
 `;
 
+/**
+* Event to trigger stream refresh
+*/
 const refreshStream = new CustomEvent('refreshStream');
 
+/**
+* Component containing the select elements and required functionality to choose media devices and initialize media streaming
+*/
 const AVSelect = () => {
 
     const audioSelect = useRef();
     const videoSelect = useRef();
 
+    // Initial setup
     useEffect(() => {
         try {
           getStream()
@@ -33,8 +40,11 @@ const AVSelect = () => {
       return () => {
         window.removeEventListener('resetMedia', getStream);
       }
-    }, [])
+    })
 
+    /**
+    * Get user media stream based on current selections of the audio/video selects
+    */
     function getStream() {
       if (window.stream) {
         window.stream.getTracks().forEach(track => {
@@ -53,10 +63,17 @@ const AVSelect = () => {
         .catch(handleError);
     }
 
+    /**
+    * Get available media devices
+    */
     function getDevices() {
       return navigator.mediaDevices.enumerateDevices();
     }
       
+    /**
+    * Set the audio/video select options based on available media devices
+    * @param {MediaDeviceInfo[]} deviceInfos Available media devices
+    */
     function gotDevices(deviceInfos) {
       window.deviceInfos = deviceInfos;
       for (const deviceInfo of deviceInfos) {
@@ -71,7 +88,11 @@ const AVSelect = () => {
         }
       }
     }  
-    
+
+    /**
+    * Set window stream to selected MediaStream and dispatch refresh event
+    * @param {MediaStream} stream Available media devices
+    */
     function gotStream(stream) {
       window.stream = stream;
       audioSelect.current.selectedIndex = [...audioSelect.current.options].findIndex(
@@ -84,6 +105,9 @@ const AVSelect = () => {
       window.dispatchEvent(refreshStream);
     }
     
+    /**
+    * Log errors.
+    */
     function handleError(error) {
       console.error("Error: ", error);
     }

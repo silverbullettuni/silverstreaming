@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useRef } from 'react';
+import React, { useState, useEffect, createContext } from 'react';
 import {useParams} from "react-router-dom";
 import { socket } from "../Services/socket";
 import BroadcastContainer from "./BroadcastContainer";
@@ -6,7 +6,9 @@ import ViewContainer from "./ViewContainer";
 const resetMedia = new CustomEvent('resetMedia');
 
 export const DataContext = createContext();
- 
+/**
+* InfoContainer containes actions and data before view
+*/
 export default function InfoContainer(props){
     
     const [uid, setUid] = useState('');
@@ -22,20 +24,14 @@ export default function InfoContainer(props){
         uid: uid,
     };
 
+    /**
+    * Set boolean of page changed
+    */
     function setChange() {
         setForChanged(true)
     }
-    function setExit() {
-        if (!formChanged) {
-            socket.emit('exitChatbox')
-            if (wb == "broadcast") {
-                socket.emit("streamerTimeout");
-            }
-            if (wb == "broadcast") {
-                socket.emit("resetStreamerTimeout");
-            }
-        }
-    }
+
+    // Initial setup
     useEffect(() => {
         window.dispatchEvent(resetMedia);
         socket.connect();
@@ -45,9 +41,9 @@ export default function InfoContainer(props){
           }
     }, [])
  
+    // Initial setup for login and exit
     useEffect(() => {
         inputUsername();
-
         setForChanged(false);
         window.addEventListener('change', setChange);
         window.addEventListener('beforeunload', setExit, false);
@@ -57,40 +53,60 @@ export default function InfoContainer(props){
             window.removeEventListener('change',setChange)
             window.removeEventListener('beforeunload',setExit)
         }
-    }, []);
 
-    function generateUid() {
-        return new Date().getTime() + "" + Math.floor(Math.random() * 9 + 1);
-    }
-
-    function inputUsername() {
-        if (window.sessionStorage.getItem("userData") === null) {
-            let participant = window.prompt("Please enter your username ");
-            let uid = generateUid();
-            if (!participant) {
-                participant = "guest" + uid;
+    /**
+    * emit exitChatBox socket
+    */
+    function setExit() {
+        if (!formChanged) {
+            socket.emit('exitChatbox')
+            if (wb === "broadcast") {
+                socket.emit("streamerTimeout");
             }
-            setParticipant(participant);
-            setUid(uid);
-
-            var obj = { username: participant };
-            var str = JSON.stringify(obj);
-
-            window.sessionStorage.setItem("userData", str); 
-
-            if (participant != "") {
-                socket.emit("login", { uid: uid, username: participant });
+            if (wb === "broadcast") {
+                socket.emit("resetStreamerTimeout");
             }
-        } else {
-            let getUser = window.sessionStorage.getItem("userData");
-            var obj = JSON.parse(getUser);
-            setUid(obj.uid);
-            setParticipant(obj.username);
-            socket.emit("login", { uid: obj.uid, username: obj.username });
         }
     }
+        /**
+    * Genrate a fixed UID to user
+    */
+   function generateUid() {
+    return new Date().getTime() + "" + Math.floor(Math.random() * 9 + 1);
+}
+/**
+* Input username and emit login socket
+*/
+function inputUsername() {
+    if (window.sessionStorage.getItem("userData") === null) {
+        let participantTemp = window.prompt("Please enter your username ");
+        let uidTemp = generateUid();
+        if (!participantTemp) {
+            participantTemp = "guest" + uidTemp;
+        }
+        setParticipant(participantTemp);
+        setUid(uidTemp);
 
-    if (wb == "watch") {
+        var obj = { username: participantTemp};
+        var str = JSON.stringify(obj);
+
+        window.sessionStorage.setItem("userData", str); 
+
+        if (participantTemp !== "") {
+            socket.emit("login", { uid: uid, username: participantTemp });
+        }
+    } else {
+        let getUser = window.sessionStorage.getItem("userData");
+        var userObj = JSON.parse(getUser);
+        setUid(userObj.uid);
+        setParticipant(userObj.username);
+        socket.emit("login", { uid: userObj.uid, username: userObj.username });
+    }
+}
+    }, [formChanged, wb]); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+    if (wb === "watch") {
         return (
             <div className="container">
                 <DataContext.Provider value={data}>
@@ -98,7 +114,7 @@ export default function InfoContainer(props){
                 </DataContext.Provider>
             </div>
         );
-    } else if (wb == "broadcast") {
+    } else if (wb === "broadcast") {
         return (
             <div className="container">
                 <DataContext.Provider value={data}>

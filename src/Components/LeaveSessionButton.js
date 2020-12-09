@@ -4,15 +4,18 @@ import { socket } from "../Services/socket"
 
 
 class LeaveSessionButton extends React.Component {
+//Disconnects the streamer   
     handleClick = () => {
-      if(this.props.isBroadcaster == true){
+      if(this.props.isBroadcaster === true){
         socket.emit("streamerDisconnect");
       }
   };
-  
+//React Button component
   render() {
     return (
-         <Link to="/home"><button id="leaveSessionButton" onClick={this.handleClick}>Leave session</button></Link> 
+          <Link id="leaveSessionButton" onClick={this.handleClick} to="/home">
+            <button>Leave session</button>
+          </Link> 
     );
   }
 }
