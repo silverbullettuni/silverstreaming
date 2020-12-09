@@ -151,6 +151,7 @@
   transition: height .35s ease-in-out;
   justify-content: center;
   align-content: center;
+  overflow: auto;
 }
 
 /* .fullChatBox .chatConatiner:hover{

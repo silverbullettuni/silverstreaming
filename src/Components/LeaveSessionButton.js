@@ -9,6 +9,8 @@ class LeaveSessionButton extends React.Component {
       if(this.props.isBroadcaster === true){
         socket.emit("streamerDisconnect");
       }
+
+      socket.emit('exitChatbox');
   };
 //React Button component
   render() {

@@ -143,6 +143,8 @@ io.sockets.on("connection", (socket) => {
       rooms.delete(socket.roomId);
     }
     socket.roomId = undefined;
+
+    socket.emit('exitChatbox');
   });
 
   socket.on("streamerDisconnect", () => {
@@ -159,6 +161,7 @@ io.sockets.on("connection", (socket) => {
       console.log("Timing out: disconnecting peer connection");
       let room = rooms.get(socket.roomId);
       let bc = room.get("broadcaster");
+      socket.emit('exitChatbox');
       socket.to(bc).emit("disconnectPeer", socket.id);
       socket.to(socket.roomId).emit("streamerTimeouted");
       socket.leave(socket.roomId);
