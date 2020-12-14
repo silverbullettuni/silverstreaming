@@ -2,8 +2,6 @@
 
 WebRTC PeerToPeer broadcast application that allows the broadcaster to send video and audio stream to all connected users (watchers). 
 
-You can find the tutorial that explains the code and functionality on my [website](https://gabrieltanner.org/blog/webrtc-video-broadcast).
-
 ## Getting started
 
 ### Starting the application
