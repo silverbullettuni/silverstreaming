@@ -43,6 +43,14 @@ turnserver --listening-port 12779 --user testuser:testpassword --external-ip PUB
 
 Configure your TURN credentials to BroadcastContainer and ViewContainer.
 
+### Testcafe
+
+Testcafe test for this repository can be executed with command 
+
+```
+testcafe chrome src/Tests/*
+```
+
 ## Authors
 
 Anna Suo-Anttila, Jermu Toiviainen, Kim Milan, Shujun Liu, Ville Mannila
